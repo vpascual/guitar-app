@@ -19,3 +19,11 @@ Newest last. Each entry: what was decided and why.
 15. **BPM rule:** two clean runs in a row raise the tempo by 4; a failed run lowers it by 8 and biases the next session towards that focus; the target moves up by 8 once reached.
 16. **JSON Schema files are not generated.** The TypeScript types in `src/puzzles/types.ts`, `src/engine/session.ts` and `src/storage/repository.ts` are the schemas; generating JSON Schema needs an extra dependency and nothing consumes it yet.
 17. **The PDF is never read at runtime or committed.** It lives in `./reference/` (gitignored); only `src/content/book-index.json` is committed.
+18. **Practice focuses cover all weak areas**, not only modes: 6 modes, 5 chord-type focuses (spread triads, sus, half-diminished/diminished, tensions, altered dominants) and 4 meters (3/4, 6/8, 5/4, 7/8). Every focus resolves to the same ingredients (scale, key, progression, meter), so one builder serves all.
+19. **Focus choice** = puzzle failure rate for the focus's concepts + failed practice material + never-practised bonus − recency − weak-area order. The last three focuses are penalised so sessions rotate.
+20. **Meter sessions borrow a dark modal progression** (aeolian, dorian or phrygian) from the library and play it in the meter; the metronome clicks every eighth (or quarter) with accents at group starts, and tabs mark accents with `>` instead of pick direction.
+21. **The borrowed-chord puzzle asks "which of these modes contains the chord"**, not "where does it come from": many borrowed chords belong to several parallel modes, and the explanation lists the others.
+22. **Spread-triad puzzles skip chords spelled with Fa♭, Do♭, Mi♯ or Si♯.**
+23. **Answer options go in two columns when all labels are short**, so the fretboard or diagram is not covered on a phone.
+24. **`?g=<generator>&seed=&level=` pins the first puzzle.** Used by `npm run shots` for visual audits; harmless otherwise.
+25. **JS bundle is 90 kB gzip against my own 80 kB budget.** Load-to-puzzle is 150 ms cold and 50 ms offline in headless Chromium, so I did not trade React for something smaller.

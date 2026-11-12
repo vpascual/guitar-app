@@ -9,21 +9,21 @@ import { ListenButton } from '../ui/ListenButton';
 import { MetronomeControl } from '../ui/Metronome';
 import { Tab } from '../ui/Tab';
 import { Timer } from '../ui/Timer';
+import { RhythmLine } from '../ui/RhythmLine';
 
 const RESULT_CA: Record<BlockResult, string> = { clean: 'Net', sloppy: 'Brut', failed: 'Fallat' };
 
 async function loadContext(): Promise<BuildContext> {
   const [attempts, sessions, materials] = await Promise.all([repo.listAttempts(), repo.listSessions(), repo.getMaterials()]);
-  const modeStats: BuildContext['modeStats'] = {};
+  const conceptStats: BuildContext['conceptStats'] = {};
   for (const a of attempts) {
-    if (!a.puzzle?.conceptKey.startsWith('mode:')) continue;
-    const id = a.puzzle.conceptKey.slice(5);
-    const st = (modeStats[id] ??= { wrong: 0, total: 0 });
+    if (!a.puzzle) continue;
+    const st = (conceptStats[a.puzzle.conceptKey] ??= { wrong: 0, total: 0 });
     st.total++;
     if (!a.puzzle.correct) st.wrong++;
   }
   const history = sessions.sort((a, b) => a.createdAt - b.createdAt).map((s) => ({ focusId: s.focus.id, progressionId: s.progressionId }));
-  return { modeStats, history, materials, now: Date.now(), rand: Math.random };
+  return { conceptStats, history, materials, now: Date.now(), rand: Math.random };
 }
 
 function Block({ block, open, onRate }: { block: PracticeBlock; open: boolean; onRate: (r: BlockResult) => void }) {
@@ -40,6 +40,7 @@ function Block({ block, open, onRate }: { block: PracticeBlock; open: boolean; o
         <MetronomeControl accents={block.accents} startBpm={block.startBpm} targetBpm={block.targetBpm} meterLabel={block.meterLabel} />
       </div>
       {block.listen && <div className="row">{block.listen.map((l) => <ListenButton key={l.label} what={l.what} label={l.label} />)}</div>}
+      {block.rhythm && <RhythmLine groups={block.rhythm} />}
       <ul className="detail">{block.detail.map((d, i) => <li key={i}>{d}</li>)}</ul>
       {block.tabs.map((t) => <Tab key={t.title} tab={t} />)}
       {block.diagrams.length > 0 && (
@@ -57,7 +58,10 @@ function Block({ block, open, onRate }: { block: PracticeBlock; open: boolean; o
       )}
       <details className="refs">
         <summary>Referències al llibre</summary>
-        <ul>{block.bookConcepts.map((c) => <li key={c}>{formatRef(c)}</li>)}</ul>
+        <ul>
+          {block.bookConcepts.map((c) => <li key={c}>{formatRef(c)}</li>)}
+          {block.bookConcepts.length === 0 && <li>{formatRef(null)}</li>}
+        </ul>
       </details>
       <div className="rate">
         <span>Com ha anat?</span>

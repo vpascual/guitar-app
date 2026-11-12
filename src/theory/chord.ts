@@ -81,12 +81,14 @@ export function romanNumeral(degree: string, chordDefId: string): string {
   const m = /^([b#]*)(\d)$/.exec(degree);
   if (!m) throw new Error(`Bad degree: ${degree}`);
   const base = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'][Number(m[2]) - 1];
-  const minorish = ['m', 'dim', 'm7', 'm7b5', 'dim7', 'mMaj7'].includes(chordDefId);
+  const minorish = ['m', 'dim', 'm7', 'm7b5', 'dim7', 'mMaj7', 'm6', 'm9'].includes(chordDefId);
   const suffix: Record<string, string> = {
     maj: '', m: '', dim: '°', aug: '+', maj7: 'maj7', '7': '7', m7: '7', m7b5: 'ø7',
     dim7: '°7', mMaj7: '(maj7)', 'maj7#5': '+maj7', '7#5': '+7',
   };
-  return m[1] + (minorish ? base.toLowerCase() : base) + (suffix[chordDefId] ?? '');
+  // Chord types outside the diatonic set keep their own suffix, e.g. "I7♯9" or "bVIIsus2".
+  const other = getChord(chordDefId).suffix.replace(/^m(?!aj)/, '');
+  return m[1] + (minorish ? base.toLowerCase() : base) + (suffix[chordDefId] ?? other);
 }
 
 /** Chords built in thirds on every degree of a scale. */

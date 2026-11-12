@@ -27,7 +27,11 @@ const siblings = (s: ScaleDef, pool: ScaleDef[]): ScaleDef[] => {
   return [...same, ...other];
 };
 
-const colourLine = (s: ScaleDef) => `El ${s.nameCa} és un ${s.colourCa}.`;
+const FEMININE = ['melodic-minor', 'harmonic-minor', 'altered'];
+/** Scale name with its article: "El dòric", "L'escala menor harmònica". */
+const the = (s: ScaleDef, capital = true): string =>
+  FEMININE.includes(s.id) ? `${capital ? 'L' : 'l'}'escala ${s.nameCa}` : `${capital ? 'El' : 'el'} ${s.nameCa}`;
+const colourLine = (s: ScaleDef) => `${the(s)} és un ${s.colourCa}.`;
 
 export const modeFromFormula: PuzzleGenerator = {
   id: 'mode-from-formula',
@@ -149,8 +153,8 @@ export const parentScale: PuzzleGenerator = {
       bookConcept: s.family === 'major' ? 'chord-scales-major-melodic' : s.family === 'melodic-minor' ? 'chord-scales-major-melodic' : 'chord-scales-harmonic-misc',
       prompt: `${scaleName(tonic, s)} té les mateixes notes que quina escala ${parentLabel}?`,
       answer: choice(rng, pt, notes.filter((n) => !sameNote(n, pt)), (n) => `${noteCa(n)} ${parentLabel}`, optionCount(level)),
-      hint: `El ${s.nameCa} és el ${ORDINALS[s.modeIndex]} mode de l'escala ${parentLabel}.`,
-      explanation: `El ${s.nameCa} és el ${ORDINALS[s.modeIndex]} mode de l'escala ${parentLabel}: ${noteCa(tonic)} és el ${ORDINALS[s.modeIndex]} grau de ${noteCa(pt)} ${parentLabel}.\nNotes: ${notesCa(notes)}.`,
+      hint: `${the(s)} és el ${ORDINALS[s.modeIndex]} mode de l'escala ${parentLabel}.`,
+      explanation: `${the(s)} és el ${ORDINALS[s.modeIndex]} mode de l'escala ${parentLabel}: ${noteCa(tonic)} és el ${ORDINALS[s.modeIndex]} grau de ${noteCa(pt)} ${parentLabel}.\nNotes: ${notesCa(notes)}.`,
       terms: ['mode', 'escala mare'],
       listen: { type: 'scale', midi: scaleMidi(tonic, s) },
       truth: { kind: 'parent', tonic: noteName(tonic), scaleId: s.id },

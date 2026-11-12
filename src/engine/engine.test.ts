@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { expectedScore, updateRating, levelFor } from './elo';
 import { initialFeedState, nextPuzzle, recordAnswer, FeedState } from './feed';
-import { buildSession, applyResult, renderTab, chooseProgression, progressionChords, BLOCK_MINUTES, BuildContext } from './session';
+import { buildSession, applyResult, renderTab, chooseProgression, progressionChords, chordFocusChords, FOCI, BLOCK_MINUTES, BuildContext } from './session';
+import { CHORD_FOCI } from '../content/progressions';
 import { PROGRESSIONS } from '../content/progressions';
 import { hasRef } from '../content/refs';
 import { makeRng } from '../puzzles/util';
@@ -80,7 +81,7 @@ describe('feed', () => {
 });
 
 const ctx = (over: Partial<BuildContext> = {}): BuildContext => ({
-  modeStats: {}, history: [], materials: {}, now: 1, rand: makeRng(1).next, ...over,
+  conceptStats: {}, history: [], materials: {}, now: 1, rand: makeRng(1).next, ...over,
 });
 
 describe('practice sessions', () => {
@@ -92,7 +93,6 @@ describe('practice sessions', () => {
       expect(BLOCK_MINUTES[m].integration).toBeGreaterThanOrEqual(5);
       for (const b of s.blocks) {
         expect(b.goal.length).toBeGreaterThan(10);
-        expect(b.bookConcepts.length).toBeGreaterThan(0);
         for (const c of b.bookConcepts) expect(hasRef(c), c).toBe(true);
         for (const t of b.tabs) expect(t.tip.length).toBeGreaterThan(10);
       }
@@ -101,20 +101,22 @@ describe('practice sessions', () => {
     }
   });
   it('focuses on the mode with the worst puzzle record and avoids the last focus', () => {
-    const weak = buildSession(30, ctx({ modeStats: { lydian: { wrong: 9, total: 10 }, dorian: { wrong: 0, total: 10 } } }));
+    const weak = buildSession(30, ctx({ conceptStats: { 'mode:lydian': { wrong: 9, total: 10 }, 'mode:dorian': { wrong: 0, total: 10 } } }));
     expect(weak.focus.id).toBe('lydian');
+    const meter = buildSession(30, ctx({ conceptStats: { 'meter:7/8': { wrong: 19, total: 20 } } }));
+    expect(meter.focus.id).toBe('meter-7/8');
     const next = buildSession(30, ctx({
-      modeStats: { lydian: { wrong: 9, total: 10 } },
+      conceptStats: { 'mode:lydian': { wrong: 9, total: 10 } },
       history: [{ focusId: 'lydian', progressionId: 'lyd-I-II' }],
     }));
     expect(next.focus.id).not.toBe('lydian');
   });
   it('does not repeat a progression until the library for that mode is used up', () => {
-    const a = chooseProgression('dorian', []);
-    const b = chooseProgression('dorian', [{ progressionId: a.id }]);
-    const c = chooseProgression('dorian', [{ progressionId: a.id }, { progressionId: b.id }]);
+    const a = chooseProgression(['dorian'], []);
+    const b = chooseProgression(['dorian'], [{ progressionId: a.id }]);
+    const c = chooseProgression(['dorian'], [{ progressionId: a.id }, { progressionId: b.id }]);
     expect(new Set([a.id, b.id, c.id]).size).toBe(3);
-    const d = chooseProgression('dorian', [a, b, c].map((p) => ({ progressionId: p.id })));
+    const d = chooseProgression(['dorian'], [a, b, c].map((p) => ({ progressionId: p.id })));
     expect(d.id).toBe(a.id);
   });
   it('every library progression is diatonic to its mode, has book refs, and is not I-IV-V or ii-V-I', () => {
@@ -129,6 +131,44 @@ describe('practice sessions', () => {
       for (const c of progressionChords(p)) expect(chordFitsScale(c, parseNote(p.tonic), getScale(p.scaleId))).toBe(true);
       expect(p.whyCa.length).toBeGreaterThan(30);
     }
+  });
+  it('builds a complete session for every focus: modes, chord types and meters', () => {
+    expect(FOCI.map((f) => f.type)).toEqual(expect.arrayContaining(['mode', 'chord-type', 'meter']));
+    for (const f of FOCI) for (const m of [30, 60] as const) {
+      const s = buildSession(m, ctx(), f);
+      expect(s.focus.id).toBe(f.id);
+      expect(s.blocks).toHaveLength(4);
+      expect(s.blocks.reduce((a, b) => a + b.minutes, 0)).toBe(m);
+      expect(s.blocks[1].tabs.length, f.id).toBeGreaterThan(0);
+      expect(s.blocks[2].diagrams.length, f.id).toBeGreaterThan(0);
+      expect(s.blocks[3].chordTones.length, f.id).toBeGreaterThan(0);
+      for (const b of s.blocks) {
+        for (const c of b.bookConcepts) expect(hasRef(c), c).toBe(true);
+        // Only odd-meter technique may lack a book reference: the book does not cover it.
+        if (!(f.type === 'meter' && b.phase === 'technique')) expect(b.bookConcepts.length, `${f.id} ${b.phase}`).toBeGreaterThan(0);
+        for (const t of b.tabs) {
+          expect(t.lines.some((l) => l.startsWith('e|')) && t.lines.some((l) => l.startsWith('E|'))).toBe(true);
+          expect(t.tip.length).toBeGreaterThan(10);
+        }
+        // Roman numerals in the progression line are paired with the chord.
+        expect(b.detail.join(' ')).not.toMatch(/undefined|NaN/);
+      }
+      expect(s.blocks[2].detail[0]).toMatch(/ = /);
+      if (f.type === 'meter') {
+        expect(s.blocks[0].accents.length).toBeGreaterThanOrEqual(3);
+        expect(s.blocks[0].accents[0]).toBe(2);
+        expect(s.blocks[1].rhythm).toBeDefined();
+      }
+    }
+  });
+  it('chord-focus progressions avoid I-IV-V and ii-V-I and name their chords', () => {
+    for (const c of CHORD_FOCI) {
+      const romans = chordFocusChords(c).map((x) => x.roman).join(' ');
+      expect(romans).not.toMatch(/^I IV V$|ii7? V7? I/);
+      expect(c.whyCa.length).toBeGreaterThan(40);
+      for (const b of c.bookConcepts) expect(hasRef(b), b).toBe(true);
+    }
+    expect(chordFocusChords(CHORD_FOCI.find((c) => c.id === 'altered')!).map((x) => x.roman)).toEqual(['I7♯9', 'bIII', 'IV', 'I7♯9']);
   });
   it('raises BPM after two clean runs and lowers it after a failure', () => {
     let m = { bpm: 60, target: 64, cleanStreak: 0 };

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FretPos } from '../theory/guitar';
 import type { Puzzle, SkillArea } from '../puzzles/types';
 import { FeedState, Served, initialFeedState, nextPuzzle, recordAnswer } from '../engine/feed';
+import { makePuzzle } from '../puzzles/registry';
 import { SKILLS } from '../engine/elo';
 import { repo } from '../storage';
 import { DEFAULT_SETTINGS, DayStats, Settings, localDate } from '../storage/repository';
@@ -52,7 +53,17 @@ export function Feed() {
   const loaded = useRef<Promise<void> | null>(null);
   const shownAt = useRef(performance.now());
 
-  const [served, setServed] = useState<Served>(() => nextPuzzle(feed.current, DEFAULT_SETTINGS, Date.now(), Math.random));
+  const [served, setServed] = useState<Served>(() => {
+    // Debug aid: ?g=<generator>&seed=<n>&level=<n> pins the first puzzle, for audits and screenshots.
+    const q = new URLSearchParams(location.search);
+    const g = q.get('g');
+    if (g) {
+      try {
+        return { puzzle: makePuzzle(g, Number(q.get('seed') ?? 1), Number(q.get('level') ?? 1)) };
+      } catch { /* unknown generator: fall through to the normal feed */ }
+    }
+    return nextPuzzle(feed.current, DEFAULT_SETTINGS, Date.now(), Math.random);
+  });
   const [pick, setPick] = useState<Pick | null>(null);
   const [hint, setHint] = useState(false);
   const [today, setToday] = useState(0);
@@ -124,6 +135,25 @@ export function Feed() {
     rerender((n) => n + 1);
   };
 
+  const exportBackup = async () => {
+    const blob = new Blob([JSON.stringify(await repo.exportAll())], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `guitarra-${localDate()}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
+
+  const importBackup = async (file?: File) => {
+    if (!file) return;
+    try {
+      await repo.importAll(JSON.parse(await file.text()) as Record<string, unknown>);
+      location.reload();
+    } catch {
+      window.alert('El fitxer no és una còpia vàlida.');
+    }
+  };
+
   const correct = pick && (puzzle.answer.type === 'choice'
     ? 'index' in pick && pick.index === puzzle.answer.correctIndex
     : 'pos' in pick && puzzle.answer.accept.some((a) => a.string === pick.pos.string && a.fret === pick.pos.fret));
@@ -172,7 +202,7 @@ export function Feed() {
         )}
       </section>
 
-      <footer className="answers">
+      <footer className={puzzle.answer.type === 'choice' && puzzle.answer.options.every((o) => o.length <= 14) ? 'answers two' : 'answers'}>
         {!pick && puzzle.answer.type === 'choice' && puzzle.answer.options.map((o, i) => (
           <button key={i} className="btn option" onClick={() => void answer({ index: i })}>{o}</button>
         ))}
@@ -209,6 +239,14 @@ export function Feed() {
               Avui: {day.current.opens} {day.current.opens === 1 ? 'obertura' : 'obertures'}, {day.current.opensWithSolve} amb
               almenys un trencaclosques resolt. Repassos pendents: {feed.current.reviews.length}.
             </p>
+            <div className="row">
+              <button className="btn" onClick={() => void exportBackup()}>Exporta una còpia</button>
+              <label className="btn">
+                Importa una còpia
+                <input type="file" accept="application/json" hidden onChange={(e) => void importBackup(e.target.files?.[0])} />
+              </label>
+            </div>
+            <p className="muted">Les dades només viuen en aquest dispositiu. La còpia és un fitxer JSON que guardes tu.</p>
             <button className="btn primary" onClick={() => setSheet(false)}>Tanca</button>
           </div>
         </div>

@@ -1,6 +1,6 @@
 # PLAN — Guitar theory & practice app
 
-Status: **awaiting approval** (Phase 0 gate). Nothing but this plan and `.gitignore` exists yet.
+Status: **approved**; MVP and iterations built. Backlog status is at the end of section 9.
 
 ## 0. Blockers found before planning
 
@@ -300,6 +300,24 @@ Out: audio puzzles, chord/harmony/rhythm generators, stats sheet, backup export,
 14. JSON export / import backup. *(practice, data safety)*
 15. Stats sheet: opens, opens with a solve, rating per skill. *(polish)*
 16. Visual pass: typography, dark theme, transitions under 150 ms. *(polish)*
+
+### Backlog status
+
+| # | Item | Status |
+|---|------|--------|
+| 1–4 | Load-time, one-thumb, offline and 50-puzzle audits | Done, part of `npm run verify` |
+| 5 | Every generator and block mapped to the book index | Done, enforced by tests (odd meters excepted, Q4) |
+| 6 | Spread triads: puzzle + practice focus | Done |
+| 7 | Chord types beyond 7ths: 3 puzzles + 4 practice focuses | Done |
+| 8 | Harmonic / melodic minor and their modes | Puzzles done; practice only through the half-diminished focus |
+| 9 | Meters: 2 puzzles + 4 practice focuses with accented metronome | Done |
+| 10 | Roman analysis, modal interchange, secondary dominants | Done |
+| 11 | Audio filter: mode by ear, meter by ear, listen buttons | Done |
+| 12 | BPM history view | **Not done**; BPM state is stored and applied, not charted |
+| 13 | Progression library to 20+ | 19 (14 modal + 5 chord-focus); chord focuses have one progression each |
+| 14 | JSON export / import | Done |
+| 15 | Stats sheet | Partial: ratings, today's opens, pending reviews |
+| 16 | Visual pass | **Not done** beyond a usable dark theme |
 
 ## 10. Decisions already taken (will move to DECISIONS.md)
 

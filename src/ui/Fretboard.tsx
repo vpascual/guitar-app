@@ -19,7 +19,7 @@ export function Fretboard({ firstFret, frets, dots, onTap }: {
   const Y = (row: number) => 16 + row * H;
   const rows = Array.from({ length: frets }, (_, i) => i);
   return (
-    <svg className="fretboard" viewBox={`0 0 ${X(5) + 30} ${Y(frets) + 8}`} role="img" aria-label="Diapasó">
+    <svg className="fretboard" viewBox={`0 0 ${X(5) + 30} ${Y(frets) + 24}`} role="img" aria-label="Diapasó">
       {rows.map((r) => (
         <text key={r} x={14} y={Y(r) + H / 2 + 5} textAnchor="middle" className="fret-num">{firstFret + r}</text>
       ))}
@@ -28,6 +28,9 @@ export function Fretboard({ firstFret, frets, dots, onTap }: {
       ))}
       {[0, 1, 2, 3, 4, 5].map((s) => (
         <line key={s} x1={X(s)} x2={X(s)} y1={Y(0)} y2={Y(frets)} className="stringline" strokeWidth={3 - s * 0.35} />
+      ))}
+      {['E', 'A', 'D', 'G', 'B', 'e'].map((n, s) => (
+        <text key={n} x={X(s)} y={Y(frets) + 18} textAnchor="middle" className="fret-num">{n}</text>
       ))}
       {dots.map((d, i) => (
         <g key={i}>

@@ -127,3 +127,89 @@ export const PROGRESSIONS: ProgressionDef[] = [
     bookConcept: 'modal-resolution-tendencies',
   },
 ];
+
+/** Progressions written chord by chord, for sessions whose focus is a chord type rather than a mode. */
+export interface ChordFocusDef {
+  id: string;
+  labelCa: string;
+  /** Puzzle concept keys that count towards this focus when choosing what to practise. */
+  conceptKeys: string[];
+  tonic: string;
+  /** Scale used to improvise over the progression. */
+  scaleId: string;
+  /** [root, chord id] pairs. */
+  chords: [string, string][];
+  /** Chord ids whose arpeggios make up the technique block. */
+  study: [string, string][];
+  /** True when the chords are to be played as spread triads rather than block shapes. */
+  spread?: boolean;
+  whyCa: string;
+  songs: SongExample[];
+  bookConcepts: string[];
+}
+
+export const CHORD_FOCI: ChordFocusDef[] = [
+  {
+    id: 'spread', labelCa: 'Tríades obertes', conceptKeys: ['spread:0', 'spread:1', 'spread:2'],
+    tonic: 'G', scaleId: 'lydian', chords: [['G', 'maj'], ['A', 'maj'], ['B', 'm'], ['A', 'maj']],
+    study: [['G', 'maj'], ['A', 'maj'], ['B', 'm']], spread: true,
+    whyCa: 'Cada tríada té la veu del mig pujada una octava, i les tres notes queden separades per sisenes i cinquenes. El II major porta la 4a augmentada del lidi; obert, sona ample i gens tancat.',
+    songs: [],
+    bookConcepts: ['spread-triads-over-bass', 'spread-triad-arpeggios', 'advanced-triads'],
+  },
+  {
+    id: 'sus', labelCa: 'Acords suspesos', conceptKeys: ['chord:sus2', 'chord:sus4', 'chord:7sus4'],
+    tonic: 'D', scaleId: 'mixolydian', chords: [['D', 'sus4'], ['D', 'maj'], ['C', 'sus2'], ['G', 'maj']],
+    study: [['D', 'sus4'], ['D', 'sus2'], ['D', '7sus4']],
+    whyCa: 'La 4a suspesa demana caure a la 3a. Ajornar aquesta caiguda crea moviment sense canviar de fonamental, i el sus2 sobre el bVII deixa l\'acord sense 3a: ni major ni menor.',
+    songs: [
+      { title: 'Pinball Wizard', artist: 'The Who', confidence: 'segura', note: 'Sisus4 – Si a la introducció' },
+      { title: 'Free Fallin\'', artist: 'Tom Petty', confidence: 'segura', note: 'la tònica alterna amb el seu sus4' },
+    ],
+    bookConcepts: ['suspended-triads', 'suspended-triad-forms', 'drop2-dom7sus4'],
+  },
+  {
+    id: 'half-dim', labelCa: 'Semidisminuït i disminuït', conceptKeys: ['chord:m7b5', 'chord:dim7', 'chord:dim'],
+    tonic: 'A', scaleId: 'harmonic-minor', chords: [['A', 'm'], ['B', 'm7b5'], ['G#', 'dim7'], ['A', 'm']],
+    study: [['B', 'm7b5'], ['G#', 'dim7']],
+    whyCa: 'Els dos acords comparteixen Si, Re i Fa: el tritò Si–Fa empeny cap a La menor. El disminuït surt del 7è grau de la menor harmònica i resol a la tònica un semitò amunt, sense passar pel V7.',
+    songs: [],
+    bookConcepts: ['drop2-min7b5', 'drop2-dim7', 'harmonic-minor-harmonized'],
+  },
+  {
+    id: 'extended', labelCa: 'Acords amb tensions (9a, 13a)', conceptKeys: ['chord:9', 'chord:maj9', 'chord:m9', 'chord:13', 'chord:11', 'chord:add9'],
+    tonic: 'A', scaleId: 'dorian', chords: [['A', 'm9'], ['D', '13'], ['A', 'm9'], ['C', 'maj9']],
+    study: [['A', 'm9'], ['D', '13'], ['C', 'maj9']],
+    whyCa: 'El vamp dòric i – IV amb tensions: la 9a de Lam9 (Si) i la 13a de Re13 (Si) són la mateixa nota, que queda sostinguda mentre els acords canvien per sota.',
+    songs: [{ title: 'Oye como va', artist: 'Santana', confidence: 'segura', note: 'Lam7 – Re9' }],
+    bookConcepts: ['chord-families-scales', 'stretch-voicings', 'chord-scales-major-melodic'],
+  },
+  {
+    id: 'altered', labelCa: 'Dominants alterats', conceptKeys: ['chord:7b9', 'chord:7#9', 'chord:7b5', 'chord:7#5'],
+    tonic: 'E', scaleId: 'dorian', chords: [['E', '7#9'], ['G', 'maj'], ['A', 'maj'], ['E', '7#9']],
+    study: [['E', '7#9'], ['E', '7b9'], ['E', '7#5']],
+    whyCa: 'El 7♯9 té alhora la 3a major (Sol♯) i la 9a augmentada (Sol natural, que sona com una 3a menor). Aquest xoc major-menor és el so del blues dur; el bIII i el IV majors venen del menor.',
+    songs: [{ title: 'Purple Haze', artist: 'Jimi Hendrix', confidence: 'segura', note: 'Mi7♯9 – Sol – La' }],
+    bookConcepts: ['chordal-scales-altered-dominant', 'chord-families-scales', 'drop2-aug7'],
+  },
+];
+
+/** Songs that are safely documented in each meter, for meter-focused sessions. */
+export const METER_SONGS: Record<string, SongExample[]> = {
+  '3/4': [
+    { title: 'Piano Man', artist: 'Billy Joel', confidence: 'segura' },
+    { title: 'Manic Depression', artist: 'Jimi Hendrix', confidence: 'segura', note: 'vals ràpid de rock' },
+  ],
+  '6/8': [
+    { title: 'The House of the Rising Sun', artist: 'The Animals', confidence: 'segura' },
+    { title: 'Nothing Else Matters', artist: 'Metallica', confidence: 'segura' },
+  ],
+  '5/4': [
+    { title: 'Take Five', artist: 'The Dave Brubeck Quartet', confidence: 'segura', note: 'agrupat 3+2' },
+    { title: 'Mission: Impossible', artist: 'Lalo Schifrin', confidence: 'segura' },
+  ],
+  '7/8': [
+    { title: 'Tom Sawyer', artist: 'Rush', confidence: 'segura', note: 'secció instrumental' },
+    { title: 'Money', artist: 'Pink Floyd', confidence: 'segura', note: 'és 7/4: set negres, el mateix recompte' },
+  ],
+};

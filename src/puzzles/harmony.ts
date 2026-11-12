@@ -64,16 +64,17 @@ export const borrowedChord: PuzzleGenerator = {
       // Only offer modes that cannot also supply this chord.
       const others = DONORS.filter((m) => m.id !== donor.id && !chordFitsScale(borrowed, tonic, m));
       if (others.length < 2) continue;
+      const also = DONORS.filter((m) => m.id !== donor.id && chordFitsScale(borrowed, tonic, m));
       const foreign = spellChord(borrowed).filter((n) => !scaleNotes(tonic, ionian).some((x) => pc(x) === pc(n)));
       return {
         difficulty: this.base + 70 * level + keyCost(tonic, ionian),
         conceptKey: `borrow:${donor.id}`,
         bookConcept: 'modal-mixture-songwriters',
-        prompt: `Una cançó en ${noteCa(tonic)} major fa servir ${borrowed.roman} = ${chordSymbol(borrowed)}. De quin mode paral·lel ve l'acord?`,
+        prompt: `Una cançó en ${noteCa(tonic)} major fa servir ${borrowed.roman} = ${chordSymbol(borrowed)}, que no és de la tonalitat. Quin d'aquests modes paral·lels el conté?`,
         visual: { type: 'progression', chords: [chordSymbol(home[0]), chordSymbol(borrowed), chordSymbol(home[0])] },
         answer: choice(rng, donor, others, (m) => `${noteCa(tonic)} ${m.nameCa}`, optionCount(level)),
         hint: `Notes de ${chordSymbol(borrowed)}: ${notesCa(spellChord(borrowed))}. Quines no són a ${noteCa(tonic)} major?`,
-        explanation: `${chordSymbol(borrowed)} conté ${notesCa(foreign)}, que no ${foreign.length > 1 ? 'són' : 'és'} a ${noteCa(tonic)} major. A ${noteCa(tonic)} ${donor.nameCa} (${notesCa(scaleNotes(tonic, donor))}) l'acord surt sol: ${borrowed.roman} = ${chordSymbol(borrowed)}.`,
+        explanation: `${chordSymbol(borrowed)} conté ${notesCa(foreign)}, que no ${foreign.length > 1 ? 'són' : 'és'} a ${noteCa(tonic)} major. A ${noteCa(tonic)} ${donor.nameCa} (${notesCa(scaleNotes(tonic, donor))}) l'acord surt sol: ${borrowed.roman} = ${chordSymbol(borrowed)}.${also.length ? ` També és a ${also.map((m) => `${noteCa(tonic)} ${m.nameCa}`).join(' i ')}.` : ''}`,
         terms: ['intercanvi modal', 'xifra romana', 'mode'],
         listen: { type: 'progression', chords: [home[0], borrowed, home[0]].map(chordMidi) },
         chordHelp: chordHelp([borrowed, home[0]]),

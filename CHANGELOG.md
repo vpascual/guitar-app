@@ -13,3 +13,14 @@
 - 14 modal progressions with origin, reason and song examples; no repeats until a mode's list is used up.
 - IndexedDB behind a repository interface; installable PWA, works offline.
 - Checks: typecheck, lint, 89 unit tests, production build, headless end-to-end run at a phone viewport.
+
+## 0.2.0 — coverage of all weak areas
+
+- Practice sessions for chord types (spread triads, sus, half-diminished and diminished, tensions, altered dominants)
+  and meters (3/4, 6/8, 5/4, 7/8) in addition to the six modes; accented metronome and accent marks in tabs.
+- 5 chord-focus progressions and per-meter song examples.
+- Feed: reviews capped at every other puzzle; one new glossary term per puzzle; two-column answers; string names
+  under the fretboard; backup export and import.
+- Fixes found by the audits: endless loop in the borrowed-chord generator, misleading borrowed-chord wording,
+  feminine scale names ("L'escala menor harmònica"), clipped fret label in chord diagrams, add9 voicing wider than four frets.
+- Checks: 91 unit tests, end-to-end run with 15 assertions.

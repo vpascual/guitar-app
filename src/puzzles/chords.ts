@@ -175,6 +175,9 @@ export function spreadTriad(ch: Chord, inversion: number, bottomString: number):
 }
 
 const TRIADS = ['maj', 'm', 'dim', 'sus4'].map(getChord);
+/** No double accidentals and no Fa♭, Do♭, Mi♯ or Si♯: spellings nobody reads at a glance. */
+const plain = (c: Chord): boolean =>
+  spellChord(c).every((n) => Math.abs(n.alt) <= 1 && !(n.alt < 0 && [0, 3].includes(n.letter)) && !(n.alt > 0 && [2, 6].includes(n.letter)));
 
 export const spreadTriadName: PuzzleGenerator = {
   id: 'spread-triad',
@@ -191,14 +194,15 @@ export const spreadTriadName: PuzzleGenerator = {
       const root = rng.pick(TONIC_CANDIDATES.slice(0, level === 0 ? 7 : 12));
       const ch: Chord = { root, def };
       const pos = spreadTriad(ch, inversion, rng.int(3));
-      if (!pos || pos.some((p) => p.fret > 12)) continue;
+      if (!plain(ch) || !pos || pos.some((p) => p.fret > 12)) continue;
       const notes = pos.map((p) => spellChord(ch).find((n) => pc(n) === mod(fretMidi(p.string, p.fret), 12))!);
       const firstFret = Math.max(1, Math.min(...pos.map((p) => p.fret)));
       const pcs = pcKey(spellChord(ch));
       const others: Chord[] = [
         ...TRIADS.filter((d) => d.id !== def.id).map((d) => ({ root, def: d })),
         ...[1, 2].flatMap((i) => TRIADS.slice(0, 2).map((d) => ({ root: spellChord(ch)[i], def: d }))),
-      ].filter((c) => pcKey(spellChord(c)) !== pcs);
+      ].filter((c) => pcKey(spellChord(c)) !== pcs && plain(c));
+      if (others.length < 3) continue;
       return {
         difficulty: this.base + 70 * level,
         conceptKey: `spread:${inversion}`,

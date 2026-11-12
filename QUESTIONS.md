@@ -17,3 +17,15 @@ I will only list songs I am confident about and mark the rest "per confirmar". A
 ## Q4 — Odd meters have no source in the book
 The book contains no odd-meter section. Options: (a) odd-meter content ships without a book reference, marked
 "sense referència al llibre"; (b) you name another source; (c) drop odd meters. Default if unanswered: (a).
+
+## Q5 — GitHub push is refused (403)
+Claude has no write access to `vpascual/guitar-app`. All commits exist only in the session container. Install the
+Claude GitHub App on the repository or reconnect GitHub in claude.ai settings, then ask me to push.
+
+## Q6 — JSON Schema files
+The brief asks for JSON schemas. The TypeScript types are the schemas today; emitting `.schema.json` files needs a
+generator dependency (`ts-json-schema-generator`). Add it, or keep types only?
+
+## Q7 — Microphone input (v2 proposal)
+Pitch and onset detection could grade timing and notes automatically instead of the clean/sloppy/failed buttons.
+It needs microphone permission, which is out of scope without your approval.
