@@ -1,0 +1,1647 @@
+{
+ "book": "The Beato Book 4.0",
+ "pageOffset": 1,
+ "note": "Pages are printed page numbers. Titles, pages and example numbers only.",
+ "gaps": [
+  {
+   "weakArea": "odd-meters",
+   "note": "No section on odd meters (3/4, 6/8, 5/4, 7/8) was found in the extracted text. Comping Rhythms is the only rhythm section."
+  }
+ ],
+ "chapters": [
+  {
+   "id": "ch1",
+   "title": "Theory and Harmony",
+   "pageStart": 7,
+   "pageEnd": 102,
+   "concepts": [
+    {
+     "id": "chord-formulas",
+     "title": "Chords and Their Formulas",
+     "weakArea": "chord-types",
+     "pageStart": 13,
+     "pageEnd": 15,
+     "examples": [
+      {
+       "example": "8",
+       "page": 13
+      },
+      {
+       "example": "9",
+       "page": 14
+      },
+      {
+       "example": "10",
+       "page": 14
+      },
+      {
+       "example": "11",
+       "page": 14
+      },
+      {
+       "example": "12",
+       "page": 14
+      },
+      {
+       "example": "13",
+       "page": 15
+      }
+     ]
+    },
+    {
+     "id": "major-scale-modes-harmonized",
+     "title": "Major Scale (Triads & Sevenths)",
+     "weakArea": "modes",
+     "pageStart": 16,
+     "pageEnd": 16,
+     "examples": [
+      {
+       "example": "14a",
+       "page": 16
+      }
+     ]
+    },
+    {
+     "id": "natural-minor-harmonized",
+     "title": "Natural Minor Scale",
+     "weakArea": "modes",
+     "pageStart": 17,
+     "pageEnd": 17,
+     "examples": [
+      {
+       "example": "14b",
+       "page": 17
+      }
+     ]
+    },
+    {
+     "id": "melodic-minor-harmonized",
+     "title": "Melodic Minor Scale",
+     "weakArea": "scales",
+     "pageStart": 18,
+     "pageEnd": 18,
+     "examples": [
+      {
+       "example": "15",
+       "page": 18
+      }
+     ]
+    },
+    {
+     "id": "harmonic-minor-harmonized",
+     "title": "Harmonic Minor Scale",
+     "weakArea": "scales",
+     "pageStart": 19,
+     "pageEnd": 19,
+     "examples": [
+      {
+       "example": "16",
+       "page": 19
+      }
+     ]
+    },
+    {
+     "id": "harmonic-major-harmonized",
+     "title": "Harmonic Major Scale",
+     "weakArea": "scales",
+     "pageStart": 20,
+     "pageEnd": 20,
+     "examples": [
+      {
+       "example": "17",
+       "page": 20
+      }
+     ]
+    },
+    {
+     "id": "double-harmonic-major",
+     "title": "Double Harmonic Major Scale",
+     "weakArea": "scales",
+     "pageStart": 21,
+     "pageEnd": 21,
+     "examples": [
+      {
+       "example": "18",
+       "page": 21
+      }
+     ]
+    },
+    {
+     "id": "seventh-chords-more",
+     "title": "More About Seventh Chords",
+     "weakArea": "chord-types",
+     "pageStart": 22,
+     "pageEnd": 22,
+     "examples": [
+      {
+       "example": "19",
+       "page": 22
+      }
+     ]
+    },
+    {
+     "id": "relative-parallel",
+     "title": "Relative and Parallel Major/Minor",
+     "weakArea": "harmony",
+     "pageStart": 23,
+     "pageEnd": 23,
+     "examples": []
+    },
+    {
+     "id": "secondary-dominants",
+     "title": "Chords for Songwriters",
+     "weakArea": "harmony",
+     "pageStart": 24,
+     "pageEnd": 25,
+     "examples": []
+    },
+    {
+     "id": "modal-mixture-songwriters",
+     "title": "Modal Mixture for Songwriters",
+     "weakArea": "harmony",
+     "pageStart": 26,
+     "pageEnd": 26,
+     "examples": []
+    },
+    {
+     "id": "basic-triads",
+     "title": "Basic Triads",
+     "weakArea": "spread-triads",
+     "pageStart": 27,
+     "pageEnd": 27,
+     "examples": []
+    },
+    {
+     "id": "advanced-triads",
+     "title": "Advanced Triads",
+     "weakArea": "spread-triads",
+     "pageStart": 28,
+     "pageEnd": 28,
+     "examples": []
+    },
+    {
+     "id": "suspended-triads",
+     "title": "Suspended Triads and Other Three Note Structures",
+     "weakArea": "chord-types",
+     "pageStart": 29,
+     "pageEnd": 30,
+     "examples": [
+      {
+       "example": "20a",
+       "page": 29
+      },
+      {
+       "example": "20b",
+       "page": 29
+      },
+      {
+       "example": "2",
+       "page": 29
+      },
+      {
+       "example": "21",
+       "page": 29
+      },
+      {
+       "example": "22",
+       "page": 29
+      },
+      {
+       "example": "23",
+       "page": 30
+      },
+      {
+       "example": "24",
+       "page": 30
+      },
+      {
+       "example": "25",
+       "page": 30
+      }
+     ]
+    },
+    {
+     "id": "chord-scales-major-melodic",
+     "title": "Chord Scales (major and melodic minor modes)",
+     "weakArea": "modes",
+     "pageStart": 31,
+     "pageEnd": 31,
+     "examples": []
+    },
+    {
+     "id": "chord-scales-harmonic-misc",
+     "title": "Chord Scales (harmonic minor modes, miscellaneous)",
+     "weakArea": "scales",
+     "pageStart": 32,
+     "pageEnd": 32,
+     "examples": []
+    },
+    {
+     "id": "chord-families-scales",
+     "title": "Chord Families and Their Scales",
+     "weakArea": "chord-types",
+     "pageStart": 33,
+     "pageEnd": 35,
+     "examples": []
+    },
+    {
+     "id": "scale-degrees-progressions",
+     "title": "Scale Degree Names and Basic Progressions",
+     "weakArea": "harmony",
+     "pageStart": 36,
+     "pageEnd": 39,
+     "examples": [
+      {
+       "example": "26",
+       "page": 36
+      },
+      {
+       "example": "27",
+       "page": 36
+      },
+      {
+       "example": "28",
+       "page": 37
+      },
+      {
+       "example": "29",
+       "page": 37
+      },
+      {
+       "example": "30",
+       "page": 37
+      },
+      {
+       "example": "31",
+       "page": 37
+      },
+      {
+       "example": "32",
+       "page": 38
+      },
+      {
+       "example": "33",
+       "page": 38
+      },
+      {
+       "example": "34",
+       "page": 38
+      },
+      {
+       "example": "35",
+       "page": 39
+      },
+      {
+       "example": "36",
+       "page": 39
+      },
+      {
+       "example": "37",
+       "page": 39
+      }
+     ]
+    },
+    {
+     "id": "roman-numeral-analysis",
+     "title": "More About Roman Numeral Analysis",
+     "weakArea": "harmony",
+     "pageStart": 40,
+     "pageEnd": 41,
+     "examples": [
+      {
+       "example": "38",
+       "page": 40
+      },
+      {
+       "example": "39",
+       "page": 41
+      },
+      {
+       "example": "40",
+       "page": 41
+      },
+      {
+       "example": "41",
+       "page": 41
+      }
+     ]
+    },
+    {
+     "id": "cycle-of-fifths-back-cycling",
+     "title": "Cycle of Fifths and Back Cycling",
+     "weakArea": "harmony",
+     "pageStart": 42,
+     "pageEnd": 42,
+     "examples": [
+      {
+       "example": "42",
+       "page": 42
+      },
+      {
+       "example": "43",
+       "page": 42
+      }
+     ]
+    },
+    {
+     "id": "roman-analysis-chord-scale-choice",
+     "title": "Roman Numeral Analysis and Chord Scale Choice",
+     "weakArea": "harmony",
+     "pageStart": 43,
+     "pageEnd": 44,
+     "examples": [
+      {
+       "example": "44a",
+       "page": 43
+      },
+      {
+       "example": "44b",
+       "page": 44
+      }
+     ]
+    },
+    {
+     "id": "chord-substitution-rules",
+     "title": "Basic Rules for Chord Substitutions",
+     "weakArea": "harmony",
+     "pageStart": 45,
+     "pageEnd": 58,
+     "examples": [
+      {
+       "example": "45",
+       "page": 45
+      },
+      {
+       "example": "46",
+       "page": 45
+      },
+      {
+       "example": "47",
+       "page": 45
+      },
+      {
+       "example": "48",
+       "page": 45
+      },
+      {
+       "example": "49",
+       "page": 45
+      },
+      {
+       "example": "50",
+       "page": 46
+      },
+      {
+       "example": "51",
+       "page": 46
+      },
+      {
+       "example": "52",
+       "page": 46
+      },
+      {
+       "example": "53",
+       "page": 47
+      },
+      {
+       "example": "54",
+       "page": 47
+      },
+      {
+       "example": "55",
+       "page": 48
+      },
+      {
+       "example": "56",
+       "page": 48
+      },
+      {
+       "example": "57",
+       "page": 48
+      },
+      {
+       "example": "58",
+       "page": 48
+      },
+      {
+       "example": "59",
+       "page": 49
+      },
+      {
+       "example": "60",
+       "page": 49
+      },
+      {
+       "example": "61",
+       "page": 49
+      },
+      {
+       "example": "62",
+       "page": 50
+      },
+      {
+       "example": "63",
+       "page": 50
+      },
+      {
+       "example": "64",
+       "page": 51
+      },
+      {
+       "example": "65",
+       "page": 51
+      },
+      {
+       "example": "66",
+       "page": 51
+      },
+      {
+       "example": "67a",
+       "page": 52
+      },
+      {
+       "example": "67b",
+       "page": 52
+      },
+      {
+       "example": "68",
+       "page": 52
+      },
+      {
+       "example": "69",
+       "page": 53
+      },
+      {
+       "example": "70",
+       "page": 53
+      },
+      {
+       "example": "71",
+       "page": 53
+      },
+      {
+       "example": "72",
+       "page": 54
+      },
+      {
+       "example": "73",
+       "page": 54
+      },
+      {
+       "example": "74",
+       "page": 55
+      },
+      {
+       "example": "75",
+       "page": 55
+      },
+      {
+       "example": "76",
+       "page": 56
+      },
+      {
+       "example": "77",
+       "page": 56
+      },
+      {
+       "example": "78",
+       "page": 57
+      },
+      {
+       "example": "79",
+       "page": 57
+      },
+      {
+       "example": "80",
+       "page": 57
+      },
+      {
+       "example": "81",
+       "page": 58
+      }
+     ]
+    },
+    {
+     "id": "triads-over-bass-theory",
+     "title": "Triads Over Bass Notes (theory and tables)",
+     "weakArea": "chord-types",
+     "pageStart": 59,
+     "pageEnd": 67,
+     "examples": [
+      {
+       "example": "82a",
+       "page": 59
+      },
+      {
+       "example": "82b",
+       "page": 59
+      },
+      {
+       "example": "83",
+       "page": 59
+      },
+      {
+       "example": "84a",
+       "page": 60
+      },
+      {
+       "example": "84b",
+       "page": 60
+      },
+      {
+       "example": "85",
+       "page": 60
+      },
+      {
+       "example": "86",
+       "page": 61
+      },
+      {
+       "example": "87",
+       "page": 67
+      },
+      {
+       "example": "88",
+       "page": 67
+      },
+      {
+       "example": "89",
+       "page": 67
+      },
+      {
+       "example": "90",
+       "page": 67
+      }
+     ]
+    },
+    {
+     "id": "reharmonization",
+     "title": "Reharmonization and Chord Substitutions",
+     "weakArea": "harmony",
+     "pageStart": 68,
+     "pageEnd": 69,
+     "examples": [
+      {
+       "example": "91",
+       "page": 68
+      },
+      {
+       "example": "92a",
+       "page": 69
+      },
+      {
+       "example": "92b",
+       "page": 69
+      }
+     ]
+    },
+    {
+     "id": "modal-harmony-theory",
+     "title": "Modal Harmony and Theory",
+     "weakArea": "modes",
+     "pageStart": 88,
+     "pageEnd": 89,
+     "examples": [
+      {
+       "example": "116",
+       "page": 88
+      },
+      {
+       "example": "117",
+       "page": 88
+      },
+      {
+       "example": "118",
+       "page": 88
+      },
+      {
+       "example": "119",
+       "page": 89
+      }
+     ]
+    },
+    {
+     "id": "modal-modulation",
+     "title": "Sharp and Flat Direction Modal Modulation",
+     "weakArea": "modes",
+     "pageStart": 90,
+     "pageEnd": 95,
+     "examples": [
+      {
+       "example": "120",
+       "page": 90
+      },
+      {
+       "example": "121a",
+       "page": 91
+      },
+      {
+       "example": "121b",
+       "page": 91
+      },
+      {
+       "example": "122",
+       "page": 92
+      },
+      {
+       "example": "123a",
+       "page": 93
+      },
+      {
+       "example": "123b",
+       "page": 93
+      },
+      {
+       "example": "124",
+       "page": 94
+      },
+      {
+       "example": "125",
+       "page": 94
+      },
+      {
+       "example": "126",
+       "page": 94
+      },
+      {
+       "example": "127",
+       "page": 95
+      },
+      {
+       "example": "128",
+       "page": 95
+      }
+     ]
+    },
+    {
+     "id": "modal-resolution-tendencies",
+     "title": "Resolution Tendencies Between Modal Groups",
+     "weakArea": "modes",
+     "pageStart": 96,
+     "pageEnd": 96,
+     "examples": [
+      {
+       "example": "129",
+       "page": 96
+      }
+     ]
+    },
+    {
+     "id": "voice-leading",
+     "title": "Voice Leading",
+     "weakArea": "harmony",
+     "pageStart": 97,
+     "pageEnd": 99,
+     "examples": [
+      {
+       "example": "130",
+       "page": 97
+      },
+      {
+       "example": "131",
+       "page": 97
+      },
+      {
+       "example": "132a",
+       "page": 98
+      },
+      {
+       "example": "132b",
+       "page": 98
+      },
+      {
+       "example": "133",
+       "page": 98
+      },
+      {
+       "example": "134",
+       "page": 99
+      },
+      {
+       "example": "135",
+       "page": 99
+      }
+     ]
+    },
+    {
+     "id": "mirror-modal-equivalents",
+     "title": "Mirror Modal Equivalents",
+     "weakArea": "modes",
+     "pageStart": 100,
+     "pageEnd": 102,
+     "examples": []
+    }
+   ]
+  },
+  {
+   "id": "ch2",
+   "title": "Chord Forms",
+   "pageStart": 103,
+   "pageEnd": 284,
+   "concepts": [
+    {
+     "id": "triad-forms",
+     "title": "Triad (and Suspension) Chord Forms",
+     "weakArea": "spread-triads",
+     "pageStart": 104,
+     "pageEnd": 108,
+     "examples": []
+    },
+    {
+     "id": "suspended-triad-forms",
+     "title": "Suspended Triads (forms)",
+     "weakArea": "chord-types",
+     "pageStart": 109,
+     "pageEnd": 109,
+     "examples": []
+    },
+    {
+     "id": "lydian-locrian-triad-forms",
+     "title": "Lydian and Locrian Triads (forms)",
+     "weakArea": "chord-types",
+     "pageStart": 110,
+     "pageEnd": 111,
+     "examples": []
+    },
+    {
+     "id": "drop-voicings-intro",
+     "title": "Drop Voicings",
+     "weakArea": "chord-types",
+     "pageStart": 112,
+     "pageEnd": 112,
+     "examples": [
+      {
+       "example": "136",
+       "page": 112
+      }
+     ]
+    },
+    {
+     "id": "drop2-min7b5",
+     "title": "Drop 2: Min7b5",
+     "weakArea": "chord-types",
+     "pageStart": 119,
+     "pageEnd": 119,
+     "examples": []
+    },
+    {
+     "id": "drop2-dim7",
+     "title": "Drop 2: Dim7",
+     "weakArea": "chord-types",
+     "pageStart": 120,
+     "pageEnd": 120,
+     "examples": []
+    },
+    {
+     "id": "drop2-aug7",
+     "title": "Drop 2: Aug7",
+     "weakArea": "chord-types",
+     "pageStart": 123,
+     "pageEnd": 123,
+     "examples": []
+    },
+    {
+     "id": "drop2-dom7b5",
+     "title": "Drop 2: Dom7b5",
+     "weakArea": "chord-types",
+     "pageStart": 125,
+     "pageEnd": 125,
+     "examples": []
+    },
+    {
+     "id": "drop2-maj7sus4",
+     "title": "Drop 2: Maj7sus4",
+     "weakArea": "chord-types",
+     "pageStart": 126,
+     "pageEnd": 126,
+     "examples": []
+    },
+    {
+     "id": "drop2-dom7sus4",
+     "title": "Drop 2: Dom7sus4",
+     "weakArea": "chord-types",
+     "pageStart": 127,
+     "pageEnd": 127,
+     "examples": []
+    },
+    {
+     "id": "drop3-min7b5",
+     "title": "Drop 3: Min7b5",
+     "weakArea": "chord-types",
+     "pageStart": 137,
+     "pageEnd": 137,
+     "examples": []
+    },
+    {
+     "id": "drop3-dim7",
+     "title": "Drop 3: Dim7",
+     "weakArea": "chord-types",
+     "pageStart": 138,
+     "pageEnd": 138,
+     "examples": []
+    },
+    {
+     "id": "drop3-dom7sus4",
+     "title": "Drop 3: Dom7sus4",
+     "weakArea": "chord-types",
+     "pageStart": 145,
+     "pageEnd": 145,
+     "examples": []
+    },
+    {
+     "id": "triads-over-bass-forms",
+     "title": "Triads Over Bass Notes (forms)",
+     "weakArea": "chord-types",
+     "pageStart": 185,
+     "pageEnd": 203,
+     "examples": [
+      {
+       "example": "137",
+       "page": 185
+      }
+     ]
+    },
+    {
+     "id": "spread-triads-over-bass",
+     "title": "Spread Triads Over Bass Notes",
+     "weakArea": "spread-triads",
+     "pageStart": 204,
+     "pageEnd": 204,
+     "examples": [
+      {
+       "example": "138",
+       "page": 204
+      },
+      {
+       "example": "139",
+       "page": 204
+      }
+     ]
+    },
+    {
+     "id": "spread-triads-major-type",
+     "title": "Major Type Spread Triads",
+     "weakArea": "spread-triads",
+     "pageStart": 205,
+     "pageEnd": 208,
+     "examples": []
+    },
+    {
+     "id": "spread-triads-minor-type",
+     "title": "Minor Type Spread Triads",
+     "weakArea": "spread-triads",
+     "pageStart": 209,
+     "pageEnd": 212,
+     "examples": []
+    },
+    {
+     "id": "spread-triads-dom7-type",
+     "title": "Dom7 Type Spread Triads",
+     "weakArea": "spread-triads",
+     "pageStart": 213,
+     "pageEnd": 220,
+     "examples": []
+    },
+    {
+     "id": "spread-triads-diminished-type",
+     "title": "Diminished Type Spread Triads",
+     "weakArea": "spread-triads",
+     "pageStart": 221,
+     "pageEnd": 223,
+     "examples": []
+    },
+    {
+     "id": "quartal-voicings",
+     "title": "Quartal Voicings",
+     "weakArea": "chord-types",
+     "pageStart": 226,
+     "pageEnd": 244,
+     "examples": [
+      {
+       "example": "140",
+       "page": 226
+      },
+      {
+       "example": "141",
+       "page": 226
+      }
+     ]
+    },
+    {
+     "id": "open-string-voicings",
+     "title": "Open String Voicings",
+     "weakArea": "chord-types",
+     "pageStart": 250,
+     "pageEnd": 260,
+     "examples": []
+    },
+    {
+     "id": "chordal-scales-altered-dominant",
+     "title": "Chordal Scales: Dom7 (altered)",
+     "weakArea": "chord-types",
+     "pageStart": 272,
+     "pageEnd": 274,
+     "examples": []
+    },
+    {
+     "id": "diminished-scale-voicings",
+     "title": "Diminished Scale Voicings",
+     "weakArea": "chord-types",
+     "pageStart": 275,
+     "pageEnd": 278,
+     "examples": [
+      {
+       "example": "148",
+       "page": 275
+      },
+      {
+       "example": "149",
+       "page": 275
+      },
+      {
+       "example": "150",
+       "page": 275
+      }
+     ]
+    },
+    {
+     "id": "stretch-voicings",
+     "title": "Stretch Voicings",
+     "weakArea": "chord-types",
+     "pageStart": 279,
+     "pageEnd": 282,
+     "examples": [
+      {
+       "example": "151",
+       "page": 279
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ch3",
+   "title": "Scales and Arpeggios",
+   "pageStart": 285,
+   "pageEnd": 334,
+   "concepts": [
+    {
+     "id": "mode-practice",
+     "title": "Mode (Scale) Practice",
+     "weakArea": "modes",
+     "pageStart": 286,
+     "pageEnd": 288,
+     "examples": []
+    },
+    {
+     "id": "modes-major-scale",
+     "title": "Modes of the Major Scale",
+     "weakArea": "modes",
+     "pageStart": 289,
+     "pageEnd": 289,
+     "examples": []
+    },
+    {
+     "id": "modes-melodic-minor",
+     "title": "Modes of the Melodic Minor Scale",
+     "weakArea": "scales",
+     "pageStart": 290,
+     "pageEnd": 290,
+     "examples": []
+    },
+    {
+     "id": "modes-harmonic-minor",
+     "title": "Modes of the Harmonic Minor Scale",
+     "weakArea": "scales",
+     "pageStart": 291,
+     "pageEnd": 291,
+     "examples": []
+    },
+    {
+     "id": "miscellaneous-scales",
+     "title": "Miscellaneous Scales",
+     "weakArea": "scales",
+     "pageStart": 292,
+     "pageEnd": 292,
+     "examples": []
+    },
+    {
+     "id": "close-position-major",
+     "title": "Close Position Fingerings: Major Scale",
+     "weakArea": "modes",
+     "pageStart": 295,
+     "pageEnd": 295,
+     "examples": []
+    },
+    {
+     "id": "close-position-melodic-minor",
+     "title": "Close Position Fingerings: Melodic Minor",
+     "weakArea": "scales",
+     "pageStart": 296,
+     "pageEnd": 296,
+     "examples": []
+    },
+    {
+     "id": "close-position-harmonic-minor",
+     "title": "Close Position Fingerings: Harmonic Minor",
+     "weakArea": "scales",
+     "pageStart": 297,
+     "pageEnd": 297,
+     "examples": []
+    },
+    {
+     "id": "two-nps-major-modes",
+     "title": "Two Notes Per String: Modes of the Major Scale",
+     "weakArea": "modes",
+     "pageStart": 298,
+     "pageEnd": 299,
+     "examples": []
+    },
+    {
+     "id": "two-nps-melodic-minor",
+     "title": "Two Notes Per String: Melodic Minor Modes",
+     "weakArea": "scales",
+     "pageStart": 300,
+     "pageEnd": 301,
+     "examples": []
+    },
+    {
+     "id": "two-nps-harmonic-minor",
+     "title": "Two Notes Per String: Harmonic Minor Modes",
+     "weakArea": "scales",
+     "pageStart": 302,
+     "pageEnd": 303,
+     "examples": []
+    },
+    {
+     "id": "diatonic-arpeggios",
+     "title": "Diatonic Arpeggios",
+     "weakArea": "spread-triads",
+     "pageStart": 306,
+     "pageEnd": 308,
+     "examples": [
+      {
+       "example": "155a",
+       "page": 306
+      },
+      {
+       "example": "155b",
+       "page": 306
+      },
+      {
+       "example": "155c",
+       "page": 306
+      },
+      {
+       "example": "155d",
+       "page": 306
+      },
+      {
+       "example": "156a",
+       "page": 307
+      },
+      {
+       "example": "156b",
+       "page": 307
+      },
+      {
+       "example": "156c",
+       "page": 307
+      },
+      {
+       "example": "156d",
+       "page": 307
+      },
+      {
+       "example": "157",
+       "page": 307
+      },
+      {
+       "example": "158",
+       "page": 308
+      }
+     ]
+    },
+    {
+     "id": "spread-triad-arpeggios",
+     "title": "Spread Triad Arpeggios",
+     "weakArea": "spread-triads",
+     "pageStart": 309,
+     "pageEnd": 309,
+     "examples": []
+    },
+    {
+     "id": "seventh-chord-arpeggios",
+     "title": "Seventh Chord Arpeggios",
+     "weakArea": "chord-types",
+     "pageStart": 310,
+     "pageEnd": 323,
+     "examples": []
+    },
+    {
+     "id": "practicing-scales-arpeggios",
+     "title": "More About Practicing Scales and Arpeggios",
+     "weakArea": "scales",
+     "pageStart": 334,
+     "pageEnd": 334,
+     "examples": [
+      {
+       "example": "160",
+       "page": 334
+      },
+      {
+       "example": "161",
+       "page": 334
+      },
+      {
+       "example": "162",
+       "page": 334
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ch4",
+   "title": "Linear Studies",
+   "pageStart": 335,
+   "pageEnd": 467,
+   "concepts": [
+    {
+     "id": "unusual-resolutions",
+     "title": "Playing Over Unusual Resolutions",
+     "weakArea": "harmony",
+     "pageStart": 387,
+     "pageEnd": 391,
+     "examples": [
+      {
+       "example": "186a",
+       "page": 387
+      },
+      {
+       "example": "186b",
+       "page": 387
+      },
+      {
+       "example": "186c",
+       "page": 388
+      },
+      {
+       "example": "186d",
+       "page": 388
+      },
+      {
+       "example": "187a",
+       "page": 389
+      },
+      {
+       "example": "187b",
+       "page": 389
+      },
+      {
+       "example": "187c",
+       "page": 390
+      },
+      {
+       "example": "187d",
+       "page": 390
+      },
+      {
+       "example": "188",
+       "page": 390
+      },
+      {
+       "example": "189",
+       "page": 391
+      },
+      {
+       "example": "190a",
+       "page": 391
+      },
+      {
+       "example": "190b",
+       "page": 391
+      },
+      {
+       "example": "191",
+       "page": 391
+      }
+     ]
+    },
+    {
+     "id": "modes-linear-approach",
+     "title": "Modes: Linear Approach",
+     "weakArea": "modes",
+     "pageStart": 400,
+     "pageEnd": 417,
+     "examples": [
+      {
+       "example": "196",
+       "page": 400
+      },
+      {
+       "example": "197a",
+       "page": 401
+      },
+      {
+       "example": "197b",
+       "page": 401
+      },
+      {
+       "example": "197c",
+       "page": 401
+      },
+      {
+       "example": "197d",
+       "page": 401
+      },
+      {
+       "example": "197e",
+       "page": 401
+      },
+      {
+       "example": "197f",
+       "page": 402
+      },
+      {
+       "example": "197g",
+       "page": 402
+      },
+      {
+       "example": "197h",
+       "page": 402
+      },
+      {
+       "example": "197i",
+       "page": 402
+      },
+      {
+       "example": "197j",
+       "page": 402
+      },
+      {
+       "example": "197k",
+       "page": 403
+      },
+      {
+       "example": "197l",
+       "page": 403
+      },
+      {
+       "example": "197m",
+       "page": 403
+      },
+      {
+       "example": "197n",
+       "page": 403
+      },
+      {
+       "example": "197o",
+       "page": 403
+      },
+      {
+       "example": "197p",
+       "page": 404
+      },
+      {
+       "example": "197q",
+       "page": 404
+      },
+      {
+       "example": "198a",
+       "page": 405
+      },
+      {
+       "example": "198b",
+       "page": 405
+      },
+      {
+       "example": "198c",
+       "page": 405
+      },
+      {
+       "example": "198d",
+       "page": 405
+      },
+      {
+       "example": "198e",
+       "page": 406
+      },
+      {
+       "example": "198f",
+       "page": 406
+      },
+      {
+       "example": "198g",
+       "page": 406
+      },
+      {
+       "example": "198h",
+       "page": 406
+      },
+      {
+       "example": "198i",
+       "page": 407
+      },
+      {
+       "example": "198j",
+       "page": 407
+      },
+      {
+       "example": "198k",
+       "page": 407
+      },
+      {
+       "example": "198l",
+       "page": 407
+      },
+      {
+       "example": "198m",
+       "page": 407
+      },
+      {
+       "example": "198n",
+       "page": 408
+      },
+      {
+       "example": "198o",
+       "page": 408
+      },
+      {
+       "example": "198p",
+       "page": 408
+      },
+      {
+       "example": "198q",
+       "page": 408
+      },
+      {
+       "example": "199a",
+       "page": 409
+      },
+      {
+       "example": "199b",
+       "page": 409
+      },
+      {
+       "example": "199c",
+       "page": 409
+      },
+      {
+       "example": "199d",
+       "page": 409
+      },
+      {
+       "example": "199e",
+       "page": 409
+      },
+      {
+       "example": "199f",
+       "page": 410
+      },
+      {
+       "example": "199g",
+       "page": 410
+      },
+      {
+       "example": "199h",
+       "page": 410
+      },
+      {
+       "example": "199i",
+       "page": 410
+      },
+      {
+       "example": "199j",
+       "page": 410
+      },
+      {
+       "example": "200a",
+       "page": 412
+      },
+      {
+       "example": "200b",
+       "page": 412
+      },
+      {
+       "example": "200c",
+       "page": 412
+      },
+      {
+       "example": "200d",
+       "page": 412
+      },
+      {
+       "example": "200e",
+       "page": 412
+      },
+      {
+       "example": "200f",
+       "page": 413
+      },
+      {
+       "example": "200g",
+       "page": 413
+      },
+      {
+       "example": "200h",
+       "page": 413
+      },
+      {
+       "example": "200i",
+       "page": 413
+      },
+      {
+       "example": "200j",
+       "page": 413
+      },
+      {
+       "example": "200k",
+       "page": 414
+      },
+      {
+       "example": "200l",
+       "page": 414
+      },
+      {
+       "example": "200m",
+       "page": 414
+      },
+      {
+       "example": "200n",
+       "page": 414
+      },
+      {
+       "example": "200o",
+       "page": 414
+      },
+      {
+       "example": "200p",
+       "page": 415
+      },
+      {
+       "example": "200q",
+       "page": 415
+      },
+      {
+       "example": "201a",
+       "page": 416
+      },
+      {
+       "example": "201b",
+       "page": 416
+      },
+      {
+       "example": "201c",
+       "page": 416
+      },
+      {
+       "example": "201d",
+       "page": 416
+      },
+      {
+       "example": "201e",
+       "page": 416
+      },
+      {
+       "example": "201f",
+       "page": 417
+      }
+     ]
+    },
+    {
+     "id": "modal-mixture-linear",
+     "title": "Modal Mixture",
+     "weakArea": "harmony",
+     "pageStart": 418,
+     "pageEnd": 419,
+     "examples": [
+      {
+       "example": "202",
+       "page": 418
+      },
+      {
+       "example": "203",
+       "page": 419
+      },
+      {
+       "example": "204",
+       "page": 419
+      }
+     ]
+    },
+    {
+     "id": "modal-shapes",
+     "title": "Modal Shapes",
+     "weakArea": "modes",
+     "pageStart": 439,
+     "pageEnd": 442,
+     "examples": [
+      {
+       "example": "225",
+       "page": 439
+      },
+      {
+       "example": "222",
+       "page": 439
+      },
+      {
+       "example": "226",
+       "page": 439
+      },
+      {
+       "example": "227",
+       "page": 439
+      },
+      {
+       "example": "228",
+       "page": 439
+      },
+      {
+       "example": "229",
+       "page": 440
+      },
+      {
+       "example": "230",
+       "page": 441
+      },
+      {
+       "example": "231",
+       "page": 442
+      },
+      {
+       "example": "232",
+       "page": 442
+      }
+     ]
+    },
+    {
+     "id": "pedal-point-soloing",
+     "title": "Pedal Point Soloing",
+     "weakArea": "modes",
+     "pageStart": 447,
+     "pageEnd": 447,
+     "examples": [
+      {
+       "example": "235",
+       "page": 447
+      },
+      {
+       "example": "236",
+       "page": 447
+      },
+      {
+       "example": "237a",
+       "page": 447
+      },
+      {
+       "example": "237b",
+       "page": 447
+      },
+      {
+       "example": "237c",
+       "page": 447
+      }
+     ]
+    },
+    {
+     "id": "modal-studies",
+     "title": "Modal Studies",
+     "weakArea": "modes",
+     "pageStart": 448,
+     "pageEnd": 460,
+     "examples": []
+    }
+   ]
+  },
+  {
+   "id": "ch5",
+   "title": "Technique and Practice",
+   "pageStart": 468,
+   "pageEnd": 499,
+   "concepts": [
+    {
+     "id": "comping-rhythms",
+     "title": "Comping Rhythms",
+     "weakArea": "odd-meters",
+     "pageStart": 481,
+     "pageEnd": 481,
+     "examples": [
+      {
+       "example": "256",
+       "page": 481
+      }
+     ]
+    },
+    {
+     "id": "practicing",
+     "title": "Practicing",
+     "weakArea": "modes",
+     "pageStart": 496,
+     "pageEnd": 499,
+     "examples": []
+    }
+   ]
+  }
+ ]
+}

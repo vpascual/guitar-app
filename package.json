@@ -1,0 +1,34 @@
+{
+  "name": "guitar-app",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 4173 --strictPort",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src scripts",
+    "test": "vitest run",
+    "audit": "vitest run src/puzzles/audit.test.ts",
+    "loadtime": "node scripts/loadtime.mjs",
+    "shots": "node scripts/shots.mjs",
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run loadtime"
+  },
+  "dependencies": {
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "eslint": "^10.14.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.2",
+    "vite": "^8.3.8",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.1.0"
+  }
+}
