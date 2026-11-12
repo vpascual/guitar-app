@@ -1,10 +1,10 @@
 # QUESTIONS
 
-## Q1 — The book PDF is not available in this environment (blocks the book index)
-`./reference/beato-book-4.pdf` does not exist here. The session runs in a cloud container that only has what
-is in the git repo, and the PDF must never be committed.
-Options: (a) attach the PDF in the chat; (b) point me to it in Google Drive (the connector is available) by name;
-(c) run the indexing step on your own machine. Once indexed, only `book-index.json` (references, no text) is committed.
+## Q1 — The book PDF is in the repository's git history
+You uploaded the PDF to `main` (commit a26899c). This branch deletes it from the tree and keeps a local copy in
+`./reference/` (gitignored), but the file stays in history, and the repository answers unauthenticated requests,
+so it is probably public. Removing it for real means rewriting `main` (force-push) or recreating the repo.
+That is your call; I will not rewrite `main`.
 
 ## Q2 — Static hosting (blocks installing the PWA on the phone)
 Service workers and home-screen install require HTTPS. Without hosting the static bundle somewhere, Mode 1 cannot
@@ -13,3 +13,7 @@ be used on a phone. Static hosting sends no user data anywhere (all data stays i
 
 ## Q3 — Song attributions for progressions
 I will only list songs I am confident about and mark the rest "per confirmar". Acceptable?
+
+## Q4 — Odd meters have no source in the book
+The book contains no odd-meter section. Options: (a) odd-meter content ships without a book reference, marked
+"sense referència al llibre"; (b) you name another source; (c) drop odd meters. Default if unanswered: (a).

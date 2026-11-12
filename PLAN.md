@@ -6,43 +6,101 @@ Status: **awaiting approval** (Phase 0 gate). Nothing but this plan and `.gitign
 
 | # | Blocker | Impact | Needs |
 |---|---------|--------|-------|
-| B1 | `./reference/beato-book-4.pdf` is **not in this environment**. The repo was empty and the PDF is (correctly) never committed, so a cloud session cannot see it. | The book index (section 1) cannot be built. Page/example numbers cannot be invented. | You supply the PDF to the session (see QUESTIONS.md Q1). |
+| B1 | ~~PDF missing~~ **Resolved.** The PDF was uploaded to `main`; it is now at `./reference/` (gitignored) and removed from this branch's tree. It remains in `main`'s git history. | Index built. | Decide whether to purge it from history (QUESTIONS.md Q1). |
 | B2 | A PWA only installs and works offline from an **HTTPS origin**. "Deployment" is out of scope without approval. | Without static hosting, Mode 1 cannot reach your phone's home screen at all. | A yes/no on static hosting (QUESTIONS.md Q2). |
 
-Neither blocks writing code. B1 blocks real references; B2 blocks real-world use of Mode 1.
+B2 does not block writing code; it blocks real-world use of Mode 1.
 
 ## 1. Book index (weak areas only)
 
-**Not built — see B1.** What is fixed now is the method and the shape.
+**Built:** `src/content/book-index.json` — 76 concepts, 238 example references.
+Pages are printed page numbers (PDF page = printed + 1). Section titles, pages and example numbers only; no book text.
 
-Method once the PDF is available:
-1. `pdftotext -layout` per page into the scratchpad (never into the repo).
-2. Parse the table of contents; compute the offset between printed page and PDF page.
-3. Keyword pass per weak area (modes, spread/open triads, sus/add/extended/altered chords, m7b5, dim7,
-   harmonic and melodic minor and their modes, odd meters, modal/functional harmony).
-4. Record chapter > concept > example number > page. Titles and numbers only, no book text, no tab.
-5. Spot-check 20 random entries against the rendered page; fix the offset if any miss.
-6. Commit `src/content/book-index.json` (references only), so later sessions do not need the PDF.
+Checked: every section start page matches its heading in the extracted text.
+Limits: 79 of 500 pages are image-only, so diagram pages carry a page reference but no example number;
+example numbers come from "Ex. N" labels in the text layer and may be incomplete on notation-heavy pages.
 
-Shape:
+**Gap: the book has no odd-meter material.** No text hit for 3/4, 6/8, 5/4, 7/8 or "meter"; the only rhythm
+section is Comping Rhythms (p. 481). Odd-meter puzzles and blocks cannot reference the book (QUESTIONS.md Q4).
 
-```jsonc
-{
-  "book": "The Beato Book 4.0",
-  "pageOffset": 0,                // pdfPage - printedPage
-  "chapters": [{
-    "id": "ch-modes", "title": "…", "pageStart": 0, "pageEnd": 0,
-    "weakArea": "modes",          // one of the six areas
-    "concepts": [{
-      "id": "dorian-characteristic-note", "title": "…",
-      "refs": [{ "example": "…", "page": 0 }]
-    }]
-  }]
-}
-```
-
-Until the index exists, content points at a `conceptId` and the reference renders as
-"referència pendent". No generator ships to the feed as "done" without a resolved reference.
+| Weak area | Ch. | Section | Pages | Examples |
+|---|---|---|---|---|
+| modes | ch1 | Major Scale (Triads & Sevenths) | 16 | 14a |
+| modes | ch1 | Natural Minor Scale | 17 | 14b |
+| modes | ch1 | Chord Scales (major and melodic minor modes) | 31 | — |
+| modes | ch1 | Modal Harmony and Theory | 88–89 | 116–119 |
+| modes | ch1 | Sharp and Flat Direction Modal Modulation | 90–95 | 120–128 |
+| modes | ch1 | Resolution Tendencies Between Modal Groups | 96 | 129 |
+| modes | ch1 | Mirror Modal Equivalents | 100–102 | — |
+| modes | ch3 | Mode (Scale) Practice | 286–288 | — |
+| modes | ch3 | Modes of the Major Scale | 289 | — |
+| modes | ch3 | Close Position Fingerings: Major Scale | 295 | — |
+| modes | ch3 | Two Notes Per String: Modes of the Major Scale | 298–299 | — |
+| modes | ch4 | Modes: Linear Approach | 400–417 | 196–201f |
+| modes | ch4 | Modal Shapes | 439–442 | 225–232 |
+| modes | ch4 | Pedal Point Soloing | 447 | 235–237c |
+| modes | ch4 | Modal Studies | 448–460 | — |
+| modes | ch5 | Practicing | 496–499 | — |
+| spread-triads | ch1 | Basic Triads | 27 | — |
+| spread-triads | ch1 | Advanced Triads | 28 | — |
+| spread-triads | ch2 | Triad (and Suspension) Chord Forms | 104–108 | — |
+| spread-triads | ch2 | Spread Triads Over Bass Notes | 204 | 138–139 |
+| spread-triads | ch2 | Major Type Spread Triads | 205–208 | — |
+| spread-triads | ch2 | Minor Type Spread Triads | 209–212 | — |
+| spread-triads | ch2 | Dom7 Type Spread Triads | 213–220 | — |
+| spread-triads | ch2 | Diminished Type Spread Triads | 221–223 | — |
+| spread-triads | ch3 | Diatonic Arpeggios | 306–308 | 155a–158 |
+| spread-triads | ch3 | Spread Triad Arpeggios | 309 | — |
+| chord-types | ch1 | Chords and Their Formulas | 13–15 | 8–13 |
+| chord-types | ch1 | More About Seventh Chords | 22 | 19 |
+| chord-types | ch1 | Suspended Triads and Other Three Note Structures | 29–30 | 20a–25 |
+| chord-types | ch1 | Chord Families and Their Scales | 33–35 | — |
+| chord-types | ch1 | Triads Over Bass Notes (theory and tables) | 59–67 | 82a–90 |
+| chord-types | ch2 | Suspended Triads (forms) | 109 | — |
+| chord-types | ch2 | Lydian and Locrian Triads (forms) | 110–111 | — |
+| chord-types | ch2 | Drop Voicings | 112 | 136 |
+| chord-types | ch2 | Drop 2: Min7b5 | 119 | — |
+| chord-types | ch2 | Drop 2: Dim7 | 120 | — |
+| chord-types | ch2 | Drop 2: Aug7 | 123 | — |
+| chord-types | ch2 | Drop 2: Dom7b5 | 125 | — |
+| chord-types | ch2 | Drop 2: Maj7sus4 | 126 | — |
+| chord-types | ch2 | Drop 2: Dom7sus4 | 127 | — |
+| chord-types | ch2 | Drop 3: Min7b5 | 137 | — |
+| chord-types | ch2 | Drop 3: Dim7 | 138 | — |
+| chord-types | ch2 | Drop 3: Dom7sus4 | 145 | — |
+| chord-types | ch2 | Triads Over Bass Notes (forms) | 185–203 | 137 |
+| chord-types | ch2 | Quartal Voicings | 226–244 | 140–141 |
+| chord-types | ch2 | Open String Voicings | 250–260 | — |
+| chord-types | ch2 | Chordal Scales: Dom7 (altered) | 272–274 | — |
+| chord-types | ch2 | Diminished Scale Voicings | 275–278 | 148–150 |
+| chord-types | ch2 | Stretch Voicings | 279–282 | 151 |
+| chord-types | ch3 | Seventh Chord Arpeggios | 310–323 | — |
+| scales | ch1 | Melodic Minor Scale | 18 | 15 |
+| scales | ch1 | Harmonic Minor Scale | 19 | 16 |
+| scales | ch1 | Harmonic Major Scale | 20 | 17 |
+| scales | ch1 | Double Harmonic Major Scale | 21 | 18 |
+| scales | ch1 | Chord Scales (harmonic minor modes, miscellaneous) | 32 | — |
+| scales | ch3 | Modes of the Melodic Minor Scale | 290 | — |
+| scales | ch3 | Modes of the Harmonic Minor Scale | 291 | — |
+| scales | ch3 | Miscellaneous Scales | 292 | — |
+| scales | ch3 | Close Position Fingerings: Melodic Minor | 296 | — |
+| scales | ch3 | Close Position Fingerings: Harmonic Minor | 297 | — |
+| scales | ch3 | Two Notes Per String: Melodic Minor Modes | 300–301 | — |
+| scales | ch3 | Two Notes Per String: Harmonic Minor Modes | 302–303 | — |
+| scales | ch3 | More About Practicing Scales and Arpeggios | 334 | 160–162 |
+| odd-meters | ch5 | Comping Rhythms | 481 | 256 |
+| harmony | ch1 | Relative and Parallel Major/Minor | 23 | — |
+| harmony | ch1 | Chords for Songwriters | 24–25 | — |
+| harmony | ch1 | Modal Mixture for Songwriters | 26 | — |
+| harmony | ch1 | Scale Degree Names and Basic Progressions | 36–39 | 26–37 |
+| harmony | ch1 | More About Roman Numeral Analysis | 40–41 | 38–41 |
+| harmony | ch1 | Cycle of Fifths and Back Cycling | 42 | 42–43 |
+| harmony | ch1 | Roman Numeral Analysis and Chord Scale Choice | 43–44 | 44a–44b |
+| harmony | ch1 | Basic Rules for Chord Substitutions | 45–58 | 45–81 |
+| harmony | ch1 | Reharmonization and Chord Substitutions | 68–69 | 91–92b |
+| harmony | ch1 | Voice Leading | 97–99 | 130–135 |
+| harmony | ch4 | Playing Over Unusual Resolutions | 387–391 | 186a–191 |
+| harmony | ch4 | Modal Mixture | 418–419 | 202–204 |
 
 ## 2. Stack proposal
 
@@ -230,7 +288,7 @@ Out: audio puzzles, chord/harmony/rhythm generators, stats sheet, backup export,
 2. One-thumb audit: all targets at least 48 px and in the lower 60 % of the screen; "next" under the thumb. *(friction)*
 3. Offline audit: second load with network disabled. *(friction)*
 4. 50-puzzle audit script against the theory core, plus single-correct-answer check on distractors. *(correctness)*
-5. Book index and reference resolution — **blocked by B1**. *(correctness)*
+5. Map every generator and block to index concepts; test that no reference is unresolved. *(correctness)*
 6. G12 spread triads + practice focus "spread triads". *(coverage, weak area 2)*
 7. G6–G8 chord types beyond 7ths + practice focus per chord type. *(coverage, 3)*
 8. G11 harmonic / melodic minor and their modes; theory core extension. *(coverage, 4)*
