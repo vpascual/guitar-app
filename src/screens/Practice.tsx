@@ -134,14 +134,12 @@ export function Practice() {
   return (
     <main className="practice">
       <header className="topbar">
-        <a className="btn ghost" href="#/">← Trencaclosques</a>
         <span className="today">sessions acabades: {done}</span>
-        <a className="btn ghost" href="#/progres">Progrés</a>
       </header>
 
       {!session && (
         <section className="start">
-          <h1>Sessió de pràctica</h1>
+          <h1>Pràctica</h1>
           <p>Tria la durada. L'app munta la sessió al voltant d'un sol focus, el que portes més fluix als trencaclosques.</p>
           <div className="durations">
             {([30, 45, 60] as const).map((m) => (

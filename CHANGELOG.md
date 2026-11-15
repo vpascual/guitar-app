@@ -33,3 +33,8 @@
 - Sound engine rewritten around a plucked-string model with body tone, room and limiter; new metronome click and bell.
 - Chord symbols in American notation.
 - Checks: 99 unit tests, end-to-end run with 22 assertions.
+
+## 0.4.0 — Apple look
+
+- Restyled after Apple's Human Interface Guidelines: system type and colours, light and dark appearance, bottom tab bar,
+  grouped surfaces, iOS switches, options sheet with a grabber, safe-area handling.

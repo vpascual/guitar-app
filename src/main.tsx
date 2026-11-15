@@ -1,6 +1,7 @@
 import { StrictMode, useEffect, useState, lazy, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Feed } from './screens/Feed';
+import { TabBar } from './ui/TabBar';
 import './styles.css';
 
 // The practice screen is loaded on demand so it never delays the first puzzle.
@@ -14,9 +15,15 @@ function App() {
     window.addEventListener('hashchange', on);
     return () => window.removeEventListener('hashchange', on);
   }, []);
-  if (hash.startsWith('#/practica')) return <Suspense fallback={null}><Practice /></Suspense>;
-  if (hash.startsWith('#/progres')) return <Suspense fallback={null}><Progress /></Suspense>;
-  return <Feed />;
+  const tab = hash.startsWith('#/practica') ? 'practica' : hash.startsWith('#/progres') ? 'progres' : 'feed';
+  return (
+    <>
+      {tab === 'feed' ? <Feed /> : (
+        <Suspense fallback={null}>{tab === 'practica' ? <Practice /> : <Progress />}</Suspense>
+      )}
+      <TabBar current={tab} />
+    </>
+  );
 }
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);

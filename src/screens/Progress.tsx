@@ -47,10 +47,6 @@ export function Progress() {
 
   return (
     <main className="progress">
-      <header className="topbar">
-        <a className="btn ghost" href="#/">← Trencaclosques</a>
-        <a className="btn ghost" href="#/practica">Pràctica</a>
-      </header>
       <h1>Progrés</h1>
 
       <section>

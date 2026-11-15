@@ -175,9 +175,7 @@ export function Feed() {
           avui: {today}{weekDays !== null && ` · setmana: ${weekDays}/7`}
         </span>
         <nav>
-          <a className="btn ghost" href="#/progres">Progrés</a>
-          <a className="btn ghost" href="#/practica">Pràctica</a>
-          <button className="btn ghost" onClick={() => setSheet(true)} aria-label="Opcions">⚙</button>
+          <button className="btn ghost" onClick={() => setSheet(true)}>Opcions</button>
         </nav>
       </header>
 
@@ -235,11 +233,12 @@ export function Feed() {
       {sheet && (
         <div className="sheet" role="dialog" aria-label="Opcions">
           <div className="sheet-body">
+            <span className="grabber" aria-hidden="true" />
             <h2>Opcions</h2>
             <label className="check">
               <input type="checkbox" checked={settings.current.audio}
                 onChange={(e) => updateSettings({ ...settings.current, audio: e.target.checked })} />
-              Trencaclosques d'oïda (amb auriculars)
+              <span>Trencaclosques d'oïda (amb auriculars)</span>
             </label>
             <h3>Àrees</h3>
             {SKILLS.map((s) => (
@@ -251,7 +250,7 @@ export function Feed() {
                       : settings.current.skills.filter((x) => x !== s);
                     if (skills.length) updateSettings({ ...settings.current, skills });
                   }} />
-                {SKILL_CA[s]} <span className="muted">· nivell {feed.current.ratings[s]}</span>
+                <span>{SKILL_CA[s]} <span className="muted">· nivell {feed.current.ratings[s]}</span></span>
               </label>
             ))}
             <p className="muted">
