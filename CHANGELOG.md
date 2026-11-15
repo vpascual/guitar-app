@@ -24,3 +24,24 @@
 - Fixes found by the audits: endless loop in the borrowed-chord generator, misleading borrowed-chord wording,
   feminine scale names ("L'escala menor harmònica"), clipped fret label in chord diagrams, add9 voicing wider than four frets.
 - Checks: 91 unit tests, end-to-end run with 15 assertions.
+
+## 0.3.0 — progress, sound, chord notation
+
+- New "Progrés" screen: weekly rhythm, mastery map of 68 concepts by weak area, rating per skill, tempo history per exercise.
+- Feed: rating change shown after each answer; "setmana: N/7" next to the daily counter.
+- Practice: each rated block says what the rating did to its tempo and flags a new best clean tempo.
+- Sound engine rewritten around a plucked-string model with body tone, room and limiter; new metronome click and bell.
+- Chord symbols in American notation.
+- Checks: 99 unit tests, end-to-end run with 22 assertions.
+
+## 0.4.0 — Apple look
+
+- Restyled after Apple's Human Interface Guidelines: system type and colours, light and dark appearance, bottom tab bar,
+  grouped surfaces, iOS switches, options sheet with a grabber, safe-area handling.
+
+## 0.5.0 — sync between devices
+
+- Optional background sync through Supabase, protected by a per-user sync key instead of a login (`supabase/schema.sql`).
+- Options sheet: turn sync on, copy the key, connect a second device, sync now, turn it off.
+- Daily counter and weekly rhythm now include puzzles solved on other devices.
+- Checks: 105 unit tests, including two simulated devices converging through a fake server.

@@ -46,7 +46,7 @@ try {
   const vh = page.viewportSize().height;
   let thumbOk = true;
   let kinds = new Set();
-  for (let i = 0; i < 150 && (i < 40 || kinds.size < 2); i++) {
+  for (let i = 0; i < 300 && (i < 40 || !(kinds.has('choice') && kinds.has('tap'))); i++) {
     const options = page.locator('.answers .option');
     const n = await options.count();
     if (n) {
@@ -61,6 +61,13 @@ try {
       await page.locator('.fretboard .tap').nth(7).click();
     }
     await page.waitForSelector('[data-testid=explanation]');
+    if (i === 0) check(/nivell \d+ \([+−]\d+\)/.test(await page.locator('[data-testid=rating]').innerText()), 'rating change is shown after an answer');
+    const listen = page.locator('[data-testid=explanation] .btn.listen');
+    if (!kinds.has('listened') && (await listen.count())) {
+      await listen.click();
+      await page.waitForTimeout(400);
+      if ((await listen.innerText()).includes('sonant')) kinds.add('listened');
+    }
     const words = (await page.locator('[data-testid=explanation] > p').first().innerText()).split(/\s+/).length;
     if (words > 90) thumbOk = false;
     if (shots && i === 0) await page.screenshot({ path: `${shots}/explanation.png` });
@@ -69,9 +76,22 @@ try {
     await page.locator('[data-testid=next]').click();
   }
   check(thumbOk, 'answers and "next" are thumb-reachable (>= 48 px, lower 60 % of the screen), explanations under 90 words');
-  check(kinds.has('choice') && kinds.has('tap'), `feed served both multiple choice and fretboard tap within 150 puzzles (${[...kinds]})`);
+  check(kinds.has('choice') && kinds.has('tap'), `feed served both multiple choice and fretboard tap within 300 puzzles (${[...kinds]})`);
+  check(kinds.has('listened'), 'the listen button plays through the string synth without errors');
+  kinds.delete('listened');
   const today = await page.locator('.today').innerText();
   check(/avui: \d+/.test(today), `daily counter visible: "${today}"`);
+  check(/setmana: 1\/7/.test(today), 'weekly rhythm counts today as an active day');
+  await page.goto(URL + '#/progres');
+  await page.waitForSelector('[data-testid=mastery-total]');
+  const cells = await page.locator('.group .cell').count();
+  const touched = await page.locator('.group .cell.learning, .group .cell.solid').count();
+  check(cells >= 50 && touched >= 5, `mastery map shows ${cells} concepts, ${touched} already touched by the run`);
+  check((await page.locator('.day.active').count()) === 1, 'this week shows one active day');
+  check(!(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)), 'no horizontal scroll on the progress screen');
+  if (shots) await page.screenshot({ path: `${shots}/progress.png`, fullPage: true });
+  await page.goto(URL);
+  await page.waitForSelector('[data-testid=puzzle] .prompt');
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
   check(!overflow, 'no horizontal scroll on the feed');
 
@@ -101,6 +121,11 @@ try {
   }
   check(await p2.getByText('Sessió acabada.').isVisible(), 'session completes after rating all blocks');
   check((await p2.locator('.chord svg').count()) >= 2, 'chord diagrams are SVG');
+  check((await p2.locator('.outcome').count()) === 4, 'each rated block says what happened to its tempo');
+  await p2.goto(URL + '#/progres');
+  await p2.waitForSelector('.tempo-card');
+  check((await p2.locator('.tempo-card').count()) === 4 && (await p2.getByText('Millor tempo net').count()) === 4, 'tempo history lists the four exercises with their best clean tempo');
+  if (shots) await p2.screenshot({ path: `${shots}/progress-tempo.png`, fullPage: true });
 
   check(errors.length === 0, `no console or page errors${errors.length ? ': ' + errors.slice(0, 3).join(' | ') : ''}`);
 } finally {

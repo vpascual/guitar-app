@@ -5,6 +5,8 @@ import type { Session, MaterialState } from '../engine/session';
 
 export interface Attempt {
   id?: number;
+  /** Globally unique id, so the same attempt is never stored twice after syncing between devices. */
+  uid?: string;
   at: number;
   kind: 'puzzle' | 'block';
   puzzle?: {
@@ -14,6 +16,8 @@ export interface Attempt {
   block?: {
     sessionId: string; blockId: string; materialId: string;
     result: 'clean' | 'sloppy' | 'failed'; bpm: number;
+    /** Readable name of the exercise, for the tempo history. Absent on older records. */
+    title?: string;
   };
 }
 

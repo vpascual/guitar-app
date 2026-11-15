@@ -27,8 +27,8 @@ export const PROGRESSIONS: ProgressionDef[] = [
     id: 'dor-i-IV', scaleId: 'dorian', tonic: 'A', degrees: [0, 3],
     whyCa: 'Un acord major sobre el 4t grau d\'un to menor. La seva 3a és la 6a major del mode: aclareix el menor sense deixar de ser menor.',
     songs: [
-      { title: 'Oye como va', artist: 'Santana', confidence: 'segura', note: 'Lam7 – Re9 tota la cançó' },
-      { title: 'Breathe', artist: 'Pink Floyd', confidence: 'segura', note: 'Mim – La' },
+      { title: 'Oye como va', artist: 'Santana', confidence: 'segura', note: 'Am7 – D9 tota la cançó' },
+      { title: 'Breathe', artist: 'Pink Floyd', confidence: 'segura', note: 'Em – A' },
     ],
     bookConcept: 'modal-harmony-theory',
   },
@@ -52,7 +52,7 @@ export const PROGRESSIONS: ProgressionDef[] = [
     whyCa: 'El bVII major substitueix el dominant: la 7a bemoll treu la sensible i la progressió rodola en lloc de resoldre.',
     songs: [
       { title: 'Sweet Child o\' Mine', artist: 'Guns N\' Roses', confidence: 'segura', note: 'estrofa; afinada mig to avall' },
-      { title: 'Sympathy for the Devil', artist: 'The Rolling Stones', confidence: 'segura', note: 'Mi – Re – La' },
+      { title: 'Sympathy for the Devil', artist: 'The Rolling Stones', confidence: 'segura', note: 'E – D – A' },
       { title: 'Sweet Home Alabama', artist: 'Lynyrd Skynyrd', confidence: 'discutida', note: 'Re mixolidi o Sol major, segons qui escolta' },
     ],
     bookConcept: 'modal-harmony-theory',
@@ -60,13 +60,13 @@ export const PROGRESSIONS: ProgressionDef[] = [
   {
     id: 'mix-I-IV-v-IV', scaleId: 'mixolydian', tonic: 'A', degrees: [0, 3, 4, 3],
     whyCa: 'El v és menor perquè la 7a del mode és bemoll. Sense sensible, el retorn a la tònica és tou i circular.',
-    songs: [{ title: 'Louie Louie', artist: 'The Kingsmen', confidence: 'segura', note: 'La – Re – Mim – Re' }],
+    songs: [{ title: 'Louie Louie', artist: 'The Kingsmen', confidence: 'segura', note: 'A – D – Em – D' }],
     bookConcept: 'modal-resolution-tendencies',
   },
   {
     id: 'mix-I-bVII', scaleId: 'mixolydian', tonic: 'E', degrees: [0, 6],
     whyCa: 'Tònica major i l\'acord major un to per sota. Dos acords n\'hi ha prou per fixar la 7a bemoll.',
-    songs: [{ title: 'Tomorrow Never Knows', artist: 'The Beatles', confidence: 'segura', note: 'Do amb Si♭ a sobre' }],
+    songs: [{ title: 'Tomorrow Never Knows', artist: 'The Beatles', confidence: 'segura', note: 'C amb B♭ a sobre' }],
     bookConcept: 'modal-harmony-theory',
   },
   {
@@ -81,7 +81,7 @@ export const PROGRESSIONS: ProgressionDef[] = [
   {
     id: 'phr-i-bII-bIII-bII', scaleId: 'phrygian', tonic: 'E', degrees: [0, 1, 2, 1],
     whyCa: 'Tres acords veïns que pugen i tornen. El bII pesa més que cap dominant: tot gravita un semitò per sobre de la tònica.',
-    songs: [{ title: 'White Rabbit', artist: 'Jefferson Airplane', confidence: 'discutida', note: 'Fa♯ – Sol: tònica major, és frigi dominant' }],
+    songs: [{ title: 'White Rabbit', artist: 'Jefferson Airplane', confidence: 'discutida', note: 'F♯ – G: tònica major, és frigi dominant' }],
     bookConcept: 'modal-resolution-tendencies',
   },
   {
@@ -89,7 +89,7 @@ export const PROGRESSIONS: ProgressionDef[] = [
     whyCa: 'Dos acords majors a un to. El segon porta la 4a augmentada: l\'acord de tònica flota en lloc d\'assentar-se.',
     songs: [
       { title: 'Flying in a Blue Dream', artist: 'Joe Satriani', confidence: 'segura', note: 'Do lidi' },
-      { title: 'Dreams', artist: 'Fleetwood Mac', confidence: 'discutida', note: 'Fa – Sol; també es pot sentir com IV – V de Do' },
+      { title: 'Dreams', artist: 'Fleetwood Mac', confidence: 'discutida', note: 'F – G; també es pot sentir com IV – V de Do major' },
     ],
     bookConcept: 'modal-harmony-theory',
   },
@@ -104,14 +104,14 @@ export const PROGRESSIONS: ProgressionDef[] = [
     whyCa: 'Baixada per tons sencers des de la tònica menor. El bVI porta la 6a bemoll i el v és menor: no hi ha dominant.',
     songs: [
       { title: 'All Along the Watchtower', artist: 'Bob Dylan / Jimi Hendrix', confidence: 'segura' },
-      { title: 'Stairway to Heaven', artist: 'Led Zeppelin', confidence: 'segura', note: 'secció final: Lam – Sol – Fa' },
+      { title: 'Stairway to Heaven', artist: 'Led Zeppelin', confidence: 'segura', note: 'secció final: Am – G – F' },
     ],
     bookConcept: 'natural-minor-harmonized',
   },
   {
     id: 'aeo-i-bVI-bIII-bVII', scaleId: 'aeolian', tonic: 'E', degrees: [0, 5, 2, 6],
     whyCa: 'Comença en menor i passa pels tres acords majors del mode. Sona èpic i trist alhora perquè mai no arriba un V major.',
-    songs: [{ title: 'Zombie', artist: 'The Cranberries', confidence: 'segura', note: 'Mim – Do – Sol – Re' }],
+    songs: [{ title: 'Zombie', artist: 'The Cranberries', confidence: 'segura', note: 'Em – C – G – D' }],
     bookConcept: 'natural-minor-harmonized',
   },
   {
@@ -163,7 +163,7 @@ export const CHORD_FOCI: ChordFocusDef[] = [
     study: [['D', 'sus4'], ['D', 'sus2'], ['D', '7sus4']],
     whyCa: 'La 4a suspesa demana caure a la 3a. Ajornar aquesta caiguda crea moviment sense canviar de fonamental, i el sus2 sobre el bVII deixa l\'acord sense 3a: ni major ni menor.',
     songs: [
-      { title: 'Pinball Wizard', artist: 'The Who', confidence: 'segura', note: 'Sisus4 – Si a la introducció' },
+      { title: 'Pinball Wizard', artist: 'The Who', confidence: 'segura', note: 'Bsus4 – B a la introducció' },
       { title: 'Free Fallin\'', artist: 'Tom Petty', confidence: 'segura', note: 'la tònica alterna amb el seu sus4' },
     ],
     bookConcepts: ['suspended-triads', 'suspended-triad-forms', 'drop2-dom7sus4'],
@@ -180,8 +180,8 @@ export const CHORD_FOCI: ChordFocusDef[] = [
     id: 'extended', labelCa: 'Acords amb tensions (9a, 13a)', conceptKeys: ['chord:9', 'chord:maj9', 'chord:m9', 'chord:13', 'chord:11', 'chord:add9'],
     tonic: 'A', scaleId: 'dorian', chords: [['A', 'm9'], ['D', '13'], ['A', 'm9'], ['C', 'maj9']],
     study: [['A', 'm9'], ['D', '13'], ['C', 'maj9']],
-    whyCa: 'El vamp dòric i – IV amb tensions: la 9a de Lam9 (Si) i la 13a de Re13 (Si) són la mateixa nota, que queda sostinguda mentre els acords canvien per sota.',
-    songs: [{ title: 'Oye como va', artist: 'Santana', confidence: 'segura', note: 'Lam7 – Re9' }],
+    whyCa: 'El vamp dòric i – IV amb tensions: la 9a d\'Am9 (Si) i la 13a de D13 (Si) són la mateixa nota, que queda sostinguda mentre els acords canvien per sota.',
+    songs: [{ title: 'Oye como va', artist: 'Santana', confidence: 'segura', note: 'Am7 – D9' }],
     bookConcepts: ['chord-families-scales', 'stretch-voicings', 'chord-scales-major-melodic'],
   },
   {
@@ -189,7 +189,7 @@ export const CHORD_FOCI: ChordFocusDef[] = [
     tonic: 'E', scaleId: 'dorian', chords: [['E', '7#9'], ['G', 'maj'], ['A', 'maj'], ['E', '7#9']],
     study: [['E', '7#9'], ['E', '7b9'], ['E', '7#5']],
     whyCa: 'El 7♯9 té alhora la 3a major (Sol♯) i la 9a augmentada (Sol natural, que sona com una 3a menor). Aquest xoc major-menor és el so del blues dur; el bIII i el IV majors venen del menor.',
-    songs: [{ title: 'Purple Haze', artist: 'Jimi Hendrix', confidence: 'segura', note: 'Mi7♯9 – Sol – La' }],
+    songs: [{ title: 'Purple Haze', artist: 'Jimi Hendrix', confidence: 'segura', note: 'E7♯9 – G – A' }],
     bookConcepts: ['chordal-scales-altered-dominant', 'chord-families-scales', 'drop2-aug7'],
   },
 ];

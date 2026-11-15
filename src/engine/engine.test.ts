@@ -7,6 +7,8 @@ import { PROGRESSIONS } from '../content/progressions';
 import { hasRef } from '../content/refs';
 import { makeRng } from '../puzzles/util';
 import { MemoryRepository } from '../storage/memory';
+import { CONCEPT_GROUPS, masteryMap, weekDates, weekRhythm, tempoHistory } from './progress';
+import { GENERATORS } from '../puzzles/registry';
 import { getScale } from '../theory/scale';
 import { parseNote } from '../theory/note';
 import { chordFitsScale } from '../theory/chord';
@@ -192,6 +194,53 @@ describe('practice sessions', () => {
   it('chord diagrams in a session use numeric notation', () => {
     const s = buildSession(30, ctx());
     for (const d of s.blocks[2].diagrams) expect(voicingText(d.voicing)).toMatch(/^([x\d]+ ){5}[x\d]+$/);
+  });
+});
+
+describe('progress', () => {
+  const att = (key: string, correct: boolean, at: number) => ({
+    at, kind: 'puzzle' as const,
+    puzzle: { generatorId: 'g', seed: 1, level: 0, conceptKey: key, skill: 'modes' as const, correct, ms: 1, usedHint: false, ratingBefore: 1000, ratingAfter: 1000 },
+  });
+  it('every concept a generator can produce is on the mastery map', () => {
+    const keys = new Set(CONCEPT_GROUPS.flatMap((g) => g.cells.map((c) => c.key)));
+    for (const g of GENERATORS) for (const c of g.concepts) {
+      // Chord types you already know (triads and plain sevenths) are not tracked as weak areas.
+      if (c.startsWith('chord:') && !keys.has(c)) continue;
+      expect(keys.has(c), c).toBe(true);
+    }
+    expect(keys.size).toBe(CONCEPT_GROUPS.reduce((n, g) => n + g.cells.length, 0));
+  });
+  it('marks a concept solid after three right answers in a row, and learning again after a miss', () => {
+    const three = [att('mode:dorian', false, 1), att('mode:dorian', true, 2), att('mode:dorian', true, 3), att('mode:dorian', true, 4)];
+    expect(masteryMap(three, [])['mode:dorian']).toBe('solid');
+    expect(masteryMap(three.slice(0, 3), [])['mode:dorian']).toBe('learning');
+    expect(masteryMap([...three, att('mode:dorian', false, 5)], [])['mode:dorian']).toBe('learning');
+    expect(masteryMap(three, [{ generatorId: 'g', conceptKey: 'mode:dorian', stage: 1 }])['mode:dorian']).toBe('learning');
+    expect(masteryMap([], [])['mode:lydian']).toBe('new');
+  });
+  it('counts active days in the current week, Monday first, without a streak', () => {
+    const wed = new Date(2026, 10, 18);
+    expect(weekDates(wed)[0]).toBe('2026-11-16');
+    expect(weekDates(new Date(2026, 10, 22))[0]).toBe('2026-11-16');
+    const r = weekRhythm([
+      { date: '2026-11-16', opens: 1, opensWithSolve: 1, solved: 3 },
+      { date: '2026-11-17', opens: 2, opensWithSolve: 0, solved: 0 },
+      { date: '2026-11-18', opens: 1, opensWithSolve: 1, solved: 1 },
+      { date: '2026-11-09', opens: 1, opensWithSolve: 1, solved: 9 },
+    ], wed);
+    expect(r.map((d) => d.active)).toEqual([true, false, true, false, false, false, false]);
+    expect(r.filter((d) => d.future)).toHaveLength(4);
+  });
+  it('builds tempo history and the best clean tempo per exercise', () => {
+    const blk = (bpm: number, result: 'clean' | 'sloppy' | 'failed', at: number) => ({
+      at, kind: 'block' as const, block: { sessionId: 's', blockId: 'b', materialId: 'technique:dorian:thirds', result, bpm, title: 'La dòric · Tècnica' },
+    });
+    const [s] = tempoHistory([blk(60, 'clean', 1), blk(60, 'clean', 2), blk(64, 'sloppy', 3), blk(64, 'clean', 4), blk(68, 'failed', 5)]);
+    expect(s.title).toBe('La dòric · Tècnica');
+    expect(s.points.map((p) => p.bpm)).toEqual([60, 60, 64, 64, 68]);
+    expect(s.best).toBe(64);
+    expect(applyResult({ bpm: 60, target: 80, cleanStreak: 0 }, 'clean').best).toBe(60);
   });
 });
 

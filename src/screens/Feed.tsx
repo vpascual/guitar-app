@@ -4,7 +4,9 @@ import type { Puzzle, SkillArea } from '../puzzles/types';
 import { FeedState, Served, initialFeedState, nextPuzzle, recordAnswer } from '../engine/feed';
 import { makePuzzle } from '../puzzles/registry';
 import { SKILLS } from '../engine/elo';
-import { repo } from '../storage';
+import { solvedByDay, weekRhythm } from '../engine/progress';
+import { repo, sync } from '../storage';
+import { formatKey } from '../sync/engine';
 import { DEFAULT_SETTINGS, DayStats, Settings, localDate } from '../storage/repository';
 import { formatRef } from '../content/refs';
 import { GLOSSARY } from '../i18n/ca';
@@ -67,19 +69,45 @@ export function Feed() {
   const [pick, setPick] = useState<Pick | null>(null);
   const [hint, setHint] = useState(false);
   const [today, setToday] = useState(0);
+  const [weekDays, setWeekDays] = useState<number | null>(null);
+  const otherDays = useRef(0);
+  const [rating, setRating] = useState<{ after: number; delta: number } | null>(null);
   const [sheet, setSheet] = useState(false);
+  const [keyInput, setKeyInput] = useState('');
   const [newTerms, setNewTerms] = useState<string[]>([]);
   const [, rerender] = useState(0);
 
   useEffect(() => {
-    loaded.current = (async () => {
-      const [f, s, d] = await Promise.all([repo.getFeedState(), repo.getSettings(), repo.getDay(localDate())]);
+    const readLocal = async () => {
+      const [f, s, attempts] = await Promise.all([repo.getFeedState(), repo.getSettings(), repo.listAttempts()]);
+      // Counters come from the attempt log, which syncs, so they include what was solved on another device.
+      const days = solvedByDay(attempts);
+      const solvedToday = days.find((x) => x.date === localDate())?.solved ?? 0;
+      otherDays.current = weekRhythm(days.filter((x) => x.date !== localDate()), new Date()).filter((x) => x.active).length;
+      setWeekDays(otherDays.current + (solvedToday > 0 ? 1 : 0));
+      setToday(solvedToday);
       if (f) feed.current = f;
       if (s) settings.current = { ...DEFAULT_SETTINGS, ...s };
+      return f;
+    };
+    loaded.current = (async () => {
+      await readLocal();
+      const d = await repo.getDay(localDate());
       day.current = d ? { ...d, opens: d.opens + 1 } : day.current;
-      setToday(day.current.solved);
       await repo.saveDay(day.current);
+      // Sync in the background. If nothing was answered meanwhile, adopt what the other device changed.
+      const snapshot = feed.current;
+      void sync.sync().then((changed) => {
+        if (changed && feed.current === snapshot) void readLocal();
+        rerender((n) => n + 1);
+      });
     })().catch(() => undefined);
+    // Upload when the app goes to the background, which on a phone is the last moment it reliably runs.
+    const onHide = () => {
+      if (document.visibilityState === 'hidden') void sync.push(true).catch(() => undefined);
+    };
+    document.addEventListener('visibilitychange', onHide);
+    return () => document.removeEventListener('visibilitychange', onHide);
   }, []);
 
   const puzzle = served.puzzle;
@@ -95,6 +123,7 @@ export function Feed() {
     const now = Date.now();
     const res = recordAnswer(feed.current, served, correct, hint, now);
     feed.current = res.state;
+    setRating({ after: res.ratingAfter, delta: res.ratingAfter - res.ratingBefore });
     // One new term per puzzle keeps the explanation readable in under 30 seconds.
     const unseen = puzzle.terms.filter((t) => GLOSSARY[t] && !settings.current.seenTerms.includes(t)).slice(0, 1);
     setNewTerms(unseen);
@@ -106,18 +135,20 @@ export function Feed() {
         opensWithSolve: day.current.opensWithSolve + (solvedThisOpen.current ? 0 : 1),
       };
       solvedThisOpen.current = true;
-      setToday(day.current.solved);
+      setToday((n) => n + 1);
+      setWeekDays(otherDays.current + 1);
     }
     void repo.saveFeedState(feed.current);
     void repo.saveSettings(settings.current);
     void repo.saveDay(day.current);
-    void repo.addAttempt({
+    await repo.addAttempt({
       at: now, kind: 'puzzle',
       puzzle: {
         generatorId: puzzle.generatorId, seed: puzzle.seed, level: puzzle.level, conceptKey: puzzle.conceptKey,
         skill: puzzle.skill, correct, ms, usedHint: hint, ratingBefore: res.ratingBefore, ratingAfter: res.ratingAfter,
       },
     });
+    void sync.push().catch(() => undefined);
   }, [pick, puzzle, served, hint]);
 
   const next = () => {
@@ -125,6 +156,7 @@ export function Feed() {
     setPick(null);
     setHint(false);
     setNewTerms([]);
+    setRating(null);
     shownAt.current = performance.now();
     window.scrollTo(0, 0);
   };
@@ -161,10 +193,11 @@ export function Feed() {
   return (
     <main className="feed">
       <header className="topbar">
-        <span className="today" title="Trencaclosques resolts avui">avui: {today}</span>
+        <span className="today" title="Trencaclosques resolts avui i dies actius aquesta setmana">
+          avui: {today}{weekDays !== null && ` · setmana: ${weekDays}/7`}
+        </span>
         <nav>
-          <a className="btn ghost" href="#/practica">Pràctica</a>
-          <button className="btn ghost" onClick={() => setSheet(true)} aria-label="Opcions">⚙</button>
+          <button className="btn ghost" onClick={() => setSheet(true)}>Opcions</button>
         </nav>
       </header>
 
@@ -182,6 +215,12 @@ export function Feed() {
                 : 'No. Les posicions bones estan marcades en verd.'}
             </strong>
             <p>{puzzle.explanation}</p>
+            {rating && (
+              <p className="rating-line" data-testid="rating">
+                {SKILL_CA[puzzle.skill]}: nivell {rating.after}{' '}
+                <span className={rating.delta >= 0 ? 'up' : 'down'}>({rating.delta >= 0 ? '+' : '−'}{Math.abs(rating.delta)})</span>
+              </p>
+            )}
             {newTerms.map((t) => <p key={t} className="term">{GLOSSARY[t]}</p>)}
             <div className="row">
               {puzzle.listen && <ListenButton what={puzzle.listen} />}
@@ -216,11 +255,12 @@ export function Feed() {
       {sheet && (
         <div className="sheet" role="dialog" aria-label="Opcions">
           <div className="sheet-body">
+            <span className="grabber" aria-hidden="true" />
             <h2>Opcions</h2>
             <label className="check">
               <input type="checkbox" checked={settings.current.audio}
                 onChange={(e) => updateSettings({ ...settings.current, audio: e.target.checked })} />
-              Trencaclosques d'oïda (amb auriculars)
+              <span>Trencaclosques d'oïda (amb auriculars)</span>
             </label>
             <h3>Àrees</h3>
             {SKILLS.map((s) => (
@@ -232,7 +272,7 @@ export function Feed() {
                       : settings.current.skills.filter((x) => x !== s);
                     if (skills.length) updateSettings({ ...settings.current, skills });
                   }} />
-                {SKILL_CA[s]} <span className="muted">· nivell {feed.current.ratings[s]}</span>
+                <span>{SKILL_CA[s]} <span className="muted">· nivell {feed.current.ratings[s]}</span></span>
               </label>
             ))}
             <p className="muted">
@@ -246,7 +286,43 @@ export function Feed() {
                 <input type="file" accept="application/json" hidden onChange={(e) => void importBackup(e.target.files?.[0])} />
               </label>
             </div>
-            <p className="muted">Les dades només viuen en aquest dispositiu. La còpia és un fitxer JSON que guardes tu.</p>
+            <p className="muted">La còpia és un fitxer JSON que guardes tu.</p>
+            <h3>Sincronització entre dispositius</h3>
+            {!sync.configured && <p className="muted">No disponible en aquesta versió.</p>}
+            {sync.configured && !sync.key && (
+              <>
+                <p className="muted">
+                  Desactivada: les dades només viuen en aquest dispositiu. Activa-la aquí i copia la clau a l'altre
+                  dispositiu, o enganxa la clau que ja tens.
+                </p>
+                <button className="btn" onClick={() => void sync.enable().then(() => sync.sync()).then(() => rerender((n) => n + 1))}>
+                  Activa i crea una clau
+                </button>
+                <div className="row">
+                  <input id="sync-key" className="field" placeholder="Clau de l'altre dispositiu" autoCapitalize="characters"
+                    autoComplete="off" spellCheck={false} value={keyInput} onChange={(e) => setKeyInput(e.target.value)} />
+                  <button className="btn" disabled={keyInput.replace(/[^a-z0-9]/gi, '').length < 20}
+                    onClick={() => void sync.enable(keyInput).then(() => sync.sync()).then(() => location.reload())}>
+                    Connecta
+                  </button>
+                </div>
+              </>
+            )}
+            {sync.configured && sync.key && (
+              <>
+                <p className="muted">
+                  Activa. {sync.lastSync ? `Última sincronització: ${new Date(sync.lastSync).toLocaleTimeString('ca', { hour: '2-digit', minute: '2-digit' })}.` : 'Encara no s\'ha sincronitzat.'}
+                  {sync.pending > 0 && ` Canvis pendents d'enviar: ${sync.pending}.`}
+                </p>
+                <p className="key" data-testid="sync-key">{formatKey(sync.key)}</p>
+                <p className="muted">Aquesta clau és l'única protecció de les teves dades. Enganxa-la a l'altre dispositiu i no la publiquis.</p>
+                <div className="row">
+                  <button className="btn" onClick={() => void navigator.clipboard?.writeText(sync.key!).catch(() => undefined)}>Copia la clau</button>
+                  <button className="btn" onClick={() => void sync.sync().then(() => rerender((n) => n + 1))}>Sincronitza ara</button>
+                  <button className="btn" onClick={() => { sync.disable(); rerender((n) => n + 1); }}>Desactiva</button>
+                </div>
+              </>
+            )}
             <button className="btn primary" onClick={() => setSheet(false)}>Tanca</button>
           </div>
         </div>

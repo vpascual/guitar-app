@@ -85,7 +85,9 @@ describe('chords', () => {
     expect(sp('D', 'sus4')).toBe('D G A');
     expect(sp('C', 'add9')).toBe('C E G D');
     expect(sp('A', '13')).toBe('A C# G B F#');
-    expect(chordSymbol({ root: N('Bb'), def: getChord('m7') })).toBe('Si♭m7');
+    expect(chordSymbol({ root: N('Bb'), def: getChord('m7') })).toBe('B♭m7');
+    expect(chordSymbol({ root: N('F#'), def: getChord('m7b5') })).toBe('F♯m7♭5');
+    expect(chordSymbol({ root: N('B'), def: getChord('maj') })).toBe('B');
   });
   it('builds diatonic chords with Roman numerals', () => {
     const rn = (t: string, s: string, sev = false) =>

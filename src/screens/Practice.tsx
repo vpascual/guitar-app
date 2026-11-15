@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   BlockResult, BuildContext, MaterialState, PracticeBlock, Session, applyResult, buildSession, materialFor,
 } from '../engine/session';
-import { repo } from '../storage';
+import { repo, sync } from '../storage';
 import { formatRef } from '../content/refs';
 import { ChordDiagram } from '../ui/ChordDiagram';
 import { ListenButton } from '../ui/ListenButton';
@@ -33,6 +33,7 @@ function Block({ block, open, onRate }: { block: PracticeBlock; open: boolean; o
         <span className="block-title">{block.title}</span>
         <span className="badge">{block.minutes} min</span>
         {block.result && <span className={`badge ${block.result}`}>{RESULT_CA[block.result]}</span>}
+        {block.outcome && <span className="outcome">{block.outcome}</span>}
       </summary>
       <p className="goal"><strong>Objectiu:</strong> {block.goal}</p>
       <div className="tools">
@@ -79,7 +80,8 @@ export function Practice() {
   const [done, setDone] = useState(0);
 
   useEffect(() => {
-    void repo.listSessions().then((all) => {
+    // Pull the phone's puzzle results first, so the session focus reflects them.
+    void sync.syncWithin(2500).then(() => repo.listSessions()).then((all) => {
       const open = all.filter((s) => s.status === 'in-progress').sort((a, b) => b.createdAt - a.createdAt)[0];
       setSession(open ?? null);
       setDone(all.filter((s) => s.status === 'completed').length);
@@ -96,18 +98,29 @@ export function Practice() {
   const rate = async (block: PracticeBlock, result: BlockResult) => {
     if (!session || block.result) return;
     const materials: Record<string, MaterialState> = await repo.getMaterials();
-    materials[block.materialId] = applyResult(materialFor(materials, block.materialId, block.phase), result);
-    const blocks = session.blocks.map((b) => (b.id === block.id ? { ...b, result } : b));
+    const before = materialFor(materials, block.materialId, block.phase);
+    const after = applyResult(before, result);
+    materials[block.materialId] = after;
+    // Tell the player what the rating did to the tempo; a new best clean tempo is the only "reward" shown.
+    const outcome = result === 'failed' ? `La propera vegada: ${after.bpm} bpm.`
+      : (after.best ?? 0) > (before.best ?? 0) ? `Nou millor tempo net: ${after.best} bpm.${after.bpm > before.bpm ? ` La propera vegada: ${after.bpm} bpm.` : ' Una altra passada neta i puja 4 bpm.'}`
+        : after.bpm > before.bpm ? `Puja a ${after.bpm} bpm la propera vegada.`
+          : result === 'clean' ? 'Una altra passada neta i puja 4 bpm.' : `Es manté a ${after.bpm} bpm.`;
+    const blocks = session.blocks.map((b) => (b.id === block.id ? { ...b, result, outcome } : b));
     const next: Session = { ...session, blocks, status: blocks.every((b) => b.result) ? 'completed' : 'in-progress' };
     await Promise.all([
       repo.saveMaterials(materials),
       repo.saveSession(next),
       repo.addAttempt({
         at: Date.now(), kind: 'block',
-        block: { sessionId: session.id, blockId: block.id, materialId: block.materialId, result, bpm: block.startBpm },
+        block: {
+          sessionId: session.id, blockId: block.id, materialId: block.materialId, result, bpm: block.startBpm,
+          title: `${session.focus.label} · ${block.title}`,
+        },
       }),
     ]);
     setSession(next);
+    void sync.sync();
     if (next.status === 'completed') setDone((n) => n + 1);
   };
 
@@ -123,13 +136,12 @@ export function Practice() {
   return (
     <main className="practice">
       <header className="topbar">
-        <a className="btn ghost" href="#/">← Trencaclosques</a>
         <span className="today">sessions acabades: {done}</span>
       </header>
 
       {!session && (
         <section className="start">
-          <h1>Sessió de pràctica</h1>
+          <h1>Pràctica</h1>
           <p>Tria la durada. L'app munta la sessió al voltant d'un sol focus, el que portes més fluix als trencaclosques.</p>
           <div className="durations">
             {([30, 45, 60] as const).map((m) => (
