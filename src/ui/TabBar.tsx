@@ -1,7 +1,11 @@
-/** Bottom tab bar for the three top-level areas, following the iOS pattern: icon over label, current tab tinted. */
+/** Bottom tab bar for the four top-level areas, following the iOS pattern: icon over label, current tab tinted. */
 const TABS = [
   {
-    id: 'feed', href: '#/', label: 'Teoria',
+    id: 'home', href: '#/', label: 'Inici',
+    icon: <><path d="M4 11.5 12 4l8 7.5" /><path d="M6.5 10v9.5h11V10" /></>,
+  },
+  {
+    id: 'feed', href: '#/teoria', label: 'Teoria',
     icon: <><rect x="3.5" y="3.5" width="7" height="7" rx="2" /><rect x="13.5" y="3.5" width="7" height="7" rx="2" /><rect x="3.5" y="13.5" width="7" height="7" rx="2" /><rect x="13.5" y="13.5" width="7" height="7" rx="2" /></>,
   },
   {

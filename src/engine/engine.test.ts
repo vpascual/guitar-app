@@ -8,7 +8,8 @@ import { hasRef } from '../content/refs';
 import { makeRng } from '../puzzles/util';
 import { MemoryRepository } from '../storage/memory';
 import { CONCEPT_GROUPS, masteryMap, weekDates, weekRhythm, tempoHistory } from './progress';
-import { GENERATORS } from '../puzzles/registry';
+import { GENERATORS, makePuzzle } from '../puzzles/registry';
+import { makeTip, TIP_COUNT } from './tips';
 import { getScale } from '../theory/scale';
 import { parseNote } from '../theory/note';
 import { chordFitsScale } from '../theory/chord';
@@ -241,6 +242,29 @@ describe('progress', () => {
     expect(s.points.map((p) => p.bpm)).toEqual([60, 60, 64, 64, 68]);
     expect(s.best).toBe(64);
     expect(applyResult({ bpm: 60, target: 80, cleanStreak: 0 }, 'clean').best).toBe(60);
+  });
+});
+
+describe('home tips', () => {
+  it('builds a valid tip for every seed, with a generator that accepts its concept', () => {
+    const seen = new Set<string>();
+    for (let seed = 0; seed < 400; seed++) {
+      const t = makeTip(seed);
+      seen.add(t.conceptKey);
+      expect(t.title.length).toBeGreaterThan(1);
+      expect(t.lines.length).toBeGreaterThanOrEqual(2);
+      expect(t.lines.join(' ')).not.toMatch(/undefined|NaN/);
+      expect(t.lines.join(' ').split(/\s+/).length).toBeLessThan(70);
+      const g = GENERATORS.find((x) => x.id === t.generatorId)!;
+      expect(g.concepts, `${t.generatorId} ${t.conceptKey}`).toContain(t.conceptKey);
+      expect(makePuzzle(t.generatorId, seed, 1, t.conceptKey).conceptKey).toBe(t.conceptKey);
+      if (t.bookConcept) expect(hasRef(t.bookConcept)).toBe(true);
+    }
+    expect(seen.size).toBeGreaterThan(TIP_COUNT * 0.8);
+  });
+  it('prefers concepts that are in progress', () => {
+    for (let seed = 0; seed < 30; seed++) expect(makeTip(seed, { 'mode:lydian': 'learning' }).conceptKey).toBe('mode:lydian');
+    expect(makeTip(3)).toEqual(makeTip(3));
   });
 });
 

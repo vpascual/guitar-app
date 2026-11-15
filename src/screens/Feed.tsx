@@ -56,12 +56,15 @@ export function Feed() {
   const shownAt = useRef(performance.now());
 
   const [served, setServed] = useState<Served>(() => {
-    // Debug aid: ?g=<generator>&seed=<n>&level=<n> pins the first puzzle, for audits and screenshots.
+    // "#/teoria?g=<generator>&c=<concept>" starts on one concept (the home tip's "try it" button).
+    // "?g=<generator>&seed=<n>&level=<n>" in the page address pins a puzzle, for audits and screenshots.
+    const fromHash = new URLSearchParams(location.hash.split('?')[1] ?? '');
     const q = new URLSearchParams(location.search);
-    const g = q.get('g');
+    const g = fromHash.get('g') ?? q.get('g');
     if (g) {
       try {
-        return { puzzle: makePuzzle(g, Number(q.get('seed') ?? 1), Number(q.get('level') ?? 1)) };
+        const seed = q.get('seed') ? Number(q.get('seed')) : Math.floor(Math.random() * 2 ** 31);
+        return { puzzle: makePuzzle(g, seed, Number(q.get('level') ?? 1), fromHash.get('c') ?? undefined) };
       } catch { /* unknown generator: fall through to the normal feed */ }
     }
     return nextPuzzle(feed.current, DEFAULT_SETTINGS, Date.now(), Math.random);
