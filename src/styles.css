@@ -99,3 +99,31 @@ details > summary { cursor: pointer; color: var(--accent); padding: 8px 0; min-h
 .rate { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; }
 .btn.clean { border-color: var(--ok); } .btn.sloppy { border-color: var(--warn); } .btn.failed { border-color: var(--ko); }
 .btn.chosen { background: var(--line); }
+
+/* ---- Progress ---- */
+.rating-line { font-size: 0.9rem; color: var(--muted); }
+.rating-line .up { color: var(--ok); } .rating-line .down { color: var(--ko); }
+.outcome { font-size: 0.85rem; color: var(--muted); margin-left: 10px; font-weight: 400; }
+.progress { max-width: 760px; margin: 0 auto; padding: 0 16px 60px; line-height: 1.5; }
+.progress h1 { font-size: 1.6rem; margin: 10px 0; }
+.progress h2 { font-size: 1.15rem; margin: 28px 0 8px; }
+.progress h3 { font-size: 0.95rem; margin: 14px 0 6px; }
+.week { display: flex; gap: 8px; margin: 8px 0; }
+.day { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; font-size: 0.8rem; color: var(--muted); }
+.day.active { background: var(--accent); border-color: var(--accent); color: #1a1408; font-weight: 700; }
+.day.future { border-style: dashed; opacity: 0.6; }
+.cells, .legend { display: flex; flex-wrap: wrap; gap: 6px; }
+.legend { margin-top: 14px; }
+.cell { font-size: 0.85rem; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); color: var(--muted); }
+.cell.learning { border-color: var(--warn); color: var(--text); }
+.cell.solid { background: var(--ok); border-color: var(--ok); color: #08210f; font-weight: 600; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.ratings { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 8px 0; }
+.rating { background: var(--panel); border-radius: 12px; padding: 12px; display: grid; }
+.rating strong { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.tempos { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.tempo-card { background: var(--panel); border-radius: 12px; padding: 12px; }
+.tempo-card h3 { margin: 0 0 6px; }
+.tempo { width: 100%; max-width: 300px; }
+.tempo-line { fill: none; stroke: var(--muted); stroke-width: 1.5; }
+.tempo-dot.clean { fill: var(--ok); } .tempo-dot.sloppy { fill: var(--warn); } .tempo-dot.failed { fill: var(--ko); }

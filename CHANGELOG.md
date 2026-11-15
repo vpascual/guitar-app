@@ -24,3 +24,12 @@
 - Fixes found by the audits: endless loop in the borrowed-chord generator, misleading borrowed-chord wording,
   feminine scale names ("L'escala menor harmònica"), clipped fret label in chord diagrams, add9 voicing wider than four frets.
 - Checks: 91 unit tests, end-to-end run with 15 assertions.
+
+## 0.3.0 — progress, sound, chord notation
+
+- New "Progrés" screen: weekly rhythm, mastery map of 68 concepts by weak area, rating per skill, tempo history per exercise.
+- Feed: rating change shown after each answer; "setmana: N/7" next to the daily counter.
+- Practice: each rated block says what the rating did to its tempo and flags a new best clean tempo.
+- Sound engine rewritten around a plucked-string model with body tone, room and limiter; new metronome click and bell.
+- Chord symbols in American notation.
+- Checks: 99 unit tests, end-to-end run with 22 assertions.

@@ -14,6 +14,8 @@ export interface Attempt {
   block?: {
     sessionId: string; blockId: string; materialId: string;
     result: 'clean' | 'sloppy' | 'failed'; bpm: number;
+    /** Readable name of the exercise, for the tempo history. Absent on older records. */
+    title?: string;
   };
 }
 

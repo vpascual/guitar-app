@@ -18,6 +18,8 @@ export interface MaterialState {
   target: number;
   cleanStreak: number;
   last?: BlockResult;
+  /** Highest tempo played clean so far. */
+  best?: number;
 }
 
 export interface TabData {
@@ -56,6 +58,8 @@ export interface PracticeBlock {
   /** Empty when the book does not cover the topic (odd meters). */
   bookConcepts: string[];
   result?: BlockResult;
+  /** What the rating did to the tempo, shown next to the block once rated. */
+  outcome?: string;
 }
 
 export interface Session {
@@ -85,9 +89,10 @@ const DEFAULT_BPM: Record<Phase, [number, number]> = {
 export function applyResult(m: MaterialState, result: BlockResult): MaterialState {
   if (result === 'clean') {
     const streak = m.cleanStreak + 1;
-    if (streak < 2) return { ...m, cleanStreak: streak, last: result };
+    const best = Math.max(m.best ?? 0, m.bpm);
+    if (streak < 2) return { ...m, cleanStreak: streak, last: result, best };
     const bpm = m.bpm + 4;
-    return { bpm, target: bpm >= m.target ? m.target + 8 : m.target, cleanStreak: 0, last: result };
+    return { bpm, target: bpm >= m.target ? m.target + 8 : m.target, cleanStreak: 0, last: result, best };
   }
   if (result === 'sloppy') return { ...m, cleanStreak: 0, last: result };
   return { ...m, bpm: Math.max(40, m.bpm - 8), cleanStreak: 0, last: result };

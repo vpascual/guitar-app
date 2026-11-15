@@ -4,6 +4,7 @@ import type { Puzzle, SkillArea } from '../puzzles/types';
 import { FeedState, Served, initialFeedState, nextPuzzle, recordAnswer } from '../engine/feed';
 import { makePuzzle } from '../puzzles/registry';
 import { SKILLS } from '../engine/elo';
+import { weekRhythm } from '../engine/progress';
 import { repo } from '../storage';
 import { DEFAULT_SETTINGS, DayStats, Settings, localDate } from '../storage/repository';
 import { formatRef } from '../content/refs';
@@ -67,13 +68,19 @@ export function Feed() {
   const [pick, setPick] = useState<Pick | null>(null);
   const [hint, setHint] = useState(false);
   const [today, setToday] = useState(0);
+  const [weekDays, setWeekDays] = useState<number | null>(null);
+  const otherDays = useRef(0);
+  const [rating, setRating] = useState<{ after: number; delta: number } | null>(null);
   const [sheet, setSheet] = useState(false);
   const [newTerms, setNewTerms] = useState<string[]>([]);
   const [, rerender] = useState(0);
 
   useEffect(() => {
     loaded.current = (async () => {
-      const [f, s, d] = await Promise.all([repo.getFeedState(), repo.getSettings(), repo.getDay(localDate())]);
+      const [f, s, d, days] = await Promise.all([repo.getFeedState(), repo.getSettings(), repo.getDay(localDate()), repo.listDays()]);
+      // Active days this week, not counting today: today is added as soon as a puzzle is solved.
+      otherDays.current = weekRhythm(days.filter((x) => x.date !== localDate()), new Date()).filter((x) => x.active).length;
+      setWeekDays(otherDays.current + (d && d.solved > 0 ? 1 : 0));
       if (f) feed.current = f;
       if (s) settings.current = { ...DEFAULT_SETTINGS, ...s };
       day.current = d ? { ...d, opens: d.opens + 1 } : day.current;
@@ -95,6 +102,7 @@ export function Feed() {
     const now = Date.now();
     const res = recordAnswer(feed.current, served, correct, hint, now);
     feed.current = res.state;
+    setRating({ after: res.ratingAfter, delta: res.ratingAfter - res.ratingBefore });
     // One new term per puzzle keeps the explanation readable in under 30 seconds.
     const unseen = puzzle.terms.filter((t) => GLOSSARY[t] && !settings.current.seenTerms.includes(t)).slice(0, 1);
     setNewTerms(unseen);
@@ -107,6 +115,7 @@ export function Feed() {
       };
       solvedThisOpen.current = true;
       setToday(day.current.solved);
+      setWeekDays(otherDays.current + 1);
     }
     void repo.saveFeedState(feed.current);
     void repo.saveSettings(settings.current);
@@ -125,6 +134,7 @@ export function Feed() {
     setPick(null);
     setHint(false);
     setNewTerms([]);
+    setRating(null);
     shownAt.current = performance.now();
     window.scrollTo(0, 0);
   };
@@ -161,8 +171,11 @@ export function Feed() {
   return (
     <main className="feed">
       <header className="topbar">
-        <span className="today" title="Trencaclosques resolts avui">avui: {today}</span>
+        <span className="today" title="Trencaclosques resolts avui i dies actius aquesta setmana">
+          avui: {today}{weekDays !== null && ` · setmana: ${weekDays}/7`}
+        </span>
         <nav>
+          <a className="btn ghost" href="#/progres">Progrés</a>
           <a className="btn ghost" href="#/practica">Pràctica</a>
           <button className="btn ghost" onClick={() => setSheet(true)} aria-label="Opcions">⚙</button>
         </nav>
@@ -182,6 +195,12 @@ export function Feed() {
                 : 'No. Les posicions bones estan marcades en verd.'}
             </strong>
             <p>{puzzle.explanation}</p>
+            {rating && (
+              <p className="rating-line" data-testid="rating">
+                {SKILL_CA[puzzle.skill]}: nivell {rating.after}{' '}
+                <span className={rating.delta >= 0 ? 'up' : 'down'}>({rating.delta >= 0 ? '+' : '−'}{Math.abs(rating.delta)})</span>
+              </p>
+            )}
             {newTerms.map((t) => <p key={t} className="term">{GLOSSARY[t]}</p>)}
             <div className="row">
               {puzzle.listen && <ListenButton what={puzzle.listen} />}

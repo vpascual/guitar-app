@@ -313,10 +313,10 @@ Out: audio puzzles, chord/harmony/rhythm generators, stats sheet, backup export,
 | 9 | Meters: 2 puzzles + 4 practice focuses with accented metronome | Done |
 | 10 | Roman analysis, modal interchange, secondary dominants | Done |
 | 11 | Audio filter: mode by ear, meter by ear, listen buttons | Done |
-| 12 | BPM history view | **Not done**; BPM state is stored and applied, not charted |
+| 12 | BPM history view | Done: tempo chart and best clean tempo per exercise on the Progrés screen |
 | 13 | Progression library to 20+ | 19 (14 modal + 5 chord-focus); chord focuses have one progression each |
 | 14 | JSON export / import | Done |
-| 15 | Stats sheet | Partial: ratings, today's opens, pending reviews |
+| 15 | Stats | Done as the Progrés screen: weekly rhythm, mastery map, ratings |
 | 16 | Visual pass | **Not done** beyond a usable dark theme |
 
 ## 10. Decisions already taken (will move to DECISIONS.md)

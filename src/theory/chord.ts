@@ -1,5 +1,5 @@
 // Chord spelling, diatonic harmony and Roman numerals.
-import { Note, parseDegree, transpose, pc, mod, noteCa, noteName, intervalBetween } from './note';
+import { Note, parseDegree, transpose, pc, mod, noteName, intervalBetween } from './note';
 import { ScaleDef, scaleNotes } from './scale';
 
 export interface ChordDef {
@@ -58,8 +58,8 @@ export interface Chord {
 
 export const spellChord = (ch: Chord): Note[] => ch.def.formula.map((d) => transpose(ch.root, parseDegree(d)));
 
-/** Chord symbol with Catalan note names, e.g. "Si♭m7". */
-export const chordSymbol = (ch: Chord): string => noteCa(ch.root) + ch.def.suffix;
+/** Chord symbol in American letter notation, e.g. "B♭m7". Note and key names elsewhere stay in solfège. */
+export const chordSymbol = (ch: Chord): string => noteName(ch.root).replace(/#/g, '♯').replace(/(?<=.)b/g, '♭') + ch.def.suffix;
 
 /** Stable ASCII id, e.g. "Bb:m7". */
 export const chordId = (ch: Chord): string => `${noteName(ch.root)}:${ch.def.id}`;
