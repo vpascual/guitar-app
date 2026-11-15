@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { repo } from '../storage';
+import { repo, sync } from '../storage';
 import { initialFeedState, FeedState } from '../engine/feed';
 import { SKILLS } from '../engine/elo';
 import {
-  CONCEPT_GROUPS, Mastery, TempoSeries, countMastery, masteryMap, tempoHistory, weekRhythm,
+  CONCEPT_GROUPS, Mastery, TempoSeries, countMastery, masteryMap, solvedByDay, tempoHistory, weekRhythm,
 } from '../engine/progress';
 import type { SkillArea } from '../puzzles/types';
 
@@ -34,9 +34,10 @@ export function Progress() {
   } | null>(null);
 
   useEffect(() => {
-    void Promise.all([repo.getFeedState(), repo.listAttempts(), repo.listDays()]).then(([f, attempts, days]) => {
+    // Fetch what the other device did first, but never wait long for the network.
+    void sync.syncWithin(2500).then(() => Promise.all([repo.getFeedState(), repo.listAttempts()])).then(([f, attempts]) => {
       const feed = f ?? initialFeedState();
-      setData({ feed, map: masteryMap(attempts, feed.reviews), week: weekRhythm(days, new Date()), tempo: tempoHistory(attempts) });
+      setData({ feed, map: masteryMap(attempts, feed.reviews), week: weekRhythm(solvedByDay(attempts), new Date()), tempo: tempoHistory(attempts) });
     });
   }, []);
 

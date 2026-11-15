@@ -4,8 +4,9 @@ import type { Puzzle, SkillArea } from '../puzzles/types';
 import { FeedState, Served, initialFeedState, nextPuzzle, recordAnswer } from '../engine/feed';
 import { makePuzzle } from '../puzzles/registry';
 import { SKILLS } from '../engine/elo';
-import { weekRhythm } from '../engine/progress';
-import { repo } from '../storage';
+import { solvedByDay, weekRhythm } from '../engine/progress';
+import { repo, sync } from '../storage';
+import { formatKey } from '../sync/engine';
 import { DEFAULT_SETTINGS, DayStats, Settings, localDate } from '../storage/repository';
 import { formatRef } from '../content/refs';
 import { GLOSSARY } from '../i18n/ca';
@@ -72,21 +73,41 @@ export function Feed() {
   const otherDays = useRef(0);
   const [rating, setRating] = useState<{ after: number; delta: number } | null>(null);
   const [sheet, setSheet] = useState(false);
+  const [keyInput, setKeyInput] = useState('');
   const [newTerms, setNewTerms] = useState<string[]>([]);
   const [, rerender] = useState(0);
 
   useEffect(() => {
-    loaded.current = (async () => {
-      const [f, s, d, days] = await Promise.all([repo.getFeedState(), repo.getSettings(), repo.getDay(localDate()), repo.listDays()]);
-      // Active days this week, not counting today: today is added as soon as a puzzle is solved.
+    const readLocal = async () => {
+      const [f, s, attempts] = await Promise.all([repo.getFeedState(), repo.getSettings(), repo.listAttempts()]);
+      // Counters come from the attempt log, which syncs, so they include what was solved on another device.
+      const days = solvedByDay(attempts);
+      const solvedToday = days.find((x) => x.date === localDate())?.solved ?? 0;
       otherDays.current = weekRhythm(days.filter((x) => x.date !== localDate()), new Date()).filter((x) => x.active).length;
-      setWeekDays(otherDays.current + (d && d.solved > 0 ? 1 : 0));
+      setWeekDays(otherDays.current + (solvedToday > 0 ? 1 : 0));
+      setToday(solvedToday);
       if (f) feed.current = f;
       if (s) settings.current = { ...DEFAULT_SETTINGS, ...s };
+      return f;
+    };
+    loaded.current = (async () => {
+      await readLocal();
+      const d = await repo.getDay(localDate());
       day.current = d ? { ...d, opens: d.opens + 1 } : day.current;
-      setToday(day.current.solved);
       await repo.saveDay(day.current);
+      // Sync in the background. If nothing was answered meanwhile, adopt what the other device changed.
+      const snapshot = feed.current;
+      void sync.sync().then((changed) => {
+        if (changed && feed.current === snapshot) void readLocal();
+        rerender((n) => n + 1);
+      });
     })().catch(() => undefined);
+    // Upload when the app goes to the background, which on a phone is the last moment it reliably runs.
+    const onHide = () => {
+      if (document.visibilityState === 'hidden') void sync.push(true).catch(() => undefined);
+    };
+    document.addEventListener('visibilitychange', onHide);
+    return () => document.removeEventListener('visibilitychange', onHide);
   }, []);
 
   const puzzle = served.puzzle;
@@ -114,19 +135,20 @@ export function Feed() {
         opensWithSolve: day.current.opensWithSolve + (solvedThisOpen.current ? 0 : 1),
       };
       solvedThisOpen.current = true;
-      setToday(day.current.solved);
+      setToday((n) => n + 1);
       setWeekDays(otherDays.current + 1);
     }
     void repo.saveFeedState(feed.current);
     void repo.saveSettings(settings.current);
     void repo.saveDay(day.current);
-    void repo.addAttempt({
+    await repo.addAttempt({
       at: now, kind: 'puzzle',
       puzzle: {
         generatorId: puzzle.generatorId, seed: puzzle.seed, level: puzzle.level, conceptKey: puzzle.conceptKey,
         skill: puzzle.skill, correct, ms, usedHint: hint, ratingBefore: res.ratingBefore, ratingAfter: res.ratingAfter,
       },
     });
+    void sync.push().catch(() => undefined);
   }, [pick, puzzle, served, hint]);
 
   const next = () => {
@@ -264,7 +286,43 @@ export function Feed() {
                 <input type="file" accept="application/json" hidden onChange={(e) => void importBackup(e.target.files?.[0])} />
               </label>
             </div>
-            <p className="muted">Les dades només viuen en aquest dispositiu. La còpia és un fitxer JSON que guardes tu.</p>
+            <p className="muted">La còpia és un fitxer JSON que guardes tu.</p>
+            <h3>Sincronització entre dispositius</h3>
+            {!sync.configured && <p className="muted">No disponible en aquesta versió.</p>}
+            {sync.configured && !sync.key && (
+              <>
+                <p className="muted">
+                  Desactivada: les dades només viuen en aquest dispositiu. Activa-la aquí i copia la clau a l'altre
+                  dispositiu, o enganxa la clau que ja tens.
+                </p>
+                <button className="btn" onClick={() => void sync.enable().then(() => sync.sync()).then(() => rerender((n) => n + 1))}>
+                  Activa i crea una clau
+                </button>
+                <div className="row">
+                  <input id="sync-key" className="field" placeholder="Clau de l'altre dispositiu" autoCapitalize="characters"
+                    autoComplete="off" spellCheck={false} value={keyInput} onChange={(e) => setKeyInput(e.target.value)} />
+                  <button className="btn" disabled={keyInput.replace(/[^a-z0-9]/gi, '').length < 20}
+                    onClick={() => void sync.enable(keyInput).then(() => sync.sync()).then(() => location.reload())}>
+                    Connecta
+                  </button>
+                </div>
+              </>
+            )}
+            {sync.configured && sync.key && (
+              <>
+                <p className="muted">
+                  Activa. {sync.lastSync ? `Última sincronització: ${new Date(sync.lastSync).toLocaleTimeString('ca', { hour: '2-digit', minute: '2-digit' })}.` : 'Encara no s\'ha sincronitzat.'}
+                  {sync.pending > 0 && ` Canvis pendents d'enviar: ${sync.pending}.`}
+                </p>
+                <p className="key" data-testid="sync-key">{formatKey(sync.key)}</p>
+                <p className="muted">Aquesta clau és l'única protecció de les teves dades. Enganxa-la a l'altre dispositiu i no la publiquis.</p>
+                <div className="row">
+                  <button className="btn" onClick={() => void navigator.clipboard?.writeText(sync.key!).catch(() => undefined)}>Copia la clau</button>
+                  <button className="btn" onClick={() => void sync.sync().then(() => rerender((n) => n + 1))}>Sincronitza ara</button>
+                  <button className="btn" onClick={() => { sync.disable(); rerender((n) => n + 1); }}>Desactiva</button>
+                </div>
+              </>
+            )}
             <button className="btn primary" onClick={() => setSheet(false)}>Tanca</button>
           </div>
         </div>

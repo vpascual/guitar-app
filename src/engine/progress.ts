@@ -81,6 +81,17 @@ export function weekDates(now: Date): string[] {
   return Array.from({ length: 7 }, (_, i) => localDate(new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i)));
 }
 
+/** Solved puzzles per local day, from the attempt log. Attempts sync between devices, so these counts do too. */
+export function solvedByDay(attempts: Attempt[]): DayStats[] {
+  const n = new Map<string, number>();
+  for (const a of attempts) {
+    if (!a.puzzle?.correct) continue;
+    const d = localDate(new Date(a.at));
+    n.set(d, (n.get(d) ?? 0) + 1);
+  }
+  return [...n].map(([date, solved]) => ({ date, solved, opens: 0, opensWithSolve: 0 }));
+}
+
 /** Which days of this week had at least one puzzle solved. A missed day costs nothing: there is no streak to lose. */
 export function weekRhythm(days: DayStats[], now: Date): { date: string; active: boolean; future: boolean }[] {
   const solved = new Set(days.filter((d) => d.solved > 0).map((d) => d.date));

@@ -38,3 +38,10 @@
 
 - Restyled after Apple's Human Interface Guidelines: system type and colours, light and dark appearance, bottom tab bar,
   grouped surfaces, iOS switches, options sheet with a grabber, safe-area handling.
+
+## 0.5.0 — sync between devices
+
+- Optional background sync through Supabase, protected by a per-user sync key instead of a login (`supabase/schema.sql`).
+- Options sheet: turn sync on, copy the key, connect a second device, sync now, turn it off.
+- Daily counter and weekly rhythm now include puzzles solved on other devices.
+- Checks: 105 unit tests, including two simulated devices converging through a fake server.

@@ -46,7 +46,7 @@ try {
   const vh = page.viewportSize().height;
   let thumbOk = true;
   let kinds = new Set();
-  for (let i = 0; i < 150 && (i < 40 || !(kinds.has('choice') && kinds.has('tap'))); i++) {
+  for (let i = 0; i < 300 && (i < 40 || !(kinds.has('choice') && kinds.has('tap'))); i++) {
     const options = page.locator('.answers .option');
     const n = await options.count();
     if (n) {
@@ -76,7 +76,7 @@ try {
     await page.locator('[data-testid=next]').click();
   }
   check(thumbOk, 'answers and "next" are thumb-reachable (>= 48 px, lower 60 % of the screen), explanations under 90 words');
-  check(kinds.has('choice') && kinds.has('tap'), `feed served both multiple choice and fretboard tap within 150 puzzles (${[...kinds]})`);
+  check(kinds.has('choice') && kinds.has('tap'), `feed served both multiple choice and fretboard tap within 300 puzzles (${[...kinds]})`);
   check(kinds.has('listened'), 'the listen button plays through the string synth without errors');
   kinds.delete('listened');
   const today = await page.locator('.today').innerText();

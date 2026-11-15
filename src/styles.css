@@ -215,3 +215,7 @@ details[open] > summary::after { transform: rotate(90deg); }
 .tempo { width: 100%; max-width: 300px; }
 .tempo-line { fill: none; stroke: var(--muted); stroke-width: 1.5; }
 .tempo-dot.clean { fill: #34c759; } .tempo-dot.sloppy { fill: #ff9500; } .tempo-dot.failed { fill: #ff3b30; }
+
+/* ---- Sync ---- */
+.field { flex: 1; min-width: 0; font: inherit; color: var(--text); background: var(--sheet-cell); border: 0; border-radius: var(--radius); padding: 11px 14px; min-height: 44px; }
+.key { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.86rem; background: var(--sheet-cell); border-radius: var(--radius); padding: 12px 14px; overflow-wrap: anywhere; user-select: all; -webkit-user-select: all; }

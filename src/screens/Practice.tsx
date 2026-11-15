@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   BlockResult, BuildContext, MaterialState, PracticeBlock, Session, applyResult, buildSession, materialFor,
 } from '../engine/session';
-import { repo } from '../storage';
+import { repo, sync } from '../storage';
 import { formatRef } from '../content/refs';
 import { ChordDiagram } from '../ui/ChordDiagram';
 import { ListenButton } from '../ui/ListenButton';
@@ -80,7 +80,8 @@ export function Practice() {
   const [done, setDone] = useState(0);
 
   useEffect(() => {
-    void repo.listSessions().then((all) => {
+    // Pull the phone's puzzle results first, so the session focus reflects them.
+    void sync.syncWithin(2500).then(() => repo.listSessions()).then((all) => {
       const open = all.filter((s) => s.status === 'in-progress').sort((a, b) => b.createdAt - a.createdAt)[0];
       setSession(open ?? null);
       setDone(all.filter((s) => s.status === 'completed').length);
@@ -119,6 +120,7 @@ export function Practice() {
       }),
     ]);
     setSession(next);
+    void sync.sync();
     if (next.status === 'completed') setDone((n) => n + 1);
   };
 
