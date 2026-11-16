@@ -211,7 +211,10 @@ export function Feed() {
       </header>
 
       <section className="puzzle" data-testid="puzzle" key={puzzle.id}>
-        <p className="skill">{SKILL_CA[puzzle.skill]}{served.review ? ' · repàs' : ''}</p>
+        <p className="skill">
+          <span>{SKILL_CA[puzzle.skill]}{served.review ? ' · repàs' : ''}</span>
+          <span className="level">nivell {feed.current.ratings[puzzle.skill]}</span>
+        </p>
         <h1 className="prompt">{puzzle.prompt}</h1>
         <div className="visual"><Visual puzzle={puzzle} pick={pick} onTap={(pos) => void answer({ pos })} /></div>
         {hint && !pick && (

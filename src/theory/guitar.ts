@@ -121,3 +121,30 @@ export function scalePosition(notes: Note[], windowSize = 5): FretPos[] {
 export function arpeggioPosition(chordNotes: Note[], windowSize = 5): FretPos[] {
   return scalePosition(chordNotes, windowSize);
 }
+
+export interface NeckDot extends FretPos {
+  label: string;
+  kind: 'root' | 'char' | 'note';
+}
+
+/** A scale position ready to draw: every note in a five-fret window, labelled, with tonic and characteristic note marked. */
+export interface NeckData {
+  firstFret: number;
+  frets: number;
+  dots: NeckDot[];
+}
+
+export function scaleNeck(notes: Note[], names: string[], characteristic?: Note): NeckData {
+  const pos = scalePosition(notes);
+  const firstFret = Math.min(...pos.map((q) => q.fret));
+  const frets = Math.max(...pos.map((q) => q.fret)) - firstFret + 1;
+  const rootPc = pc(notes[0]);
+  const charPc = characteristic ? pc(characteristic) : -1;
+  return {
+    firstFret, frets,
+    dots: pos.map((q) => {
+      const p = fretPc(q.string, q.fret);
+      return { ...q, label: names[notes.findIndex((n) => pc(n) === p)], kind: p === rootPc ? 'root' : p === charPc ? 'char' : 'note' };
+    }),
+  };
+}

@@ -8,6 +8,7 @@ import { CHORDS, ChordDef, chordSymbol, spellChord, diatonicChords } from '../th
 import { METERS, Meter, meterLabel, counting, accentPattern } from '../theory/meter';
 import { makeRng, scaleMidi, chordMidi, chordHelp } from '../puzzles/util';
 import { degreeCa } from '../i18n/ca';
+import { NeckData, scaleNeck } from '../theory/guitar';
 
 export interface Tip {
   /** Mastery-map key of the concept the tip teaches. */
@@ -19,6 +20,8 @@ export interface Tip {
   lines: string[];
   listen?: Listen;
   chords?: ChordHelp[];
+  /** Scale position to draw, for mode and scale tips. */
+  neck?: NeckData;
   /** Eighth-note grouping to draw, for meter tips. */
   rhythm?: number[];
   bookConcept: string | null;
@@ -52,6 +55,7 @@ function modeTip(s: ScaleDef, seed: number): Tip {
     title: `${noteCa(tonic)} ${s.nameCa}`,
     lines,
     listen: { type: 'scale', midi: scaleMidi(tonic, s) },
+    neck: scaleNeck(notes, notes.map(noteCa), char),
     chords,
     bookConcept: s.family === 'major' ? 'modal-harmony-theory' : s.family === 'melodic-minor' ? 'modes-melodic-minor' : 'modes-harmonic-minor',
   };

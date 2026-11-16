@@ -94,14 +94,14 @@ try {
   const cells = await page.locator('.group .cell').count();
   const touched = await page.locator('.group .cell.learning, .group .cell.solid').count();
   check(cells >= 50 && touched >= 5, `mastery map shows ${cells} concepts, ${touched} already touched by the run`);
-  check((await page.locator('.day.active').count()) === 1, 'this week shows one active day');
+  check((await page.locator('.bar.active').count()) === 1, 'this week shows one active day as a bar');
   check(!(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)), 'no horizontal scroll on the progress screen');
   if (shots) await page.screenshot({ path: `${shots}/progress.png`, fullPage: true });
   // Home after some use: stats filled in, a tip, and the "try it" button opens a puzzle on the tip's concept.
   await page.goto(URL + '#/');
   await page.waitForSelector('[data-testid=tip]');
   await page.waitForFunction(() => /\d+%/.test(document.querySelector('.stats')?.textContent ?? ''));
-  check((await page.locator('.day.active').count()) === 1 && (await page.locator('.menu .card').count()) === 4, 'home shows this week, recent accuracy and four ways in');
+  check((await page.locator('.bar.active').count()) === 1 && (await page.locator('.menu .card').count()) === 4, 'home shows this week as bars, recent accuracy and four ways in');
   check(!(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)), 'no horizontal scroll on the home screen');
   const tipTitle = await page.locator('[data-testid=tip] h2').innerText();
   await page.getByRole('button', { name: 'Un altre' }).click();
@@ -129,6 +129,8 @@ try {
   if (shots) await page.screenshot({ path: `${shots}/theory-index.png` });
   await page.goto(URL + '#/teoria/escala-dorian');
   await page.waitForSelector('[data-testid=topic] h1');
+  check((await page.locator('.neck svg').count()) === 1 && (await page.locator('.neck-dot.char').count()) >= 2, 'a mode page draws the scale on the neck with the characteristic note marked');
+  check((await page.locator('.scale-row .chip.marked').count()) === 1 && (await page.locator('.doc-table tr.marked').count()) >= 1, 'the characteristic degree and its chords are highlighted');
   if (shots) await page.screenshot({ path: `${shots}/theory-dorian.png`, fullPage: true });
   await page.goto(URL + '#/reptes');
   await page.waitForSelector('[data-testid=puzzle] .prompt');

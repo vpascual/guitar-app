@@ -6,10 +6,10 @@ import {
   CONCEPT_GROUPS, Mastery, TempoSeries, countMastery, masteryMap, solvedByDay, tempoHistory, weekRhythm,
 } from '../engine/progress';
 import type { SkillArea } from '../puzzles/types';
+import { WeekBars } from '../ui/WeekBars';
 
 const SKILL_CA: Record<SkillArea, string> = { modes: 'Modes i escales', chords: 'Acords', harmony: 'Harmonia', rhythm: 'Ritme' };
 const STATE_CA: Record<Mastery, string> = { new: 'per descobrir', learning: 'en curs', solid: 'sòlid' };
-const WEEKDAYS = ['dl', 'dt', 'dc', 'dj', 'dv', 'ds', 'dg'];
 
 /** Tempo of each run as a small line chart; the dot colour is the rating of that run. */
 function TempoChart({ series }: { series: TempoSeries }) {
@@ -52,11 +52,7 @@ export function Progress() {
 
       <section>
         <h2>Aquesta setmana</h2>
-        <div className="week" data-testid="week">
-          {data.week.map((d, i) => (
-            <span key={d.date} className={`day${d.active ? ' active' : ''}${d.future ? ' future' : ''}`}>{WEEKDAYS[i]}</span>
-          ))}
-        </div>
+        <WeekBars week={data.week} />
         <p className="muted">{activeDays} de 7 dies amb almenys un trencaclosques resolt. Un dia sense obrir-la no trenca res.</p>
       </section>
 

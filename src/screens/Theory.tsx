@@ -6,6 +6,7 @@ import { ChordDiagram } from '../ui/ChordDiagram';
 import { Fretboard } from '../ui/Fretboard';
 import { ListenButton } from '../ui/ListenButton';
 import { RhythmLine } from '../ui/RhythmLine';
+import { Neck } from '../ui/Neck';
 
 const KEYS = ['C', 'G', 'D', 'A', 'E', 'B', 'F', 'Bb', 'Eb', 'Ab', 'Db', 'F#'];
 
@@ -23,7 +24,7 @@ function BlockView({ b }: { b: Block }) {
         <div className="doc-table">
           <table>
             <thead><tr>{b.head.map((x, i) => <th key={i}>{x}</th>)}</tr></thead>
-            <tbody>{b.rows.map((r, i) => <tr key={i}>{r.map((c, j) => <td key={j}>{c}</td>)}</tr>)}</tbody>
+            <tbody>{b.rows.map((r, i) => <tr key={i} className={b.mark?.includes(i) ? 'marked' : undefined}>{r.map((c, j) => <td key={j}>{c}</td>)}</tr>)}</tbody>
           </table>
         </div>
       );
@@ -32,11 +33,12 @@ function BlockView({ b }: { b: Block }) {
         <div className="doc-box">
           <strong>{b.label}</strong>
           <div className="scale-row">
-            {b.notes.map((n, i) => <span key={i} className="chip"><small>{b.formula[i]}</small>{n}</span>)}
+            {b.notes.map((n, i) => <span key={i} className={i === b.mark ? 'chip marked' : 'chip'}><small>{b.formula[i]}</small>{n}</span>)}
           </div>
           <ListenButton what={b.listen} />
         </div>
       );
+    case 'neck': return <div className="doc-box wide"><Neck neck={b.neck} caption={b.caption} /></div>;
     case 'chords':
       return (
         <div className="doc-chords">

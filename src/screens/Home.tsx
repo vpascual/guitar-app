@@ -8,8 +8,9 @@ import { formatRef } from '../content/refs';
 import { ChordDiagram } from '../ui/ChordDiagram';
 import { ListenButton } from '../ui/ListenButton';
 import { RhythmLine } from '../ui/RhythmLine';
+import { Neck } from '../ui/Neck';
+import { WeekBars } from '../ui/WeekBars';
 
-const WEEKDAYS = ['dl', 'dt', 'dc', 'dj', 'dv', 'ds', 'dg'];
 const ALL = CONCEPT_GROUPS.flatMap((g) => g.cells);
 
 interface Summary {
@@ -53,6 +54,7 @@ function TipCard({ tip, onAnother }: { tip: Tip; onAnother: () => void }) {
       <p className="eyebrow">Per aprendre en un minut · {tip.eyebrow}</p>
       <h2>{tip.title}</h2>
       {tip.rhythm && <RhythmLine groups={tip.rhythm} />}
+      {tip.neck && <Neck neck={tip.neck} />}
       {tip.lines.map((l, i) => <p key={i}>{l}</p>)}
       {tip.chords && tip.chords.length > 0 && (
         <div className="diagrams">{tip.chords.map((c) => <ChordDiagram key={c.symbol} voicing={c.voicing} name={c.symbol} />)}</div>
@@ -92,11 +94,7 @@ export function Home() {
 
       <section className="stats" aria-label="El teu progrés">
         <div className="stat wide">
-          <div className="week">
-            {(s?.week ?? []).map((d, i) => (
-              <span key={d.date} className={`day${d.active ? ' active' : ''}${d.future ? ' future' : ''}`}>{WEEKDAYS[i]}</span>
-            ))}
-          </div>
+          <WeekBars week={s?.week ?? []} />
           <p className="muted">
             {active === 0 ? 'Aquesta setmana encara no has començat. Un trencaclosques i ja compta.'
               : `${active} ${active === 1 ? 'dia actiu' : 'dies actius'} aquesta setmana${s && s.today > 0 ? ` · ${s.today} resolts avui` : ''}.`}

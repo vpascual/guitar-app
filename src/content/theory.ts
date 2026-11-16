@@ -7,7 +7,7 @@ import {
 } from '../theory/scale';
 import { CHORDS, Chord, ChordDef, getChord, chordSymbol, spellChord, diatonicChords, chordFitsScale } from '../theory/chord';
 import { METERS, meterLabel, counting, accentPattern } from '../theory/meter';
-import { FretPos, voicingFor } from '../theory/guitar';
+import { FretPos, NeckData, scaleNeck, voicingFor } from '../theory/guitar';
 import { PROGRESSIONS, METER_SONGS, SongExample } from './progressions';
 import { progressionChords } from '../engine/session';
 import { spreadTriad } from '../puzzles/chords';
@@ -20,8 +20,9 @@ export type Block =
   | { t: 'p'; text: string }
   | { t: 'h'; text: string; id?: string }
   | { t: 'list'; items: string[] }
-  | { t: 'table'; head: string[]; rows: string[][] }
-  | { t: 'scale'; label: string; notes: string[]; formula: string[]; listen: Listen }
+  | { t: 'table'; head: string[]; rows: string[][]; mark?: number[] }
+  | { t: 'scale'; label: string; notes: string[]; formula: string[]; listen: Listen; mark?: number }
+  | { t: 'neck'; neck: NeckData; caption: string }
   | { t: 'chords'; chords: (ChordHelp & { listen: Listen; caption?: string })[] }
   | { t: 'prog'; line: string; listen: Listen }
   | { t: 'rhythm'; groups: number[]; listen: Listen }
@@ -52,10 +53,17 @@ const FEMININE = ['melodic-minor', 'harmonic-minor', 'altered'];
 const The = (s: ScaleDef): string => (FEMININE.includes(s.id) ? `L'escala ${s.nameCa}` : `El ${s.nameCa}`);
 const parentName = (s: ScaleDef): string => (s.family === 'major' ? 'major' : SCALES.find((x) => x.family === s.family && x.modeIndex === 0)!.nameCa);
 
-const scaleBlock = (tonic: Note, s: ScaleDef): Block => ({
+const scaleBlock = (tonic: Note, s: ScaleDef, markCharacteristic = false): Block => ({
   t: 'scale', label: `${noteCa(tonic)} ${s.nameCa}`, notes: scaleNotes(tonic, s).map(noteCa), formula: s.formula,
   listen: { type: 'scale', midi: scaleMidi(tonic, s) },
+  mark: markCharacteristic ? s.formula.indexOf(s.characteristic) : undefined,
 });
+
+const neckBlock = (tonic: Note, s: ScaleDef): Block => {
+  const notes = scaleNotes(tonic, s);
+  const neck = scaleNeck(notes, notes.map(noteCa), characteristicNote(tonic, s));
+  return { t: 'neck', neck, caption: `${noteCa(tonic)} ${s.nameCa}, posició del trast ${neck.firstFret}` };
+};
 
 const chordsBlock = (chords: Chord[], caption?: (c: Chord) => string): Block => ({
   t: 'chords',
@@ -130,7 +138,8 @@ function scaleTopic(s: ScaleDef): Topic {
       const refName = isMinorScale(s) ? 'menor natural' : 'major';
       const out: Block[] = [
         p(major ? MODE_TEXT[s.id] : EXOTIC_TEXT[s.id]),
-        scaleBlock(tonic, s),
+        scaleBlock(tonic, s, true),
+        neckBlock(tonic, s),
         h('Com es construeix'),
         p(s.modeIndex === 0
           ? `${The(s)} és una escala mare: d'ella en surten set modes, un per cada grau.`
@@ -148,7 +157,7 @@ function scaleTopic(s: ScaleDef): Topic {
         out.push(
           h('Els acords del mode'),
           p('Apilant terceres sobre cada grau surten aquests acords. Les xifres romanes es llegeixen respecte de l\'escala major: una b al davant vol dir que el grau és un semitò més baix.'),
-          { t: 'table', head: ['Grau', 'Tríada', 'Notes', 'Amb 7a'], rows: triads.map((c, i) => [c.roman, chordSymbol(c), list(spellChord(c)), `${sevenths[i].roman} = ${chordSymbol(sevenths[i])}`]) },
+          { t: 'table', head: ['Grau', 'Tríada', 'Notes', 'Amb 7a'], rows: triads.map((c, i) => [c.roman, chordSymbol(c), list(spellChord(c)), `${sevenths[i].roman} = ${chordSymbol(sevenths[i])}`]), mark: carriers.map((c) => c.degree) },
           p(`Els acords que porten la nota característica (${noteCa(char)}) són els que fan sonar el mode: ${carriers.map((c) => `${c.roman} = ${chordSymbol(c)}`).join(', ')}. Combina'n un amb l'acord de tònica i ja tens el color.`),
           chordsBlock([triads[0], ...carriers.filter((c) => c.def.id !== 'dim').slice(0, 2)]),
           h('Com fer-lo sonar'),

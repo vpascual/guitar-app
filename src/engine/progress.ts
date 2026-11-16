@@ -93,10 +93,10 @@ export function solvedByDay(attempts: Attempt[]): DayStats[] {
 }
 
 /** Which days of this week had at least one puzzle solved. A missed day costs nothing: there is no streak to lose. */
-export function weekRhythm(days: DayStats[], now: Date): { date: string; active: boolean; future: boolean }[] {
-  const solved = new Set(days.filter((d) => d.solved > 0).map((d) => d.date));
+export function weekRhythm(days: DayStats[], now: Date): { date: string; active: boolean; future: boolean; solved: number }[] {
+  const solved = new Map(days.filter((d) => d.solved > 0).map((d) => [d.date, d.solved]));
   const today = localDate(now);
-  return weekDates(now).map((date) => ({ date, active: solved.has(date), future: date > today }));
+  return weekDates(now).map((date) => ({ date, active: solved.has(date), future: date > today, solved: solved.get(date) ?? 0 }));
 }
 
 export interface TempoSeries {
