@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { parseNote, noteName, noteCa, noteCaWords, transpose, parseDegree, degreeName, pc } from './note';
 import { SCALES, MAJOR_MODES, getScale, scaleNotes, characteristicNote, parentTonic, validTonics } from './scale';
 import { CHORDS, getChord, spellChord, diatonicChords, chordSymbol, romanNumeral } from './chord';
-import { voicingFor, voicingMatches, voicingText, scalePosition, fretPc, TUNING } from './guitar';
+import { voicingFor, voicingMatches, voicingText, scalePosition, scaleNeck, fretPc, TUNING } from './guitar';
 import { METERS, accentPattern, counting } from './meter';
 
 const names = (ns: { letter: number; alt: number }[]) => ns.map(noteName).join(' ');
@@ -146,6 +146,26 @@ describe('guitar', () => {
       const frets = pos.map((p) => p.fret);
       expect(Math.max(...frets) - Math.min(...frets)).toBeLessThanOrEqual(4);
       expect(fretPc(pos[0].string, pos[0].fret)).toBe(pc(t));
+    }
+  });
+});
+
+describe('neck diagrams', () => {
+  it('labels every dot with the right note and marks tonic and characteristic note', () => {
+    for (const s of MAJOR_MODES) for (const t of validTonics(s)) {
+      const notes = scaleNotes(t, s);
+      const char = characteristicNote(t, s);
+      const neck = scaleNeck(notes, notes.map(noteName), char);
+      expect(neck.frets).toBeLessThanOrEqual(5);
+      for (const d of neck.dots) {
+        const note = notes.find((n) => pc(n) === fretPc(d.string, d.fret))!;
+        expect(d.label).toBe(noteName(note));
+        expect(d.kind).toBe(pc(note) === pc(t) ? 'root' : pc(note) === pc(char) ? 'char' : 'note');
+        expect(d.fret).toBeGreaterThanOrEqual(neck.firstFret);
+        expect(d.fret).toBeLessThan(neck.firstFret + neck.frets);
+      }
+      expect(neck.dots.filter((d) => d.kind === 'root').length).toBeGreaterThanOrEqual(2);
+      if (s.id !== 'ionian') expect(neck.dots.some((d) => d.kind === 'char')).toBe(true);
     }
   });
 });

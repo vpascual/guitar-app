@@ -2,7 +2,7 @@
 import { Note, parseNote, noteCa, noteCaWords, pc, mod, intervalBetween, degreeName } from '../theory/note';
 import { ScaleDef, MAJOR_MODES, getScale, scaleNotes, characteristicNote, parentTonic, isMinorScale } from '../theory/scale';
 import { Chord, DiatonicChord, diatonicChords, chordSymbol, spellChord, getChord, romanNumeral } from '../theory/chord';
-import { FretPos, scalePosition, TAB_LABELS, fretMidi } from '../theory/guitar';
+import { FretPos, NeckData, scaleNeck, scalePosition, TAB_LABELS, fretMidi } from '../theory/guitar';
 import { Meter, METERS, meterLabel, accentPattern, counting } from '../theory/meter';
 import { PROGRESSIONS, ProgressionDef, CHORD_FOCI, ChordFocusDef, METER_SONGS, SongExample } from '../content/progressions';
 import { spreadTriad } from '../puzzles/chords';
@@ -53,6 +53,8 @@ export interface PracticeBlock {
   diagrams: ChordHelp[];
   chordTones: ChordToneRow[];
   listen?: { label: string; what: Listen }[];
+  /** Scale position to draw above the tab. */
+  neck?: NeckData;
   /** Eighth-note grouping to draw, for meter-focused blocks. */
   rhythm?: number[];
   /** Empty when the book does not cover the topic (odd meters). */
@@ -240,7 +242,7 @@ const songLines = (songs: SongExample[]): string =>
 
 // ---- Session builder ----
 
-type Extra = Pick<PracticeBlock, 'detail' | 'tabs' | 'diagrams' | 'chordTones' | 'listen' | 'bookConcepts' | 'rhythm'>;
+type Extra = Pick<PracticeBlock, 'detail' | 'tabs' | 'diagrams' | 'chordTones' | 'listen' | 'bookConcepts' | 'rhythm' | 'neck'>;
 
 export function buildSession(minutes: 30 | 45 | 60, ctx: BuildContext, forced?: Focus): Session {
   const focus = forced ?? chooseFocus(ctx);
@@ -403,6 +405,7 @@ export function buildSession(minutes: 30 | 45 | 60, ctx: BuildContext, forced?: 
           tip: `Comença i acaba sempre a ${noteCa(tonic)} perquè l'orella senti aquest centre i no un altre.`,
         }],
         diagrams: [], chordTones: [], listen: isOdd ? [meterListen, scaleListen] : [scaleListen], rhythm,
+        neck: scaleNeck(notes, notes.map(noteCa), char),
         bookConcepts: scale.family === 'major' ? ['modes-major-scale', 'close-position-major'] : ['modes-harmonic-minor', 'close-position-harmonic-minor'],
       }),
     block('technique', technique.title, technique.goal, technique.material, technique.extra),

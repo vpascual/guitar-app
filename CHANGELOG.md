@@ -60,3 +60,10 @@
 - New Teoria section with 36 topics; examples in any key, with diagrams, tables and sound.
 - Hints and explanations link to the matching topic. The puzzle tab is renamed Reptes.
 - Checks: 109 unit tests, end-to-end run with 37 assertions.
+
+## 0.8.0 — charts and diagrams
+
+- Weekly bar chart on Inici and Progrés.
+- Scale positions drawn on the neck in theory pages, the home tip and the practice warm-up.
+- Highlighted characteristic degree and chords; numbered worked steps; level shown on each puzzle.
+- Checks: 110 unit tests, end-to-end run with 39 assertions.

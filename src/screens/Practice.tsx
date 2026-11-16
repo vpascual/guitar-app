@@ -10,6 +10,7 @@ import { MetronomeControl } from '../ui/Metronome';
 import { Tab } from '../ui/Tab';
 import { Timer } from '../ui/Timer';
 import { RhythmLine } from '../ui/RhythmLine';
+import { Neck } from '../ui/Neck';
 
 const RESULT_CA: Record<BlockResult, string> = { clean: 'Net', sloppy: 'Brut', failed: 'Fallat' };
 
@@ -42,6 +43,7 @@ function Block({ block, open, onRate }: { block: PracticeBlock; open: boolean; o
       </div>
       {block.listen && <div className="row">{block.listen.map((l) => <ListenButton key={l.label} what={l.what} label={l.label} />)}</div>}
       {block.rhythm && <RhythmLine groups={block.rhythm} />}
+      {block.neck && <Neck neck={block.neck} />}
       <ul className="detail">{block.detail.map((d, i) => <li key={i}>{d}</li>)}</ul>
       {block.tabs.map((t) => <Tab key={t.title} tab={t} />)}
       {block.diagrams.length > 0 && (
