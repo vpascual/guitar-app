@@ -98,23 +98,19 @@ function Index() {
 }
 
 export function Theory({ hash }: { hash: string }) {
-  const [path, query] = hash.replace(/^#\/teoria\/?/, '').split('?');
+  const [path] = hash.replace(/^#\/teoria\/?/, '').split('?');
   const topic = path ? getTopic(decodeURIComponent(path)) : undefined;
-  const anchor = new URLSearchParams(query ?? '').get('a');
   const [key, setKey] = useState(topic ? topic.defaultKey : 'C');
 
+  // Scrolling (to the top, to a section, or back to where the reader was) is handled by the app's navigation.
   useEffect(() => {
     setKey(topic ? topic.defaultKey : 'C');
-    const el = anchor ? document.getElementById(`sec-${anchor}`) : null;
-    if (el) el.scrollIntoView();
-    else window.scrollTo(0, 0);
-  }, [topic, anchor]);
+  }, [topic]);
 
   if (!topic) return <Index />;
   const tonic = KEYS.includes(key) ? parseNote(key) : defaultKey(topic);
   return (
     <main className="theory" data-testid="topic">
-      <a className="back" href="#/teoria">‹ Teoria</a>
       <h1>{topic.title}</h1>
       <p className="muted lead">{topic.summary}</p>
       {topic.usesKey && (

@@ -28,18 +28,19 @@ function TempoChart({ series }: { series: TempoSeries }) {
   );
 }
 
-export function Progress() {
+export function Progress({ active = true }: { active?: boolean }) {
   const [data, setData] = useState<{
     feed: FeedState; map: Record<string, Mastery>; week: ReturnType<typeof weekRhythm>; tempo: TempoSeries[];
   } | null>(null);
 
   useEffect(() => {
+    if (!active) return;
     // Fetch what the other device did first, but never wait long for the network.
     void sync.syncWithin(2500).then(() => Promise.all([repo.getFeedState(), repo.listAttempts()])).then(([f, attempts]) => {
       const feed = f ?? initialFeedState();
       setData({ feed, map: masteryMap(attempts, feed.reviews), week: weekRhythm(solvedByDay(attempts), new Date()), tempo: tempoHistory(attempts) });
     });
-  }, []);
+  }, [active]);
 
   if (!data) return <main className="progress" />;
   const all = CONCEPT_GROUPS.flatMap((g) => g.cells);

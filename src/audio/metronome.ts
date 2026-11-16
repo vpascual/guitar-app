@@ -1,5 +1,5 @@
 // Metronome with look-ahead scheduling, so timing does not depend on timer jitter.
-import { audio, click } from './synth';
+import { audio, click, holdPlayback } from './synth';
 
 export class Metronome {
   private timer: number | null = null;
@@ -17,6 +17,7 @@ export class Metronome {
   start(): void {
     if (this.running) return;
     const ac = audio();
+    holdPlayback(2);
     this.beat = 0;
     this.nextTime = ac.currentTime + 0.08;
     this.timer = window.setInterval(() => this.schedule(), 25);
@@ -29,6 +30,7 @@ export class Metronome {
 
   private schedule(): void {
     const ac = audio();
+    holdPlayback(1);
     while (this.nextTime < ac.currentTime + 0.12) {
       const index = this.beat % this.accents.length;
       click(this.nextTime, this.accents[index]);
