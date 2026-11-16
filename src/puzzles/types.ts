@@ -45,7 +45,10 @@ export interface Puzzle {
   visual?: Visual;
   answer: Answer;
   hint?: string;
+  /** One-paragraph answer, readable in a few seconds. */
   explanation: string;
+  /** Worked solution, one reasoning step per entry. */
+  steps: string[];
   /** Glossary terms used; each is explained the first time it shows up. */
   terms: string[];
   listen?: Listen;

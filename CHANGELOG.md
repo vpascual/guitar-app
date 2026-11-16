@@ -52,3 +52,11 @@
   with diagram, listen button and a shortcut to a puzzle on the same concept.
 - Puzzles moved to `#/teoria`; the tab bar has four sections.
 - Checks: 107 unit tests, end-to-end run with 30 assertions.
+
+## 0.7.0 — worked solutions, "No ho sé" and a theory section
+
+- Step-by-step solution under every answer, generated for the exact puzzle.
+- "No ho sé" button next to the hint: shows the answer and the solution and leads to the theory topic.
+- New Teoria section with 36 topics; examples in any key, with diagrams, tables and sound.
+- Hints and explanations link to the matching topic. The puzzle tab is renamed Reptes.
+- Checks: 109 unit tests, end-to-end run with 37 assertions.

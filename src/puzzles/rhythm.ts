@@ -1,6 +1,7 @@
 // Generators for the "rhythm" skill: meters from notation, accent placement, and meters by ear.
 // The Beato Book has no odd-meter material, so these carry no book reference.
 import type { PuzzleGenerator, Rng } from './types';
+import { meterSteps, accentSteps } from './explain';
 import { METERS, Meter, meterLabel, counting } from '../theory/meter';
 import { choice, optionCount } from './util';
 
@@ -57,6 +58,7 @@ export const meterFromNotation: PuzzleGenerator = {
       answer: choice(rng, meterLabel(m), LABELS.filter((l) => l !== meterLabel(m)), (l) => l, optionCount(level)),
       hint: 'Compta les corxeres i mira si els grups són de dues, de tres o barrejats.',
       explanation: explain(m),
+      steps: meterSteps(groups, meterLabel(m)),
       terms: m.unit === 8 && m.beats !== 6 && m.beats !== 12 && m.beats !== 9 ? ['corxera', 'compàs irregular'] : ['corxera'],
       listen: { type: 'clicks', accents: groups.flatMap((g) => [1, ...Array<number>(g - 1).fill(0)]), bpm: 220 },
       truth: { kind: 'meter-by-groups', groups },
@@ -93,6 +95,7 @@ export const accentPositions: PuzzleGenerator = {
       answer: choice<number[]>(rng, correct, wrong, (p) => p.join(', '), optionCount(level)),
       hint: 'Cada grup comença amb un accent. Suma la mida dels grups anteriors i afegeix-hi 1.',
       explanation: `Els grups ${m.groups.join('+')} comencen a les corxeres ${correct.join(', ')}. Es compta «${counting(m)}».`,
+      steps: accentSteps(m.groups),
       terms: ['corxera', 'compàs irregular'],
       listen: { type: 'clicks', accents: m.groups.flatMap((g) => [1, ...Array<number>(g - 1).fill(0)]), bpm: 220 },
       truth: { kind: 'accents', groups: m.groups },
@@ -119,6 +122,7 @@ export const meterByEar: PuzzleGenerator = {
       answer: choice(rng, meterLabel(m), LABELS.filter((l) => l !== meterLabel(m)), (l) => l, optionCount(level)),
       hint: 'Compta quantes corxeres hi ha entre un accent fort i el següent.',
       explanation: explain(m),
+      steps: meterSteps(groups, meterLabel(m), true),
       terms: ['corxera'],
       listen: { type: 'clicks', accents: groups.flatMap((g, gi) => [gi === 0 ? 2 : 1, ...Array<number>(g - 1).fill(0)]), bpm: 220 },
       truth: { kind: 'meter-by-groups', groups },

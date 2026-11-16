@@ -59,7 +59,7 @@ function TipCard({ tip, onAnother }: { tip: Tip; onAnother: () => void }) {
       )}
       <div className="row">
         {tip.listen && <ListenButton what={tip.listen} />}
-        <a className="btn" href={`#/teoria?g=${tip.generatorId}&c=${encodeURIComponent(tip.conceptKey)}`}>Posa-t'hi a prova</a>
+        <a className="btn" href={`#/reptes?g=${tip.generatorId}&c=${encodeURIComponent(tip.conceptKey)}`}>Posa-t'hi a prova</a>
         <button className="btn ghost" onClick={onAnother}>Un altre</button>
       </div>
       <p className="muted">{formatRef(tip.bookConcept)}</p>
@@ -122,7 +122,7 @@ export function Home() {
 
       <h2 className="section-title">Per on vols començar?</h2>
       <nav className="menu" aria-label="Per on començar">
-        <a className="card teoria" href="#/teoria" data-testid="start-puzzles">
+        <a className="card teoria" href="#/reptes" data-testid="start-puzzles">
           <span className="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28"><rect x="3.5" y="3.5" width="7" height="7" rx="2" /><rect x="13.5" y="3.5" width="7" height="7" rx="2" /><rect x="3.5" y="13.5" width="7" height="7" rx="2" /><rect x="13.5" y="13.5" width="7" height="7" rx="2" /></svg></span>
           <span className="card-text">
             <strong>Trencaclosques</strong>
@@ -134,6 +134,13 @@ export function Home() {
           <span className="card-text">
             <strong>{s?.openSession ? 'Continua la sessió' : 'Sessió de pràctica'}</strong>
             <span>{s?.openSession ? `${s.openSession}, a mig fer.` : '30, 45 o 60 minuts amb la guitarra, al voltant d\'un sol focus.'}</span>
+          </span>
+        </a>
+        <a className="card teoria-docs" href="#/teoria">
+          <span className="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28"><path d="M12 6.5c-2-1.4-4.6-1.9-8-1.5v13c3.4-.4 6 .1 8 1.5 2-1.4 4.6-1.9 8-1.5V5c-3.4-.4-6 .1-8 1.5z" /><path d="M12 6.5v13" /></svg></span>
+          <span className="card-text">
+            <strong>Teoria</strong>
+            <span>Modes, acords, harmonia i compassos explicats, amb exemples en qualsevol to.</span>
           </span>
         </a>
         <a className="card progres" href="#/progres">

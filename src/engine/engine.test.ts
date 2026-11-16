@@ -10,6 +10,7 @@ import { MemoryRepository } from '../storage/memory';
 import { CONCEPT_GROUPS, masteryMap, weekDates, weekRhythm, tempoHistory } from './progress';
 import { GENERATORS, makePuzzle } from '../puzzles/registry';
 import { makeTip, TIP_COUNT } from './tips';
+import { TOPICS, GROUPS, getTopic, topicFor } from '../content/theory';
 import { getScale } from '../theory/scale';
 import { parseNote } from '../theory/note';
 import { chordFitsScale } from '../theory/chord';
@@ -265,6 +266,45 @@ describe('home tips', () => {
   it('prefers concepts that are in progress', () => {
     for (let seed = 0; seed < 30; seed++) expect(makeTip(seed, { 'mode:lydian': 'learning' }).conceptKey).toBe('mode:lydian');
     expect(makeTip(3)).toEqual(makeTip(3));
+  });
+});
+
+describe('theory section', () => {
+  const keys = ['C', 'F#', 'Bb', 'E'].map(parseNote);
+  it('every topic builds in several keys with real content and resolvable references', () => {
+    expect(TOPICS.length).toBeGreaterThanOrEqual(35);
+    expect(new Set(TOPICS.map((t) => t.id)).size).toBe(TOPICS.length);
+    for (const t of TOPICS) {
+      expect(GROUPS, t.id).toContain(t.group);
+      for (const k of keys) {
+        const blocks = t.build(k);
+        expect(blocks.length, t.id).toBeGreaterThanOrEqual(8);
+        expect(JSON.stringify(blocks), t.id).not.toMatch(/undefined|NaN|\[object/);
+        expect(blocks.filter((b) => b.t === 'p').length, t.id).toBeGreaterThanOrEqual(2);
+        for (const b of blocks) {
+          if (b.t === 'link') expect(getTopic(b.topic), `${t.id} -> ${b.topic}`).toBeDefined();
+          if (b.t === 'ref') for (const c of b.concepts) expect(hasRef(c), c).toBe(true);
+          if (b.t === 'practice') {
+            const g = GENERATORS.find((x) => x.id === b.generatorId);
+            expect(g, b.generatorId).toBeDefined();
+            if (b.concept) expect(g!.concepts).toContain(b.concept);
+          }
+          if (b.t === 'table') for (const r of b.rows) expect(r.length, `${t.id} table`).toBe(b.head.length);
+        }
+        expect(blocks.some((b) => b.t === 'ref'), t.id).toBe(true);
+      }
+    }
+  });
+  it('every puzzle concept leads to an existing topic, and to an existing section when one is named', () => {
+    for (const g of GENERATORS) for (const c of g.concepts) {
+      const where = topicFor(g.id, c);
+      const topic = getTopic(where.topic);
+      expect(topic, `${g.id} ${c} -> ${where.topic}`).toBeDefined();
+      if (where.anchor) {
+        const ids = topic!.build(parseNote(topic!.defaultKey)).flatMap((b) => (b.t === 'h' && b.id ? [b.id] : []));
+        expect(ids, `${g.id} ${c} -> ${where.topic}#${where.anchor}`).toContain(where.anchor);
+      }
+    }
   });
 });
 

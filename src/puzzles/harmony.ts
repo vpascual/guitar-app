@@ -1,5 +1,6 @@
 // Generators for the "harmony" skill: Roman numeral analysis, modal interchange, secondary dominants.
 import type { PuzzleGenerator } from './types';
+import { romanSeqSteps, borrowedSteps, secDomSteps } from './explain';
 import { noteCa, noteName, parseDegree, transpose, pc } from '../theory/note';
 import { MAJOR_MODES, getScale, scaleNotes } from '../theory/scale';
 import { Chord, DiatonicChord, diatonicChords, chordSymbol, chordFitsScale, chordId, getChord, spellChord } from '../theory/chord';
@@ -35,6 +36,7 @@ export const romanAnalysis: PuzzleGenerator = {
       answer: choice<string[]>(rng, correct, wrong, (r) => r.join(' – '), optionCount(level)),
       hint: `Compta cada fonamental des de ${noteCa(tonic)} i compara-la amb l'escala de ${noteCa(tonic)} major: si és un semitò més baixa, porta b.`,
       explanation: `${prog.map(pairCa).join(', ')}.\nTot surt de ${noteCa(tonic)} ${s.nameCa}: ${notesCa(scaleNotes(tonic, s))}.`,
+      steps: romanSeqSteps(tonic, prog),
       terms: ['xifra romana', 'centre tonal'],
       listen: { type: 'progression', chords: [...prog, prog[0]].map(chordMidi) },
       chordHelp: chordHelp(prog),
@@ -75,6 +77,7 @@ export const borrowedChord: PuzzleGenerator = {
         answer: choice(rng, donor, others, (m) => `${noteCa(tonic)} ${m.nameCa}`, optionCount(level)),
         hint: `Notes de ${chordSymbol(borrowed)}: ${notesCa(spellChord(borrowed))}. Quines no són a ${noteCa(tonic)} major?`,
         explanation: `${chordSymbol(borrowed)} conté ${notesCa(foreign)}, que no ${foreign.length > 1 ? 'són' : 'és'} a ${noteCa(tonic)} major. A ${noteCa(tonic)} ${donor.nameCa} (${notesCa(scaleNotes(tonic, donor))}) l'acord surt sol: ${borrowed.roman} = ${chordSymbol(borrowed)}.${also.length ? ` També és a ${also.map((m) => `${noteCa(tonic)} ${m.nameCa}`).join(' i ')}.` : ''}`,
+        steps: borrowedSteps(tonic, borrowed, DONORS),
         terms: ['intercanvi modal', 'xifra romana', 'mode'],
         listen: { type: 'progression', chords: [home[0], borrowed, home[0]].map(chordMidi) },
         chordHelp: chordHelp([borrowed, home[0]]),
@@ -113,6 +116,7 @@ export const secondaryDominant: PuzzleGenerator = {
       answer: choice<Chord>(rng, dom, wrong, chordSymbol, optionCount(level)),
       hint: `Puja una 5a justa des de ${noteCa(target.root)} i fes-hi un acord de 7a de dominant.`,
       explanation: `V7/${target.roman} = ${chordSymbol(dom)} (${notesCa(spellChord(dom))}). Una 5a justa per damunt de ${noteCa(target.root)} hi ha ${noteCa(dom.root)}; amb 3a major i 7a menor empeny cap a ${chordSymbol(target)}.`,
+      steps: secDomSteps(tonic, target, dom),
       terms: ['xifra romana'],
       listen: { type: 'progression', chords: [chords[0], dom, target].map(chordMidi) },
       chordHelp: chordHelp([dom, target]),

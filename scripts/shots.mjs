@@ -11,7 +11,7 @@ const browser = await chromium.launch();
 try {
   const page = await (await browser.newContext({ ...devices['Pixel 5'] })).newPage();
   for (const [g, seed] of [['tap-characteristic', 3], ['chord-from-diagram', 5], ['meter-from-notation', 2], ['spread-triad', 4], ['roman-analysis', 6]]) {
-    await page.goto(`http://localhost:4174/?g=${g}&seed=${seed}&level=1#/teoria`);
+    await page.goto(`http://localhost:4174/?g=${g}&seed=${seed}&level=1#/reptes`);
     await page.waitForSelector('[data-testid=puzzle]');
     await page.screenshot({ path: `${dir}/${g}.png` });
     const opt = page.locator('.answers .option').first();

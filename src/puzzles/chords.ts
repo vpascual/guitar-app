@@ -1,5 +1,6 @@
 // Generators for the "chords" skill: chord types beyond sevenths and spread triads.
 import type { PuzzleGenerator, Rng } from './types';
+import { chordNotesSteps, diagramSteps, missingSteps, spreadSteps } from './explain';
 import { Note, noteCa, noteName, pc, TONIC_CANDIDATES, midiAtOrAbove, mod } from '../theory/note';
 import { Chord, ChordDef, CHORDS, getChord, spellChord, chordSymbol, chordId } from '../theory/chord';
 import { voicingFor, voicingPcs, voicingText, voicingMidi, TUNING, FretPos, fretMidi } from '../theory/guitar';
@@ -66,6 +67,7 @@ export const chordFromNotes: PuzzleGenerator = {
       answer: choice<Chord>(rng, ch, near, chordSymbol, optionCount(level)),
       hint: `Ordena-les per terceres des de ${noteCa(ch.root)} i mira la 3a, la 5a i la 7a.`,
       explanation: formulaLine(ch),
+      steps: chordNotesSteps(ch),
       terms: TERMS[ch.def.id] ?? [],
       listen: { type: 'chord', midi: chordMidi(ch) },
       chordHelp: voicingFor(ch) ? [{ symbol: chordSymbol(ch), voicing: voicingFor(ch)! }] : [],
@@ -101,6 +103,7 @@ export const chordFromDiagram: PuzzleGenerator = {
       answer: choice<Chord>(rng, ch, near.slice(0, 8), chordSymbol, optionCount(level)),
       hint: 'Anomena cada nota de greu a agut i busca la 3a i la 7a.',
       explanation: `${voicingText(voicing)} sona ${notesCa(names)}.\n${formulaLine(ch)}${ch.def.formula.length > new Set(names.map(pc)).size ? ' Aquesta posició omet alguna nota (sovint la 5a).' : ''}`,
+      steps: diagramSteps(ch, voicing),
       terms: TERMS[ch.def.id] ?? [],
       listen: { type: 'chord', midi: voicingMidi(voicing) },
       truth: { kind: 'chord-by-voicing', voicing, root: noteName(ch.root) },
@@ -137,6 +140,7 @@ export const missingNote: PuzzleGenerator = {
       answer: choice<Note>(rng, target, wrong.slice(0, 6), noteCa, optionCount(level)),
       hint: `Fórmula de l'acord ${ch.def.nameCa}: ${ch.def.formula.join(' ')}.`,
       explanation: formulaLine(ch),
+      steps: missingSteps(ch, hole),
       terms: TERMS[ch.def.id] ?? [],
       listen: { type: 'chord', midi: chordMidi(ch) },
       chordHelp: voicingFor(ch) ? [{ symbol: chordSymbol(ch), voicing: voicingFor(ch)! }] : [],
@@ -212,6 +216,7 @@ export const spreadTriadName: PuzzleGenerator = {
         answer: choice<Chord>(rng, ch, others, chordSymbol, optionCount(level)),
         hint: 'Anomena les tres notes de greu a agut. La més greu no sempre és la tònica.',
         explanation: `De greu a agut: ${notesCa(notes)}. Són les notes de ${chordSymbol(ch)} (${notesCa(spellChord(ch))}) en ${INVERSIONS[inversion]}, amb la veu del mig pujada una octava.`,
+        steps: spreadSteps(ch, inversion, pos),
         terms: ['tríada oberta'],
         listen: { type: 'chord', midi: pos.map((p) => fretMidi(p.string, p.fret)) },
         truth: { kind: 'chord-by-positions', positions: pos },

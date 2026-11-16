@@ -115,5 +115,7 @@ export function auditPuzzle(p: Puzzle): string[] {
   }
   if (!p.explanation || p.explanation.length > 420) errors.push('explanation missing or too long for 30 seconds');
   if (!p.prompt) errors.push('empty prompt');
+  if (p.steps.length < 3) errors.push('worked solution has fewer than three steps');
+  if (p.steps.some((x) => !x.trim() || /undefined|NaN|\[object/.test(x))) errors.push('broken step text');
   return errors;
 }

@@ -98,7 +98,13 @@ a { color: var(--accent); text-decoration: none; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 .chip { background: var(--fill); border-radius: 10px; padding: 9px 13px; font-size: 1.12rem; font-weight: 600; font-variant-numeric: tabular-nums; }
 .chord-chip { background: var(--fill-strong); }
-.hint { background: var(--panel); padding: 12px 14px; border-radius: var(--radius); font-size: 0.94rem; }
+.hint { background: var(--panel); padding: 12px 14px; border-radius: var(--radius); font-size: 0.94rem; display: grid; gap: 8px; }
+.helpers { display: flex; justify-content: center; gap: 8px; }
+.result.skip > strong { color: var(--text); }
+.steps-title { font-size: 0.76rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin-top: 4px; }
+.steps { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; white-space: normal; }
+.steps li::marker { color: var(--muted); font-variant-numeric: tabular-nums; }
+.theory-link { justify-content: space-between; text-align: left; }
 .answers {
   position: sticky; bottom: calc(50px + env(safe-area-inset-bottom)); padding: 10px 16px 12px; display: grid; gap: 8px;
   background: var(--bar); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
@@ -245,6 +251,7 @@ details[open] > summary::after { transform: rotate(90deg); }
 .card { display: flex; gap: 14px; align-items: center; border-radius: 16px; padding: 16px; color: #fff; min-height: 88px; }
 .card.teoria { background: linear-gradient(135deg, #0a84ff, #5e5ce6); }
 .card.practica { background: linear-gradient(135deg, #ff9f0a, #ff375f); }
+.card.teoria-docs { background: linear-gradient(135deg, #bf5af2, #5e5ce6); }
 .card.progres { background: linear-gradient(135deg, #30b0c7, #34c759); }
 .card-icon { flex: none; width: 48px; height: 48px; border-radius: 12px; background: rgba(255, 255, 255, 0.22); display: grid; place-items: center; }
 .card-icon svg { fill: none; stroke: #fff; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
@@ -253,3 +260,39 @@ details[open] > summary::after { transform: rotate(90deg); }
 .card-text span { font-size: 0.82rem; opacity: 0.92; }
 @media (prefers-reduced-motion: no-preference) { .card { transition: transform 0.12s; } .card:active { transform: scale(0.98); } }
 @media (max-width: 420px) { .stat strong { font-size: 1.45rem; } }
+
+/* ---- Theory ---- */
+.theory { max-width: 760px; margin: 0 auto; padding: calc(14px + env(safe-area-inset-top)) 16px calc(84px + env(safe-area-inset-bottom)); line-height: 1.5; }
+.theory h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
+.theory .lead { font-size: 0.94rem; margin: 4px 0 14px; }
+.back { display: inline-flex; align-items: center; min-height: 44px; }
+.group-title { font-size: 0.76rem; font-weight: 400; text-transform: uppercase; color: var(--muted); margin: 22px 0 6px 16px; }
+.rows { background: var(--panel); border-radius: var(--radius); overflow: hidden; }
+.row-link { display: flex; align-items: center; min-height: 56px; padding: 9px 16px; color: var(--text); border-bottom: 0.5px solid var(--line); }
+.row-link:last-child { border-bottom: 0; }
+.row-link::after { content: '›'; margin-left: auto; padding-left: 10px; color: var(--muted); font-size: 1.3rem; }
+.row-link span { display: grid; gap: 1px; min-width: 0; }
+.row-link small { color: var(--muted); font-size: 0.8rem; }
+.keypick { display: inline-flex; align-items: center; gap: 10px; background: var(--panel); border-radius: var(--radius); padding: 6px 8px 6px 14px; margin-bottom: 14px; font-size: 0.94rem; }
+.keypick select { font: inherit; color: var(--accent); background: var(--fill); border: 0; border-radius: 8px; padding: 7px 10px; min-height: 36px; }
+.doc { display: grid; gap: 12px; min-width: 0; }
+.doc > p { max-width: 68ch; }
+.doc h2 { font-size: 1.25rem; font-weight: 700; margin-top: 14px; scroll-margin-top: 16px; }
+.doc-list { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; max-width: 68ch; }
+.doc-table { overflow-x: auto; background: var(--panel); border-radius: var(--radius); }
+.doc-table table { border-collapse: collapse; width: 100%; font-size: 0.86rem; font-variant-numeric: tabular-nums; }
+.doc-table th { font-size: 0.72rem; font-weight: 400; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.doc-table th, .doc-table td { text-align: left; padding: 9px 12px; border-bottom: 0.5px solid var(--line); vertical-align: top; }
+.doc-table tr:last-child td { border-bottom: 0; }
+.doc-box { background: var(--panel); border-radius: var(--radius); padding: 14px; display: grid; gap: 10px; justify-items: start; min-width: 0; }
+.scale-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.scale-row .chip { display: grid; justify-items: center; padding: 6px 10px; font-size: 1rem; min-width: 46px; }
+.scale-row .chip small { font-size: 0.68rem; font-weight: 500; color: var(--muted); }
+.doc-chords { display: flex; flex-wrap: wrap; gap: 8px; }
+.doc-chord { background: var(--panel); border-radius: var(--radius); padding: 10px; display: grid; justify-items: center; gap: 6px; }
+.doc-fret { margin: 0; background: var(--panel); border-radius: var(--radius); padding: 12px; display: grid; justify-items: center; gap: 6px; }
+.doc-link { display: flex; align-items: center; min-height: 48px; padding: 8px 14px; background: var(--panel); border-radius: var(--radius); }
+.doc-link::after { content: '›'; margin-left: auto; padding-left: 10px; color: var(--muted); font-size: 1.3rem; }
+.doc-refs { margin-top: 10px; display: grid; gap: 4px; }
+.doc-refs h2 { font-size: 0.76rem; font-weight: 400; text-transform: uppercase; color: var(--muted); margin: 0; }
+.doc .btn.primary { justify-self: start; }
