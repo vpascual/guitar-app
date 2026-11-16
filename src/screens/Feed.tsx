@@ -210,7 +210,7 @@ export function Feed() {
         </nav>
       </header>
 
-      <section className="puzzle" data-testid="puzzle" key={puzzle.id}>
+      <section className="puzzle" data-testid="puzzle" data-prompt={puzzle.id} key={puzzle.id}>
         <p className="skill">
           <span>{SKILL_CA[puzzle.skill]}{served.review ? ' · repàs' : ''}</span>
           <span className="level">nivell {feed.current.ratings[puzzle.skill]}</span>

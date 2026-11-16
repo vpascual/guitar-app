@@ -67,3 +67,10 @@
 - Scale positions drawn on the neck in theory pages, the home tip and the practice warm-up.
 - Highlighted characteristic degree and chords; numbered worked steps; level shown on each puzzle.
 - Checks: 110 unit tests, end-to-end run with 39 assertions.
+
+## 0.9.0 — back navigation and mobile sound
+
+- Back button at the top of the screen and left-edge swipe; going back restores the scroll position.
+- Screens keep their state when switching tabs.
+- Sound works with the iPhone's silent switch on; the audio resumes after interruptions; first notes no longer cut short.
+- Checks: 110 unit tests, end-to-end run with 42 assertions.

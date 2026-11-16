@@ -21,10 +21,73 @@ function roomImpulse(ac: AudioContext): AudioBuffer {
   return buf;
 }
 
+// ---- Mobile audio unlocking ----
+//
+// iPhones route Web Audio through the "ambient" audio session, which the ring/silent switch mutes:
+// with the phone on silent, the app makes no sound at all. Two ways around it:
+// - iOS 17+ exposes navigator.audioSession; asking for "playback" makes the app ignore the switch, like a music app.
+// - Older iOS only switches to playback while an HTML <audio> element is playing, so a silent loop is played
+//   for as long as the app is producing sound.
+
+interface AudioSessionNav { audioSession?: { type: string } }
+
+const isAppleMobile = (): boolean =>
+  /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.userAgent.includes('Macintosh') && navigator.maxTouchPoints > 1);
+
+let silent: HTMLAudioElement | null = null;
+let silentStop = 0;
+
+/** Half a second of silence as an 8-bit mono WAV, built once in memory. */
+function silentWavUrl(): string {
+  const rate = 8000;
+  const n = 4000;
+  const v = new DataView(new ArrayBuffer(44 + n));
+  const text = (at: number, t: string) => [...t].forEach((c, i) => v.setUint8(at + i, c.charCodeAt(0)));
+  text(0, 'RIFF'); v.setUint32(4, 36 + n, true); text(8, 'WAVE'); text(12, 'fmt ');
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, rate, true); v.setUint32(28, rate, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true);
+  text(36, 'data'); v.setUint32(40, n, true);
+  for (let i = 0; i < n; i++) v.setUint8(44 + i, 128);
+  return URL.createObjectURL(new Blob([v.buffer], { type: 'audio/wav' }));
+}
+
+/**
+ * Keep sound audible on a phone in silent mode for the next `seconds`.
+ * Must first be called from a tap; later calls extend the window.
+ */
+export function holdPlayback(seconds: number): void {
+  const session = (navigator as Navigator & AudioSessionNav).audioSession;
+  if (session) {
+    if (session.type !== 'playback') session.type = 'playback';
+    return;
+  }
+  if (!isAppleMobile()) return;
+  if (!silent) {
+    silent = new Audio(silentWavUrl());
+    silent.loop = true;
+    silent.setAttribute('playsinline', '');
+  }
+  if (silent.paused) void silent.play().catch(() => undefined);
+  const until = Date.now() + seconds * 1000;
+  if (until > silentStop) {
+    silentStop = until;
+    window.setTimeout(() => {
+      if (Date.now() >= silentStop - 50) silent?.pause();
+    }, seconds * 1000 + 100);
+  }
+}
+
+// After the phone locks or another app takes the audio, iOS leaves the context "interrupted".
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && ctx && ctx.state !== 'running') void ctx.resume().catch(() => undefined);
+});
+
 /** Lazily create and resume the audio context. Must be called from a user gesture the first time. */
 export function audio(): AudioContext {
   if (!ctx) {
-    ctx = new AudioContext();
+    holdPlayback(2);
+    const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    ctx = new Ctor();
     // Everything passes through one chain: guitar-body tone shaping, a touch of room, and a limiter for strums.
     const limiter = ctx.createDynamicsCompressor();
     limiter.threshold.value = -14;
@@ -57,7 +120,8 @@ export function audio(): AudioContext {
     air.connect(limiter);
     air.connect(room).connect(wet).connect(limiter);
   }
-  if (ctx.state === 'suspended') void ctx.resume();
+  // "suspended" before the first tap, "interrupted" on iOS after a call or the lock screen.
+  if (ctx.state !== 'running') void ctx.resume().catch(() => undefined);
   return ctx;
 }
 
@@ -114,6 +178,7 @@ export function click(when: number, level: number): void {
 /** Soft three-note chime for the end of a block: sine partials with a slow decay. */
 export function bell(): void {
   const ac = audio();
+  holdPlayback(3);
   const t = ac.currentTime + 0.02;
   [76, 80, 83].forEach((m, i) => {
     for (const [mult, level] of [[1, 0.2], [2.76, 0.06], [5.4, 0.025]]) {
@@ -131,9 +196,17 @@ export function bell(): void {
   });
 }
 
+/** Every MIDI note a sound will use, so the strings can be built before timing starts. */
+const notesOf = (l: Listen): number[] =>
+  l.type === 'scale' || l.type === 'chord' ? l.midi : l.type === 'progression' ? l.chords.flat() : [];
+
 /** Play a puzzle's or block's sound. Returns the total duration in seconds. */
 export function playListen(l: Listen): number {
-  const t0 = audio().currentTime + 0.06;
+  const ac = audio();
+  // Build the string sounds first: on a phone this takes long enough to push the first notes late.
+  for (const m of notesOf(l)) stringBuffer(ac, m);
+  const t0 = ac.currentTime + 0.08;
+  holdPlayback(estimate(l) + 1);
   switch (l.type) {
     case 'scale': {
       // Each note rings into the next, and the last one is held.
@@ -168,5 +241,15 @@ export function playListen(l: Listen): number {
       for (let b = 0; b < bars; b++) l.accents.forEach((a, i) => click(t0 + (b * l.accents.length + i) * step, a));
       return bars * l.accents.length * step + 0.2;
     }
+  }
+}
+
+/** Length of a sound in seconds, matching playListen's timing. */
+function estimate(l: Listen): number {
+  switch (l.type) {
+    case 'scale': return l.midi.length * 0.36 + 1.4;
+    case 'chord': return 1.7 + l.midi.length * 0.3 + 1.4;
+    case 'progression': return (l.chords.length - 1) * (60 / 92) * 4 + 2.8;
+    case 'clicks': return 3 * l.accents.length * (60 / l.bpm) + 0.2;
   }
 }

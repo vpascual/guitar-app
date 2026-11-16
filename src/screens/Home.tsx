@@ -69,17 +69,18 @@ function TipCard({ tip, onAnother }: { tip: Tip; onAnother: () => void }) {
   );
 }
 
-export function Home() {
+export function Home({ active: shown = true }: { active?: boolean }) {
   const [s, setS] = useState<Summary | null>(null);
   const [bump, setBump] = useState(0);
 
   useEffect(() => {
-    // Show local data at once; refresh if the other device had something new.
+    if (!shown) return;
+    // Show local data at once; refresh if the other device had something new. Runs each time the screen is shown.
     void load().then(setS);
     void sync.sync().then((changed) => {
       if (changed) void load().then(setS);
     });
-  }, []);
+  }, [shown]);
 
   const tip = makeTip(daySeed(new Date()) + bump * 7919, s?.map);
   const active = s?.week.filter((d) => d.active).length ?? 0;
