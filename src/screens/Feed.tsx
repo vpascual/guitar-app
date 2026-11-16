@@ -9,6 +9,8 @@ import { repo, sync } from '../storage';
 import { formatKey } from '../sync/engine';
 import { DEFAULT_SETTINGS, DayStats, Settings, localDate } from '../storage/repository';
 import { formatRef } from '../content/refs';
+import { getTopic, topicFor } from '../content/theory';
+import { theoryHref } from './Theory';
 import { GLOSSARY } from '../i18n/ca';
 import { ChordDiagram } from '../ui/ChordDiagram';
 import { Fretboard, FretDot } from '../ui/Fretboard';
@@ -17,7 +19,7 @@ import { ListenButton } from '../ui/ListenButton';
 
 const SKILL_CA: Record<SkillArea, string> = { modes: 'Modes i escales', chords: 'Acords', harmony: 'Harmonia', rhythm: 'Ritme' };
 
-type Pick = { index: number } | { pos: FretPos };
+type Pick = { index: number } | { pos: FretPos } | { skip: true };
 
 function Visual({ puzzle, pick, onTap }: { puzzle: Puzzle; pick: Pick | null; onTap: (p: FretPos) => void }) {
   const v = puzzle.visual;
@@ -56,12 +58,15 @@ export function Feed() {
   const shownAt = useRef(performance.now());
 
   const [served, setServed] = useState<Served>(() => {
-    // Debug aid: ?g=<generator>&seed=<n>&level=<n> pins the first puzzle, for audits and screenshots.
+    // "#/teoria?g=<generator>&c=<concept>" starts on one concept (the home tip's "try it" button).
+    // "?g=<generator>&seed=<n>&level=<n>" in the page address pins a puzzle, for audits and screenshots.
+    const fromHash = new URLSearchParams(location.hash.split('?')[1] ?? '');
     const q = new URLSearchParams(location.search);
-    const g = q.get('g');
+    const g = fromHash.get('g') ?? q.get('g');
     if (g) {
       try {
-        return { puzzle: makePuzzle(g, Number(q.get('seed') ?? 1), Number(q.get('level') ?? 1)) };
+        const seed = q.get('seed') ? Number(q.get('seed')) : Math.floor(Math.random() * 2 ** 31);
+        return { puzzle: makePuzzle(g, seed, Number(q.get('level') ?? 1), fromHash.get('c') ?? undefined) };
       } catch { /* unknown generator: fall through to the normal feed */ }
     }
     return nextPuzzle(feed.current, DEFAULT_SETTINGS, Date.now(), Math.random);
@@ -146,6 +151,7 @@ export function Feed() {
       puzzle: {
         generatorId: puzzle.generatorId, seed: puzzle.seed, level: puzzle.level, conceptKey: puzzle.conceptKey,
         skill: puzzle.skill, correct, ms, usedHint: hint, ratingBefore: res.ratingBefore, ratingAfter: res.ratingAfter,
+        ...('skip' in p ? { skipped: true } : {}),
       },
     });
     void sync.push().catch(() => undefined);
@@ -186,6 +192,9 @@ export function Feed() {
     }
   };
 
+  const skipped = !!pick && 'skip' in pick;
+  const where = topicFor(puzzle.generatorId, puzzle.conceptKey);
+  const theory = { href: theoryHref(where.topic, where.anchor), title: getTopic(where.topic)?.title ?? 'Teoria' };
   const correct = pick && (puzzle.answer.type === 'choice'
     ? 'index' in pick && pick.index === puzzle.answer.correctIndex
     : 'pos' in pick && puzzle.answer.accept.some((a) => a.string === pick.pos.string && a.fret === pick.pos.fret));
@@ -205,16 +214,28 @@ export function Feed() {
         <p className="skill">{SKILL_CA[puzzle.skill]}{served.review ? ' · repàs' : ''}</p>
         <h1 className="prompt">{puzzle.prompt}</h1>
         <div className="visual"><Visual puzzle={puzzle} pick={pick} onTap={(pos) => void answer({ pos })} /></div>
-        {hint && !pick && <p className="hint">{puzzle.hint}</p>}
+        {hint && !pick && (
+          <div className="hint">
+            <p>{puzzle.hint}</p>
+            <a href={theory.href}>Repassa la teoria: {theory.title} ›</a>
+          </div>
+        )}
 
         {pick && (
-          <div className={correct ? 'result ok' : 'result ko'} data-testid="explanation">
+          <div className={correct ? 'result ok' : skipped ? 'result skip' : 'result ko'} data-testid="explanation">
             <strong>
-              {correct ? 'Correcte.' : puzzle.answer.type === 'choice'
+              {correct ? 'Correcte.' : skipped ? (puzzle.answer.type === 'choice'
+                ? `La resposta és: ${puzzle.answer.options[puzzle.answer.correctIndex]}.`
+                : 'Les posicions bones estan marcades en verd.') : puzzle.answer.type === 'choice'
                 ? `No. Era: ${puzzle.answer.options[puzzle.answer.correctIndex]}.`
                 : 'No. Les posicions bones estan marcades en verd.'}
             </strong>
             <p>{puzzle.explanation}</p>
+            <h2 className="steps-title">Pas a pas</h2>
+            <ol className="steps" data-testid="steps">{puzzle.steps.map((x, i) => <li key={i}>{x}</li>)}</ol>
+            <a className={correct ? 'btn theory-link' : 'btn primary theory-link'} href={theory.href} data-testid="theory-link">
+              {correct ? 'Més teoria' : 'Aprèn-ho'}: {theory.title} ›
+            </a>
             {rating && (
               <p className="rating-line" data-testid="rating">
                 {SKILL_CA[puzzle.skill]}: nivell {rating.after}{' '}
@@ -246,8 +267,11 @@ export function Feed() {
           <button key={i} className="btn option" onClick={() => void answer({ index: i })}>{o}</button>
         ))}
         {!pick && puzzle.answer.type === 'tap' && <p className="muted center">Toca el diapasó.</p>}
-        {!pick && puzzle.hint && !hint && (
-          <button className="btn ghost" onClick={() => setHint(true)}>Pista</button>
+        {!pick && (
+          <div className="helpers">
+            {puzzle.hint && !hint && <button className="btn ghost" onClick={() => setHint(true)}>Pista</button>}
+            <button className="btn ghost" onClick={() => void answer({ skip: true })} data-testid="skip">No ho sé</button>
+          </div>
         )}
         {pick && <button className="btn primary next" onClick={next} data-testid="next">Següent</button>}
       </footer>

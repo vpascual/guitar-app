@@ -1,5 +1,6 @@
 // Generators for the "modes" skill: major modes plus the modes of harmonic and melodic minor.
 import type { PuzzleGenerator, Rng } from './types';
+import { modeFormulaSteps, charNoteSteps, modeNotesSteps, parentSteps, romanToChordSteps, progressionSteps, earSteps } from './explain';
 import { Note, noteCa, noteCaWords, noteName, parseDegree, transpose, pc, sameNote } from '../theory/note';
 import {
   ScaleDef, SCALES, MAJOR_MODES, getScale, scaleNotes, characteristicNote, parentTonic, isMinorScale,
@@ -54,6 +55,7 @@ export const modeFromFormula: PuzzleGenerator = {
       answer: choice(rng, s, siblings(s, MAJOR_MODES), (x) => x.nameCa, optionCount(level)),
       hint: `Mira la ${isMinorScale(s) ? '2a, la 5a i la 6a' : '4a i la 7a'}: és on els modes ${isMinorScale(s) ? 'menors' : 'majors'} es diferencien.`,
       explanation: `${colourLine(s)} La seva nota característica és la ${degreeCa(d)} (${d}).`,
+      steps: modeFormulaSteps(s),
       terms: ['mode', 'nota característica'],
       listen: { type: 'scale', midi: scaleMidi({ letter: 0, alt: 0 }, s) },
       truth: { kind: 'scale-by-formula', formula: s.formula },
@@ -81,6 +83,7 @@ export const characteristicNoteChoice: PuzzleGenerator = {
       answer: choice(rng, target, notes.filter((n) => !sameNote(n, target) && !sameNote(n, tonic)), noteCa, optionCount(level)),
       hint: colourLine(s),
       explanation: `${colourLine(s)} A ${noteCa(tonic)}, la ${degreeCa(s.characteristic)} és ${noteCaWords(target)}.\n${scaleName(tonic, s)}: ${notesCa(notes)}.`,
+      steps: charNoteSteps(tonic, s),
       terms: ['mode', 'nota característica'],
       listen: { type: 'scale', midi: scaleMidi(tonic, s) },
       truth: { kind: 'char-note', tonic: noteName(tonic), scaleId: s.id },
@@ -102,6 +105,7 @@ function modeFromNotesMake(pool: ScaleDef[], gen: PuzzleGenerator, rng: Rng, lev
     answer: choice(rng, s, siblings(s, distractPool), (x) => `${noteCa(tonic)} ${x.nameCa}`, optionCount(level)),
     hint: `Compara-la amb ${noteCa(tonic)} ${isMinorScale(s) ? 'menor natural' : 'major'} i busca la nota que canvia.`,
     explanation: `${colourLine(s)} Fórmula: ${s.formula.join(' ')}. Aquí la ${degreeCa(s.characteristic)} és ${noteCaWords(characteristicNote(tonic, s))}.`,
+    steps: modeNotesSteps(tonic, s),
     terms: s.family === 'major' ? ['mode', 'centre tonal'] : ['mode', 'centre tonal', s.family === 'harmonic-minor' ? 'menor harmònica' : 'menor melòdica'],
     listen: { type: 'scale' as const, midi: scaleMidi(tonic, s) },
     truth: { kind: 'scale-by-notes', tonic: noteName(tonic), pcs: notes.map(pc) },
@@ -155,6 +159,7 @@ export const parentScale: PuzzleGenerator = {
       answer: choice(rng, pt, notes.filter((n) => !sameNote(n, pt)), (n) => `${noteCa(n)} ${parentLabel}`, optionCount(level)),
       hint: `${the(s)} és el ${ORDINALS[s.modeIndex]} mode de l'escala ${parentLabel}.`,
       explanation: `${the(s)} és el ${ORDINALS[s.modeIndex]} mode de l'escala ${parentLabel}: ${noteCa(tonic)} és el ${ORDINALS[s.modeIndex]} grau de ${noteCa(pt)} ${parentLabel}.\nNotes: ${notesCa(notes)}.`,
+      steps: parentSteps(tonic, s),
       terms: ['mode', 'escala mare'],
       listen: { type: 'scale', midi: scaleMidi(tonic, s) },
       truth: { kind: 'parent', tonic: noteName(tonic), scaleId: s.id },
@@ -193,6 +198,7 @@ export const tapCharacteristic: PuzzleGenerator = {
       answer: { type: 'tap', accept },
       hint: `${colourLine(s)} Busca la ${degreeCa(s.characteristic)} comptant des de la tònica.`,
       explanation: `${colourLine(s)} A ${noteCa(tonic)}, la ${degreeCa(s.characteristic)} és ${noteCaWords(target)}.`,
+      steps: [...charNoteSteps(tonic, s), `Al diapasó, qualsevol ${noteCa(target)} dins dels cinc trastos val: n'hi ha ${accept.length}.`],
       terms: ['mode', 'nota característica'],
       listen: { type: 'scale', midi: scaleMidi(tonic, s) },
       truth: { kind: 'tap-pc', pc: pc(target), firstFret, frets },
@@ -228,6 +234,7 @@ export const romanToChord: PuzzleGenerator = {
       answer: choice<Chord>(rng, target, distractors, chordSymbol, optionCount(level)),
       hint: `${scaleName(tonic, s)}: ${notesCa(scaleNotes(tonic, s))}. Apila terceres sobre el ${ORDINALS[target.degree]} grau.`,
       explanation: `${pairCa(target)}. Sobre el ${ORDINALS[target.degree]} grau de ${scaleName(tonic, s)} (${noteCa(target.root)}) surten les notes ${notesCa(spellChord(target))}: un acord ${target.def.nameCa}.\nTots els acords: ${chords.map(pairCa).join(', ')}.`,
+      steps: romanToChordSteps(tonic, s, target),
       terms: ['mode', 'xifra romana'],
       listen: { type: 'progression', chords: [chordMidi(chords[0]), chordMidi(target), chordMidi(chords[0])] },
       chordHelp: chordHelp([target, chords[0]]),
@@ -277,6 +284,7 @@ export const modeFromProgression: PuzzleGenerator = {
       answer: choice(rng, s, siblings(s, MAJOR_MODES), (x) => `${noteCa(tonic)} ${x.nameCa}`, optionCount(level)),
       hint: `L'acord de tònica és ${isMinorScale(s) ? 'menor' : 'major'}. Mira quines notes porten els altres acords.`,
       explanation: `${prog.map(pairCa).join(', ')}.\n${colourLine(s)} L'acord ${chordSymbol(carrier)} (${notesCa(spellChord(carrier))}) ${spellChord(carrier).some((n) => pc(n) === pc(target)) ? `conté ${noteCaWords(target)}, la ${degreeCa(s.characteristic)}` : 'només encaixa en aquest mode'}.`,
+      steps: progressionSteps(tonic, s, prog),
       terms: ['mode', 'centre tonal', 'xifra romana'],
       listen: { type: 'progression', chords: [...prog, prog[0]].map(chordMidi) },
       chordHelp: chordHelp(prog),
@@ -304,6 +312,7 @@ export const modeByEar: PuzzleGenerator = {
       answer: choice(rng, s, siblings(s, MAJOR_MODES), (x) => x.nameCa, optionCount(level)),
       hint: `Primer decideix si és ${isMinorScale(s) ? 'menor' : 'major'} (la 3a), després busca la nota estranya.`,
       explanation: `Era ${scaleName(tonic, s)}: ${notesCa(scaleNotes(tonic, s))}. ${colourLine(s)}`,
+      steps: earSteps(tonic, s),
       terms: ['mode'],
       listen: { type: 'scale', midi: scaleMidi(tonic, s) },
       truth: { kind: 'scale-by-notes', tonic: noteName(tonic), pcs: scaleNotes(tonic, s).map(pc), nameOnly: true },

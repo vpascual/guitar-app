@@ -8,7 +8,9 @@ import { hasRef } from '../content/refs';
 import { makeRng } from '../puzzles/util';
 import { MemoryRepository } from '../storage/memory';
 import { CONCEPT_GROUPS, masteryMap, weekDates, weekRhythm, tempoHistory } from './progress';
-import { GENERATORS } from '../puzzles/registry';
+import { GENERATORS, makePuzzle } from '../puzzles/registry';
+import { makeTip, TIP_COUNT } from './tips';
+import { TOPICS, GROUPS, getTopic, topicFor } from '../content/theory';
 import { getScale } from '../theory/scale';
 import { parseNote } from '../theory/note';
 import { chordFitsScale } from '../theory/chord';
@@ -241,6 +243,68 @@ describe('progress', () => {
     expect(s.points.map((p) => p.bpm)).toEqual([60, 60, 64, 64, 68]);
     expect(s.best).toBe(64);
     expect(applyResult({ bpm: 60, target: 80, cleanStreak: 0 }, 'clean').best).toBe(60);
+  });
+});
+
+describe('home tips', () => {
+  it('builds a valid tip for every seed, with a generator that accepts its concept', () => {
+    const seen = new Set<string>();
+    for (let seed = 0; seed < 400; seed++) {
+      const t = makeTip(seed);
+      seen.add(t.conceptKey);
+      expect(t.title.length).toBeGreaterThan(1);
+      expect(t.lines.length).toBeGreaterThanOrEqual(2);
+      expect(t.lines.join(' ')).not.toMatch(/undefined|NaN/);
+      expect(t.lines.join(' ').split(/\s+/).length).toBeLessThan(70);
+      const g = GENERATORS.find((x) => x.id === t.generatorId)!;
+      expect(g.concepts, `${t.generatorId} ${t.conceptKey}`).toContain(t.conceptKey);
+      expect(makePuzzle(t.generatorId, seed, 1, t.conceptKey).conceptKey).toBe(t.conceptKey);
+      if (t.bookConcept) expect(hasRef(t.bookConcept)).toBe(true);
+    }
+    expect(seen.size).toBeGreaterThan(TIP_COUNT * 0.8);
+  });
+  it('prefers concepts that are in progress', () => {
+    for (let seed = 0; seed < 30; seed++) expect(makeTip(seed, { 'mode:lydian': 'learning' }).conceptKey).toBe('mode:lydian');
+    expect(makeTip(3)).toEqual(makeTip(3));
+  });
+});
+
+describe('theory section', () => {
+  const keys = ['C', 'F#', 'Bb', 'E'].map(parseNote);
+  it('every topic builds in several keys with real content and resolvable references', () => {
+    expect(TOPICS.length).toBeGreaterThanOrEqual(35);
+    expect(new Set(TOPICS.map((t) => t.id)).size).toBe(TOPICS.length);
+    for (const t of TOPICS) {
+      expect(GROUPS, t.id).toContain(t.group);
+      for (const k of keys) {
+        const blocks = t.build(k);
+        expect(blocks.length, t.id).toBeGreaterThanOrEqual(8);
+        expect(JSON.stringify(blocks), t.id).not.toMatch(/undefined|NaN|\[object/);
+        expect(blocks.filter((b) => b.t === 'p').length, t.id).toBeGreaterThanOrEqual(2);
+        for (const b of blocks) {
+          if (b.t === 'link') expect(getTopic(b.topic), `${t.id} -> ${b.topic}`).toBeDefined();
+          if (b.t === 'ref') for (const c of b.concepts) expect(hasRef(c), c).toBe(true);
+          if (b.t === 'practice') {
+            const g = GENERATORS.find((x) => x.id === b.generatorId);
+            expect(g, b.generatorId).toBeDefined();
+            if (b.concept) expect(g!.concepts).toContain(b.concept);
+          }
+          if (b.t === 'table') for (const r of b.rows) expect(r.length, `${t.id} table`).toBe(b.head.length);
+        }
+        expect(blocks.some((b) => b.t === 'ref'), t.id).toBe(true);
+      }
+    }
+  });
+  it('every puzzle concept leads to an existing topic, and to an existing section when one is named', () => {
+    for (const g of GENERATORS) for (const c of g.concepts) {
+      const where = topicFor(g.id, c);
+      const topic = getTopic(where.topic);
+      expect(topic, `${g.id} ${c} -> ${where.topic}`).toBeDefined();
+      if (where.anchor) {
+        const ids = topic!.build(parseNote(topic!.defaultKey)).flatMap((b) => (b.t === 'h' && b.id ? [b.id] : []));
+        expect(ids, `${g.id} ${c} -> ${where.topic}#${where.anchor}`).toContain(where.anchor);
+      }
+    }
   });
 });
 

@@ -23,22 +23,29 @@ try {
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
 
+  // The app opens on the home screen; a puzzle is one tap away. Both moments are timed from navigation.
+  let homeMs = 0;
   const timeToPuzzle = async () => {
+    await page.goto('about:blank');
     const t0 = Date.now();
     await page.goto(URL, { waitUntil: 'commit' });
+    await page.waitForSelector('[data-testid=home] [data-testid=tip]');
+    homeMs = Date.now() - t0;
+    await page.locator('[data-testid=start-puzzles]').click();
     await page.waitForSelector('[data-testid=puzzle] .prompt');
     return Date.now() - t0;
   };
 
   const cold = await timeToPuzzle();
-  check(cold < LIMIT_MS, `cold load to first puzzle: ${cold} ms (limit ${LIMIT_MS})`);
+  check(cold < LIMIT_MS, `cold load: home in ${homeMs} ms, first puzzle after one tap in ${cold} ms (limit ${LIMIT_MS})`);
+  check((await page.locator('.tabbar .tab').count()) === 5, 'tab bar has five sections');
   await page.evaluate(() => navigator.serviceWorker.ready);
   await page.waitForTimeout(800);
   const warm = await timeToPuzzle();
-  check(warm < LIMIT_MS, `cached load to first puzzle: ${warm} ms`);
+  check(warm < LIMIT_MS, `cached load: home in ${homeMs} ms, first puzzle in ${warm} ms`);
   await context.setOffline(true);
   const offline = await timeToPuzzle();
-  check(offline < LIMIT_MS, `offline load to first puzzle: ${offline} ms`);
+  check(offline < LIMIT_MS, `offline load: home in ${homeMs} ms, first puzzle in ${offline} ms`);
   await context.setOffline(false);
   if (shots) await page.screenshot({ path: `${shots}/feed.png` });
 
@@ -90,7 +97,40 @@ try {
   check((await page.locator('.day.active').count()) === 1, 'this week shows one active day');
   check(!(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)), 'no horizontal scroll on the progress screen');
   if (shots) await page.screenshot({ path: `${shots}/progress.png`, fullPage: true });
-  await page.goto(URL);
+  // Home after some use: stats filled in, a tip, and the "try it" button opens a puzzle on the tip's concept.
+  await page.goto(URL + '#/');
+  await page.waitForSelector('[data-testid=tip]');
+  await page.waitForFunction(() => /\d+%/.test(document.querySelector('.stats')?.textContent ?? ''));
+  check((await page.locator('.day.active').count()) === 1 && (await page.locator('.menu .card').count()) === 4, 'home shows this week, recent accuracy and four ways in');
+  check(!(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)), 'no horizontal scroll on the home screen');
+  const tipTitle = await page.locator('[data-testid=tip] h2').innerText();
+  await page.getByRole('button', { name: 'Un altre' }).click();
+  check((await page.locator('[data-testid=tip] h2').innerText()) !== tipTitle, 'another tip appears on request');
+  if (shots) await page.screenshot({ path: `${shots}/home.png`, fullPage: true });
+  await page.getByRole('link', { name: "Posa-t'hi a prova" }).click();
+  await page.waitForSelector('[data-testid=puzzle] .prompt');
+  check(true, 'the tip opens a puzzle');
+
+  // "No ho sé": shows the answer with the worked solution and leads to the theory topic.
+  await page.locator('[data-testid=skip]').click();
+  await page.waitForSelector('[data-testid=explanation]');
+  check((await page.locator('[data-testid=steps] li').count()) >= 3, 'the worked solution has at least three steps');
+  check((await page.locator('[data-testid=explanation] > strong').innerText()).length > 5, '"No ho sé" reveals the answer');
+  await page.locator('[data-testid=theory-link]').click();
+  await page.waitForSelector('[data-testid=topic] h1');
+  check((await page.locator('.doc > *').count()) >= 8, `"No ho sé" leads to a theory topic: "${await page.locator('[data-testid=topic] h1').innerText()}"`);
+  check(!(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)), 'no horizontal scroll on a theory topic');
+  await page.selectOption('#theory-key', 'Eb').catch(() => undefined);
+  check((await page.locator('.doc > *').count()) >= 8, 'theory examples can be moved to another key');
+  await page.goto(URL + '#/teoria');
+  await page.waitForSelector('.row-link');
+  const topics = await page.locator('.row-link').count();
+  check(topics >= 35, `theory index lists ${topics} topics`);
+  if (shots) await page.screenshot({ path: `${shots}/theory-index.png` });
+  await page.goto(URL + '#/teoria/escala-dorian');
+  await page.waitForSelector('[data-testid=topic] h1');
+  if (shots) await page.screenshot({ path: `${shots}/theory-dorian.png`, fullPage: true });
+  await page.goto(URL + '#/reptes');
   await page.waitForSelector('[data-testid=puzzle] .prompt');
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
   check(!overflow, 'no horizontal scroll on the feed');

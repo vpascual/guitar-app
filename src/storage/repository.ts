@@ -12,6 +12,8 @@ export interface Attempt {
   puzzle?: {
     generatorId: string; seed: number; level: number; conceptKey: string; skill: SkillArea;
     correct: boolean; ms: number; usedHint: boolean; ratingBefore: number; ratingAfter: number;
+    /** True when the answer was "I don't know" rather than a wrong guess. */
+    skipped?: boolean;
   };
   block?: {
     sessionId: string; blockId: string; materialId: string;
