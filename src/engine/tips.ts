@@ -8,7 +8,9 @@ import { CHORDS, ChordDef, chordSymbol, spellChord, diatonicChords } from '../th
 import { METERS, Meter, meterLabel, counting, accentPattern } from '../theory/meter';
 import { makeRng, scaleMidi, chordMidi, chordHelp } from '../puzzles/util';
 import { degreeCa } from '../i18n/ca';
+import { BLUES, BluesDef, bluesChords, CADENCES, CadenceDef, cadenceChords, SECTIONS, SectionDef, TRAIT_CA } from '../theory/form';
 import { NeckData, scaleNeck } from '../theory/guitar';
+import { ProgDef, SECTION_PROGS, ROLE_CA, progChords } from '../theory/songwriting';
 
 export interface Tip {
   /** Mastery-map key of the concept the tip teaches. */
@@ -104,11 +106,87 @@ function meterTip(m: Meter): Tip {
 const WEAK_CHORDS = CHORDS.filter((c) => c.tier > 0);
 const TIP_METERS = METERS.filter((m) => meterLabel(m) !== '4/4');
 
+function bluesTip(b: BluesDef, seed: number): Tip {
+  const rng = makeRng(seed);
+  const tonic = parseNote(rng.pick(b.minor ? ['A', 'E', 'D', 'G', 'C'] : ['E', 'A', 'G', 'C', 'D', 'Bb', 'F']));
+  const chords = bluesChords(b, tonic);
+  const uniq = [...new Map(chords.map((c) => [c.roman, c])).values()];
+  return {
+    conceptKey: `blues:${b.id}`,
+    generatorId: 'blues-bar',
+    eyebrow: 'Forma',
+    title: `${b.nameCa.charAt(0).toUpperCase() + b.nameCa.slice(1)} en ${noteCa(tonic)}${b.minor ? ' menor' : ''}`,
+    lines: [
+      `Tres frases de quatre compassos amb ${uniq.map((c) => `${c.roman} = ${chordSymbol(c)}`).join(', ')}.`,
+      `${[0, 1, 2].map((k) => chords.slice(4 * k, 4 * k + 4).map((c) => chordSymbol(c)).join(' ')).join(' | ')}`,
+      'Toca-ho comptant els compassos en veu alta: quan arribis al 12, ja saps on tornes.',
+    ],
+    listen: { type: 'progression', chords: chords.map(chordMidi) },
+    bookConcept: 'blues-forms',
+  };
+}
+
+function cadenceTip(c: CadenceDef, seed: number): Tip {
+  const rng = makeRng(seed);
+  const tonic = parseNote(rng.pick(['C', 'G', 'D', 'A', 'E', 'F']));
+  const end = cadenceChords(tonic, c.examples[0]);
+  const prog = c.id === 'half' ? end : [...cadenceChords(tonic, [['1', 'maj']]), ...end];
+  return {
+    conceptKey: `cadence:${c.id}`,
+    generatorId: 'cadence',
+    eyebrow: 'Cadència',
+    title: c.nameCa.charAt(0).toUpperCase() + c.nameCa.slice(1),
+    lines: [
+      `A ${noteCa(tonic)} major: ${end.map((x) => `${x.roman} = ${chordSymbol(x)}`).join(' → ')}.`,
+      c.effectCa,
+      c.whereCa,
+    ],
+    listen: { type: 'progression', chords: prog.map(chordMidi) },
+    chords: chordHelp(end),
+    bookConcept: 'scale-degrees-progressions',
+  };
+}
+
+function sectionTip(sec: SectionDef): Tip {
+  return {
+    conceptKey: `section:${sec.id}`,
+    generatorId: 'section-role',
+    eyebrow: 'Secció',
+    title: sec.nameCa.charAt(0).toUpperCase() + sec.nameCa.slice(1),
+    lines: [sec.roleCa, `Com la reconeixes: ${sec.traits.map((t) => TRAIT_CA[t].replace(/\.$/, '').toLowerCase()).join('; ')}.`],
+    bookConcept: null,
+  };
+}
+
+function progTip(prog: ProgDef, seed: number): Tip {
+  const rng = makeRng(seed);
+  const tonic = parseNote(rng.pick(['C', 'G', 'D', 'A', 'E', 'F']));
+  const chords = progChords(tonic, prog);
+  const rule = prog.role === 'bridge' ? null : prog.role;
+  return {
+    conceptKey: rule ? `fit:${rule}` : 'songwriting:bridge-new',
+    generatorId: rule ? 'section-fit' : 'bridge-new',
+    eyebrow: `Progressió · ${ROLE_CA[prog.role]}`,
+    title: chords.map((c) => chordSymbol(c)).join(' – '),
+    lines: [
+      `A ${noteCa(tonic)} major: ${chords.map((c) => `${c.roman} = ${chordSymbol(c)}`).join(', ')}.`,
+      prog.whyCa,
+    ],
+    listen: { type: 'progression', chords: [...chords, chords[0]].map(chordMidi) },
+    chords: chordHelp(chords),
+    bookConcept: prog.role === 'bridge' ? 'modal-mixture-songwriters' : 'scale-degrees-progressions',
+  };
+}
+
 /** Every tip the app can give, as (concept key, builder). */
 const CATALOG: { key: string; build: (seed: number) => Tip }[] = [
   ...SCALES.filter((s) => s.id !== 'ionian').map((s) => ({ key: `mode:${s.id}`, build: (seed: number) => modeTip(s, seed) })),
   ...WEAK_CHORDS.map((d) => ({ key: `chord:${d.id}`, build: (seed: number) => chordTip(d, seed) })),
   ...TIP_METERS.map((m) => ({ key: `meter:${meterLabel(m)}`, build: () => meterTip(m) })),
+  ...BLUES.map((b) => ({ key: `blues:${b.id}`, build: (seed: number) => bluesTip(b, seed) })),
+  ...CADENCES.map((c) => ({ key: `cadence:${c.id}`, build: (seed: number) => cadenceTip(c, seed) })),
+  ...SECTIONS.map((sec) => ({ key: `section:${sec.id}`, build: () => sectionTip(sec) })),
+  ...SECTION_PROGS.map((pr) => ({ key: pr.role === 'bridge' ? 'songwriting:bridge-new' : `fit:${pr.role}`, build: (seed: number) => progTip(pr, seed) })),
 ];
 
 /**

@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FretPos } from '../theory/guitar';
 import type { Puzzle, SkillArea } from '../puzzles/types';
-import { FeedState, Served, initialFeedState, nextPuzzle, recordAnswer } from '../engine/feed';
+import { FeedState, Served, initialFeedState, nextPuzzle, normalizeFeedState, recordAnswer } from '../engine/feed';
 import { makePuzzle } from '../puzzles/registry';
 import { SKILLS } from '../engine/elo';
 import { solvedByDay, weekRhythm } from '../engine/progress';
 import { repo, sync } from '../storage';
 import { formatKey } from '../sync/engine';
-import { DEFAULT_SETTINGS, DayStats, Settings, localDate } from '../storage/repository';
+import { DEFAULT_SETTINGS, DayStats, Settings, localDate, migrateSettings } from '../storage/repository';
 import { formatRef } from '../content/refs';
 import { getTopic, topicFor } from '../content/theory';
 import { theoryHref } from './Theory';
@@ -15,9 +15,11 @@ import { GLOSSARY } from '../i18n/ca';
 import { ChordDiagram } from '../ui/ChordDiagram';
 import { Fretboard, FretDot } from '../ui/Fretboard';
 import { RhythmLine } from '../ui/RhythmLine';
+import { FormChart } from '../ui/FormChart';
+import { BarGrid } from '../ui/BarGrid';
 import { ListenButton } from '../ui/ListenButton';
 
-const SKILL_CA: Record<SkillArea, string> = { modes: 'Modes i escales', chords: 'Acords', harmony: 'Harmonia', rhythm: 'Ritme' };
+const SKILL_CA: Record<SkillArea, string> = { modes: 'Modes i escales', chords: 'Acords', harmony: 'Harmonia', rhythm: 'Ritme', form: 'Composició' };
 
 type Pick = { index: number } | { pos: FretPos } | { skip: true };
 
@@ -35,6 +37,10 @@ function Visual({ puzzle, pick, onTap }: { puzzle: Puzzle; pick: Pick | null; on
       return <RhythmLine groups={v.groups} />;
     case 'listen':
       return puzzle.listen ? <ListenButton what={puzzle.listen} big /> : null;
+    case 'form':
+      return <FormChart blocks={v.blocks} />;
+    case 'bars':
+      return <BarGrid bars={v.bars} perRow={v.perRow} />;
     case 'fretboard': {
       const dots: FretDot[] = [...v.dots];
       if (pick && puzzle.answer.type === 'tap') {
@@ -91,8 +97,8 @@ export function Feed() {
       otherDays.current = weekRhythm(days.filter((x) => x.date !== localDate()), new Date()).filter((x) => x.active).length;
       setWeekDays(otherDays.current + (solvedToday > 0 ? 1 : 0));
       setToday(solvedToday);
-      if (f) feed.current = f;
-      if (s) settings.current = { ...DEFAULT_SETTINGS, ...s };
+      if (f) feed.current = normalizeFeedState(f);
+      if (s) settings.current = migrateSettings({ ...DEFAULT_SETTINGS, ...s, knownSkills: s.knownSkills });
       return f;
     };
     loaded.current = (async () => {

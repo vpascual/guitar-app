@@ -36,7 +36,7 @@ export function resolveRef(conceptId: string): ResolvedRef {
 
 /** Catalan citation, e.g. "Beato Book 4.0, cap. 1 — Modal Harmony and Theory, p. 88–89, ex. 116". */
 export function formatRef(conceptId: string | null): string {
-  if (!conceptId) return 'Sense referència al llibre: el Beato Book 4.0 no tracta els compassos irregulars.';
+  if (!conceptId) return 'Sense referència al llibre: el Beato Book 4.0 no tracta aquest tema.';
   const r = resolveRef(conceptId);
   const pages = r.pageStart === r.pageEnd ? `p. ${r.pageStart}` : `p. ${r.pageStart}–${r.pageEnd}`;
   return `Beato Book 4.0, cap. ${r.chapter} «${r.chapterTitle}» — ${r.title}, ${pages}${r.example ? `, ex. ${r.example}` : ''}`;

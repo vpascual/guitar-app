@@ -6,6 +6,10 @@
   {
    "weakArea": "odd-meters",
    "note": "No section on odd meters (3/4, 6/8, 5/4, 7/8) was found in the extracted text. Comping Rhythms is the only rhythm section."
+  },
+  {
+   "weakArea": "form",
+   "note": "The book treats song form only through jazz forms: blues, rhythm changes (AABA), turnarounds and the 32-bar form. Pop sections (verse, pre-chorus, chorus, bridge) are not covered."
   }
  ],
  "chapters": [
@@ -730,6 +734,132 @@
      "pageStart": 100,
      "pageEnd": 102,
      "examples": []
+    },
+    {
+     "id": "blues-forms",
+     "title": "Advanced Reharmonizations: Blues",
+     "weakArea": "form",
+     "pageStart": 70,
+     "pageEnd": 76,
+     "examples": [
+      {
+       "example": "93",
+       "page": 71
+      },
+      {
+       "example": "94a",
+       "page": 71
+      },
+      {
+       "example": "94b",
+       "page": 72
+      },
+      {
+       "example": "95a",
+       "page": 72
+      },
+      {
+       "example": "95b",
+       "page": 72
+      },
+      {
+       "example": "95c",
+       "page": 72
+      },
+      {
+       "example": "96",
+       "page": 73
+      },
+      {
+       "example": "97",
+       "page": 74
+      },
+      {
+       "example": "98",
+       "page": 74
+      },
+      {
+       "example": "99",
+       "page": 75
+      },
+      {
+       "example": "100",
+       "page": 75
+      },
+      {
+       "example": "101",
+       "page": 75
+      },
+      {
+       "example": "102",
+       "page": 76
+      }
+     ]
+    },
+    {
+     "id": "rhythm-changes",
+     "title": "Rhythm Changes",
+     "weakArea": "form",
+     "pageStart": 77,
+     "pageEnd": 82,
+     "examples": [
+      {
+       "example": "103",
+       "page": 77
+      },
+      {
+       "example": "104",
+       "page": 78
+      },
+      {
+       "example": "105",
+       "page": 79
+      },
+      {
+       "example": "106a",
+       "page": 79
+      },
+      {
+       "example": "106b",
+       "page": 79
+      },
+      {
+       "example": "107",
+       "page": 80
+      },
+      {
+       "example": "108a",
+       "page": 80
+      },
+      {
+       "example": "108b",
+       "page": 80
+      },
+      {
+       "example": "109",
+       "page": 81
+      },
+      {
+       "example": "110",
+       "page": 81
+      },
+      {
+       "example": "111",
+       "page": 81
+      },
+      {
+       "example": "112",
+       "page": 81
+      },
+      {
+       "example": "113",
+       "page": 82
+      },
+      {
+       "example": "114",
+       "page": 82
+      }
+     ]
     }
    ]
   },
@@ -1611,6 +1741,27 @@
      "pageStart": 448,
      "pageEnd": 460,
      "examples": []
+    },
+    {
+     "id": "turnarounds",
+     "title": "Turnarounds",
+     "weakArea": "form",
+     "pageStart": 352,
+     "pageEnd": 358,
+     "examples": [
+      {
+       "example": "171",
+       "page": 353
+      },
+      {
+       "example": "172a",
+       "page": 355
+      },
+      {
+       "example": "173",
+       "page": 358
+      }
+     ]
     }
    ]
   },
@@ -1639,6 +1790,14 @@
      "weakArea": "modes",
      "pageStart": 496,
      "pageEnd": 499,
+     "examples": []
+    },
+    {
+     "id": "standard-forms-solos",
+     "title": "Solos Over Standard Forms",
+     "weakArea": "form",
+     "pageStart": 482,
+     "pageEnd": 495,
      "examples": []
     }
    ]

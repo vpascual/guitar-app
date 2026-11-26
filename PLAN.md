@@ -317,6 +317,7 @@ Out: audio puzzles, chord/harmony/rhythm generators, stats sheet, backup export,
 | 13 | Progression library to 20+ | 19 (14 modal + 5 chord-focus); chord focuses have one progression each |
 | 14 | JSON export / import | Done |
 | 15 | Stats | Done as the Progrés screen: weekly rhythm, mastery map, ratings |
+| 17 | Song structure and songwriting (added later): skill area, twelve quiz types, nine theory pages, song sketch | Done |
 | 16 | Visual pass | **Not done** beyond a usable dark theme |
 
 ## 10. Decisions already taken (will move to DECISIONS.md)

@@ -139,7 +139,7 @@ export function Home({ active: shown = true }: { active?: boolean }) {
           <span className="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28"><path d="M12 6.5c-2-1.4-4.6-1.9-8-1.5v13c3.4-.4 6 .1 8 1.5 2-1.4 4.6-1.9 8-1.5V5c-3.4-.4-6 .1-8 1.5z" /><path d="M12 6.5v13" /></svg></span>
           <span className="card-text">
             <strong>Teoria</strong>
-            <span>Modes, acords, harmonia i compassos explicats, amb exemples en qualsevol to.</span>
+            <span>Modes, acords, harmonia, compassos i estructura de les cançons, amb exemples en qualsevol to.</span>
           </span>
         </a>
         <a className="card progres" href="#/progres">

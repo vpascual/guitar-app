@@ -5,6 +5,7 @@ import type { ReviewItem } from './feed';
 import { MAJOR_MODES, SCALES } from '../theory/scale';
 import { CHORDS } from '../theory/chord';
 import { localDate } from '../storage/repository';
+import { FORMS, SECTIONS, BLUES, CADENCES } from '../theory/form';
 
 export type Mastery = 'new' | 'learning' | 'solid';
 
@@ -47,6 +48,24 @@ export const CONCEPT_GROUPS: ConceptGroup[] = [
       ...HARMONY_MODES.map((s) => ({ key: `roman:${s.id}`, label: `xifres: ${s.nameCa}` })),
       ...DONORS.map((id) => ({ key: `borrow:${id}`, label: `préstec: ${nameOf(id)}` })),
       ...[1, 2, 3, 4, 5].map((d) => ({ key: `secdom:${d}`, label: `V7/${DEGREES[d]}` })),
+      { key: 'rc:bridge', label: 'pont de les rhythm changes' },
+    ],
+  },
+  {
+    id: 'form', titleCa: 'Escriure cançons',
+    cells: [
+      ...FORMS.map((f) => ({ key: `form:${f.id}`, label: f.nameCa.replace(/ \(.*\)/, '') })),
+      ...SECTIONS.map((s) => ({ key: `section:${s.id}`, label: s.nameCa })),
+      ...BLUES.map((b) => ({ key: `blues:${b.id}`, label: b.nameCa.replace(/ \(.*\)/, '') })),
+      ...CADENCES.map((c) => ({ key: `cadence:${c.id}`, label: c.nameCa })),
+      { key: 'fit:verse', label: 'vers sense tònica' },
+      { key: 'fit:prechorus', label: 'pre-tornada oberta' },
+      { key: 'fit:chorus', label: 'tornada que tanca' },
+      { key: 'songwriting:chorus-setup', label: 'preparar la tornada' },
+      { key: 'songwriting:bridge-new', label: 'acord nou al pont' },
+      { key: 'songwriting:relative', label: 'canvi a la relativa' },
+      { key: 'songwriting:key-lift', label: 'pujar l\'última tornada' },
+      ...['AABB', 'ABAB', 'ABBA', 'XAXA'].map((r) => ({ key: `rhyme:${r}`, label: `rima ${r}` })),
     ],
   },
 ];

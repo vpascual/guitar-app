@@ -341,3 +341,31 @@ details[open] > summary::after { transform: rotate(90deg); }
 .backbar ~ .screen { --top: 0px; }
 .back-btn { gap: 6px; padding-left: 6px; font-size: 1rem; }
 .back-btn svg { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---- Song form ---- */
+.formchart { width: 100%; display: grid; gap: 6px; }
+.form-row { display: flex; flex-wrap: wrap; gap: 20px 3px; width: 100%; padding-top: 18px; }
+.form-block { position: relative; min-width: 0; min-height: 64px; border-radius: 8px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 1px; padding: 6px 2px; color: #fff; text-align: center; }
+.form-block.s0 { background: var(--accent); }
+.form-block.s1 { background: var(--root); }
+.form-block.s2 { background: #30b0c7; }
+.form-block.s3 { background: #af52de; }
+.form-block.s4 { background: #8e8e93; }
+.form-block.s5 { background: #34c759; }
+.form-block.hl { box-shadow: 0 0 0 3px var(--panel), 0 0 0 5px var(--text); }
+.form-letter { font-size: 1.15rem; font-weight: 700; line-height: 1; }
+.form-name { font-size: 0.64rem; line-height: 1.1; opacity: 0.95; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 2px; }
+.form-bars { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.7rem; opacity: 0.9; }
+.form-start { position: absolute; top: -17px; left: 2px; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.62rem; color: var(--muted); white-space: nowrap; }
+.form-total { font-size: 0.76rem; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+.bargrid { display: grid; gap: 4px; width: 100%; }
+.bar-cell { position: relative; min-height: 58px; border-radius: 8px; background: var(--fill); display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px 8px; padding: 14px 4px 6px; }
+.bar-cell.hidden-cell { background: var(--warn-fill); box-shadow: inset 0 0 0 1.5px var(--root); }
+.bar-cell.hl { box-shadow: inset 0 0 0 1.5px var(--accent); }
+.bar-no { position: absolute; top: 3px; left: 6px; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.6rem; color: var(--muted); }
+.bar-q { font-size: 1.4rem; font-weight: 700; color: var(--warn); }
+.bar-chord { display: grid; justify-items: center; line-height: 1.1; }
+.bar-chord strong { font-size: 0.98rem; }
+.bar-chord small { font-size: 0.66rem; color: var(--muted); font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
+.another { margin: 0 0 14px 10px; }

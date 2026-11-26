@@ -74,3 +74,21 @@
 - Screens keep their state when switching tabs.
 - Sound works with the iPhone's silent switch on; the audio resumes after interruptions; first notes no longer cut short.
 - Checks: 110 unit tests, end-to-end run with 42 assertions.
+
+## 0.10.0 — song structure
+
+- New skill area "Estructura" with six quiz types: form from a chart, section from clues, where a section starts,
+  12-bar blues bar by bar, the rhythm-changes bridge, and cadences.
+- Six theory topics on song structure, with form diagrams and chord charts in any key, and sound.
+- Home tips for blues variants, cadences and song sections; mastery map group for structure.
+- Book index: blues, rhythm changes, turnarounds and solos over standard forms.
+- Checks: 130 unit tests, end-to-end run with 46 assertions.
+
+## 0.11.0 — songwriting
+
+- The structure area becomes "Composició": six songwriting quiz types (section progressions, preparing the chorus,
+  a new chord for the bridge, relative keys, last-chorus key lift, rhyme schemes).
+- Four new theory pages: how sections relate harmonically, progressions for each section, melody and lyrics,
+  and a song-sketch builder with "Un altre esbós".
+- Home tips for section progressions. Rhythm changes moved to harmony.
+- Checks: 152 unit tests, end-to-end run with 48 assertions.

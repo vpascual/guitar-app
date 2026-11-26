@@ -1,7 +1,7 @@
 // Elo-style rating per skill area. A puzzle's difficulty plays the role of the opponent's rating.
 import type { SkillArea } from '../puzzles/types';
 
-export const SKILLS: SkillArea[] = ['modes', 'chords', 'harmony', 'rhythm'];
+export const SKILLS: SkillArea[] = ['modes', 'chords', 'harmony', 'rhythm', 'form'];
 export const START_RATING = 1000;
 
 export const expectedScore = (rating: number, difficulty: number): number =>

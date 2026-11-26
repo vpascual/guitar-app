@@ -1,7 +1,7 @@
 // Puzzle data model. A puzzle is fully determined by generator id, seed and level.
 import type { Voicing, FretPos } from '../theory/guitar';
 
-export type SkillArea = 'modes' | 'chords' | 'harmony' | 'rhythm';
+export type SkillArea = 'modes' | 'chords' | 'harmony' | 'rhythm' | 'form';
 
 export type Visual =
   | { type: 'notes'; notes: string[] }
@@ -9,7 +9,26 @@ export type Visual =
   | { type: 'diagram'; voicing: Voicing }
   | { type: 'fretboard'; firstFret: number; frets: number; dots: (FretPos & { label?: string; root?: boolean })[] }
   | { type: 'rhythm'; groups: number[] }
-  | { type: 'listen' };
+  | { type: 'listen' }
+  | { type: 'form'; blocks: FormVisualBlock[] }
+  | { type: 'bars'; bars: BarCell[]; perRow: number };
+
+/** One section in a form diagram. */
+export interface FormVisualBlock {
+  label: string;
+  bars: number;
+  name?: string;
+  /** Show the start bar above the block. */
+  start?: number;
+  highlight?: boolean;
+}
+
+/** One bar in a chord chart: chords as "roman = symbol" pairs; a hidden bar shows "?". */
+export interface BarCell {
+  chords: { roman: string; symbol: string }[];
+  hidden?: boolean;
+  highlight?: boolean;
+}
 
 /** What the optional "listen" button plays. MIDI numbers. */
 export type Listen =

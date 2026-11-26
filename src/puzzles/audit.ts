@@ -5,6 +5,10 @@ import { Note, parseNote, pc, mod, intervalBetween, degreeName, sameNote, transp
 import { ScaleDef, SCALES, getScale, scaleNotes } from '../theory/scale';
 import { Chord, getChord, spellChord, romanNumeral } from '../theory/chord';
 import { fretPc, FretPos, Voicing } from '../theory/guitar';
+import {
+  FormBlock, FormDef, SectionDef, Trait, CadenceDef, identifyForm, sectionsWith, getBlues, classifyCadence,
+} from '../theory/form';
+import { FitRule, fitsRule, schemeOf } from '../theory/songwriting';
 
 const setEq = (a: number[], b: number[]) => {
   const x = [...new Set(a)].sort();
@@ -86,6 +90,54 @@ export function isCorrect(p: Puzzle, value: unknown): boolean {
       (t.groups as number[]).reduce((at, g) => (starts.push(at), at + g), 1);
       return starts.join() === (value as number[]).join();
     }
+    case 'form-by-chart':
+      return identifyForm(t.blocks as FormBlock[])?.id === (value as FormDef).id;
+    case 'section-by-traits': {
+      const fits = sectionsWith(t.traits as Trait[]);
+      return fits.length === 1 && fits[0].id === (value as SectionDef).id;
+    }
+    case 'section-start':
+      return value === 1 + (t.bars as number[]).slice(0, t.target as number).reduce((a, b) => a + b, 0);
+    case 'blues-bar': {
+      const [degree, chord] = getBlues(t.variant).bars[t.bar as number];
+      const want = { root: transpose(parseNote(t.tonic), parseDegree(degree)), def: getChord(chord) };
+      const got = value as Chord;
+      return got.def.id === want.def.id && sameNote(got.root, want.root);
+    }
+    case 'rc-bridge': {
+      // Major third above the tonic, then down a fifth three times, all dominant sevenths.
+      const tonic = parseNote(t.tonic);
+      const roots = ['3', '6', '2', '5'].map((d) => transpose(tonic, parseDegree(d)));
+      const got = value as Chord[];
+      return got.length === 4 && got.every((c, i) => c.def.id === '7' && sameNote(c.root, roots[i]));
+    }
+    case 'cadence': {
+      const [a, b] = (t.chords as string[]).map(parseChord);
+      return classifyCadence(parseNote(t.tonic), a, b) === (value as CadenceDef).id;
+    }
+    case 'section-fit':
+      return fitsRule(t.rule as FitRule, parseNote(t.tonic), value as Chord[]);
+    case 'dominant-of': {
+      const target = parseChord(t.target);
+      const c = value as Chord;
+      return c.def.id === '7' && pc(c.root) === mod(pc(target.root) + 7, 12);
+    }
+    case 'not-used': {
+      const c = value as Chord;
+      return !(t.used as string[]).map(parseChord).some((u) => pc(u.root) === pc(c.root) && u.def.id === c.def.id);
+    }
+    case 'relative': {
+      const c = value as Chord;
+      const want = mod(pc(parseNote(t.from)) + (t.toMajor ? 3 : -3), 12);
+      return pc(c.root) === want && c.def.id === (t.toMajor ? 'maj' : 'm');
+    }
+    case 'key-lift': {
+      const v = value as { tonic: Note; pivot: Chord };
+      const up = mod(pc(parseNote(t.tonic)) + (t.step as number), 12);
+      return pc(v.tonic) === up && v.pivot.def.id === '7' && pc(v.pivot.root) === mod(up + 7, 12);
+    }
+    case 'rhyme':
+      return schemeOf(t.words as string[]) === value;
     default:
       throw new Error(`No solver for ${p.truth.kind}`);
   }
