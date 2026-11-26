@@ -15,6 +15,7 @@ import { DEGREE_NAME } from '../puzzles/explain';
 import { scaleMidi, chordMidi } from '../puzzles/util';
 import type { BarCell, ChordHelp, FormVisualBlock, Listen } from '../puzzles/types';
 import { FORM_GROUP, FORM_TOPICS } from './form-topics';
+import { SONGWRITING_TOPICS } from './songwriting-topics';
 import { degreeCa, ORDINALS } from '../i18n/ca';
 
 export type Block =
@@ -42,7 +43,9 @@ export interface Topic {
   /** True when the examples change with the chosen key. */
   usesKey: boolean;
   defaultKey: string;
-  build(key: Note): Block[];
+  /** True when the page can show another random example ("Un altre esbós"). */
+  randomizable?: boolean;
+  build(key: Note, seed?: number): Block[];
 }
 
 export const GROUPS = ['Fonaments', 'Modes de l\'escala major', 'Menor harmònica, menor melòdica i els seus modes', 'Acords', 'Harmonia', 'Ritme', FORM_GROUP];
@@ -624,7 +627,11 @@ const TOPIC_LIST: Topic[] = [
   },
 ];
 
-export const TOPICS: Topic[] = [...TOPIC_LIST, ...FORM_TOPICS];
+const [seccions, ...restForm] = FORM_TOPICS;
+const byId = (id: string) => [...SONGWRITING_TOPICS, ...restForm].find((t) => t.id === id)!;
+/** Songwriting first, in the order a songwriter needs it; the jazz forms after. */
+const SONG_ORDER = ['relacions-harmoniques', 'progressions-per-seccio', 'cadencies', 'melodia-i-lletra', 'esbos-de-canco', 'estructura-formes', 'estructura-frases', 'blues-12', 'aaba-rhythm-changes'];
+export const TOPICS: Topic[] = [...TOPIC_LIST, seccions, ...SONG_ORDER.map(byId)];
 export const getTopic = (id: string): Topic | undefined => TOPICS.find((t) => t.id === id);
 
 const CHORD_TOPIC: Record<string, string> = {
@@ -658,6 +665,9 @@ export function topicFor(generatorId: string, conceptKey: string): { topic: stri
     case 'blues': return { topic: 'blues-12', anchor: id };
     case 'rc': return { topic: 'aaba-rhythm-changes', anchor: 'rc-bridge' };
     case 'cadence': return { topic: 'cadencies', anchor: id };
+    case 'fit': return { topic: 'progressions-per-seccio', anchor: id };
+    case 'songwriting': return { topic: 'relacions-harmoniques', anchor: id === 'relative' ? 'relative' : id };
+    case 'rhyme': return { topic: 'melodia-i-lletra', anchor: 'rima' };
     default: return { topic: 'graus' };
   }
 }

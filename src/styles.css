@@ -368,3 +368,4 @@ details[open] > summary::after { transform: rotate(90deg); }
 .bar-chord { display: grid; justify-items: center; line-height: 1.1; }
 .bar-chord strong { font-size: 0.98rem; }
 .bar-chord small { font-size: 0.66rem; color: var(--muted); font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
+.another { margin: 0 0 14px 10px; }

@@ -12,7 +12,7 @@ import type { BarCell, FormVisualBlock, Listen } from '../puzzles/types';
 import type { Block, Topic } from './theory';
 import { SongExample } from './progressions';
 
-export const FORM_GROUP = 'Estructura de les cançons';
+export const FORM_GROUP = 'Escriure cançons';
 
 const p = (text: string): Block => ({ t: 'p', text });
 const h = (text: string, id?: string): Block => ({ t: 'h', text, id });
@@ -57,7 +57,7 @@ const FORM_SONGS: Record<string, SongExample[]> = {
 
 export const FORM_TOPICS: Topic[] = [
   {
-    id: 'estructura-seccions', group: FORM_GROUP, title: 'Les seccions d\'una cançó', summary: 'Vers, pre-tornada, tornada, pont i la resta: què fa cadascuna i com reconèixer-la',
+    id: 'estructura-seccions', group: FORM_GROUP, title: 'Les parts d\'una cançó', summary: 'Vers, pre-tornada, tornada, pont i la resta: què fa cadascuna i en quin ordre van',
     usesKey: false, defaultKey: 'C',
     build: () => [
       p('Una cançó és una seqüència de seccions. Cada secció té una música pròpia i un paper: presentar, explicar, preparar, arribar al punt culminant, contrastar, tancar. Saber en quina secció ets et diu què vindrà després, i això és el que permet tocar una cançó sense perdre\'s.'),
@@ -158,7 +158,7 @@ export const FORM_TOPICS: Topic[] = [
     },
   },
   {
-    id: 'aaba-rhythm-changes', group: FORM_GROUP, title: 'L\'AABA i les rhythm changes', summary: 'La forma de 32 compassos dels estàndards i la progressió de Gershwin',
+    id: 'aaba-rhythm-changes', group: 'Harmonia', title: 'L\'AABA i les rhythm changes', summary: 'La forma de 32 compassos dels estàndards i la progressió de Gershwin',
     usesKey: true, defaultKey: 'Bb',
     build(tonic: Note) {
       const a = rhythmBars(tonic, RHYTHM_A);

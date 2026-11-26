@@ -199,6 +199,12 @@ export const getCadence = (id: CadenceId): CadenceDef => CADENCES.find((c) => c.
 export const cadenceChords = (tonic: Note, example: [string, string][]): ChartChord[] =>
   example.map(([d, c]) => chartChord(tonic, d, c));
 
+/** Chords from [degree, chord id] pairs in a key, each with its Roman numeral. */
+export const chartChords = cadenceChords;
+
+/** Roman numeral of any chord measured from a tonic, e.g. A7 in C -> "VI7". */
+export const romanIn = (tonic: Note, c: Chord): string => romanNumeral(degreeName(intervalBetween(tonic, c.root)), c.def.id);
+
 /** Which cadence two chords form at the end of a section in a key, from their degrees alone. */
 export function classifyCadence(tonic: Note, a: Chord, b: Chord): CadenceId | null {
   const deg = (c: Chord) => degreeName(intervalBetween(tonic, c.root));

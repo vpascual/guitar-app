@@ -5,9 +5,10 @@ import { CHORD_GENERATORS } from './chords';
 import { HARMONY_GENERATORS } from './harmony';
 import { RHYTHM_GENERATORS } from './rhythm';
 import { FORM_GENERATORS } from './form';
+import { SONGWRITING_GENERATORS } from './songwriting';
 
 export const GENERATORS: PuzzleGenerator[] = [
-  ...MODE_GENERATORS, ...CHORD_GENERATORS, ...HARMONY_GENERATORS, ...RHYTHM_GENERATORS, ...FORM_GENERATORS,
+  ...MODE_GENERATORS, ...CHORD_GENERATORS, ...HARMONY_GENERATORS, ...RHYTHM_GENERATORS, ...FORM_GENERATORS, ...SONGWRITING_GENERATORS,
 ];
 
 export function getGenerator(id: string): PuzzleGenerator {

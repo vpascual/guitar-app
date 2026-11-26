@@ -169,6 +169,15 @@ try {
   check((await page.locator('.formchart:visible').count()) >= 8, 'the forms page draws a diagram for each form');
   check(!(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)), 'no horizontal scroll on the forms page');
   if (shots) await page.screenshot({ path: `${shots}/forms.png`, fullPage: true });
+  // Songwriting: a song sketch that can be regenerated, with a chart for each section.
+  await page.goto(URL + '#/teoria/esbos-de-canco');
+  await page.waitForSelector('[data-testid=topic] h1');
+  const sketchA = await page.locator('.doc:visible').innerText();
+  check((await page.locator('.bargrid:visible').count()) >= 6 && (await page.locator('.formchart:visible').count()) === 1, 'the song sketch shows the form and a chord chart per section');
+  await page.locator('[data-testid=another]:visible').click();
+  await page.waitForTimeout(150);
+  check((await page.locator('.doc:visible').innerText()) !== sketchA, '"Un altre esbós" builds a different song');
+  if (shots) await page.screenshot({ path: `${shots}/sketch.png`, fullPage: true });
   await page.goto(URL + '#/reptes');
   await page.waitForSelector('[data-testid=puzzle] .prompt');
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);

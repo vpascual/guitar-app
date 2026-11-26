@@ -10,6 +10,7 @@ import { makeRng, scaleMidi, chordMidi, chordHelp } from '../puzzles/util';
 import { degreeCa } from '../i18n/ca';
 import { BLUES, BluesDef, bluesChords, CADENCES, CadenceDef, cadenceChords, SECTIONS, SectionDef, TRAIT_CA } from '../theory/form';
 import { NeckData, scaleNeck } from '../theory/guitar';
+import { ProgDef, SECTION_PROGS, ROLE_CA, progChords } from '../theory/songwriting';
 
 export interface Tip {
   /** Mastery-map key of the concept the tip teaches. */
@@ -157,6 +158,26 @@ function sectionTip(sec: SectionDef): Tip {
   };
 }
 
+function progTip(prog: ProgDef, seed: number): Tip {
+  const rng = makeRng(seed);
+  const tonic = parseNote(rng.pick(['C', 'G', 'D', 'A', 'E', 'F']));
+  const chords = progChords(tonic, prog);
+  const rule = prog.role === 'bridge' ? null : prog.role;
+  return {
+    conceptKey: rule ? `fit:${rule}` : 'songwriting:bridge-new',
+    generatorId: rule ? 'section-fit' : 'bridge-new',
+    eyebrow: `Progressió · ${ROLE_CA[prog.role]}`,
+    title: chords.map((c) => chordSymbol(c)).join(' – '),
+    lines: [
+      `A ${noteCa(tonic)} major: ${chords.map((c) => `${c.roman} = ${chordSymbol(c)}`).join(', ')}.`,
+      prog.whyCa,
+    ],
+    listen: { type: 'progression', chords: [...chords, chords[0]].map(chordMidi) },
+    chords: chordHelp(chords),
+    bookConcept: prog.role === 'bridge' ? 'modal-mixture-songwriters' : 'scale-degrees-progressions',
+  };
+}
+
 /** Every tip the app can give, as (concept key, builder). */
 const CATALOG: { key: string; build: (seed: number) => Tip }[] = [
   ...SCALES.filter((s) => s.id !== 'ionian').map((s) => ({ key: `mode:${s.id}`, build: (seed: number) => modeTip(s, seed) })),
@@ -165,6 +186,7 @@ const CATALOG: { key: string; build: (seed: number) => Tip }[] = [
   ...BLUES.map((b) => ({ key: `blues:${b.id}`, build: (seed: number) => bluesTip(b, seed) })),
   ...CADENCES.map((c) => ({ key: `cadence:${c.id}`, build: (seed: number) => cadenceTip(c, seed) })),
   ...SECTIONS.map((sec) => ({ key: `section:${sec.id}`, build: () => sectionTip(sec) })),
+  ...SECTION_PROGS.map((pr) => ({ key: pr.role === 'bridge' ? 'songwriting:bridge-new' : `fit:${pr.role}`, build: (seed: number) => progTip(pr, seed) })),
 ];
 
 /**

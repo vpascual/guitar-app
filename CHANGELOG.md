@@ -83,3 +83,12 @@
 - Home tips for blues variants, cadences and song sections; mastery map group for structure.
 - Book index: blues, rhythm changes, turnarounds and solos over standard forms.
 - Checks: 130 unit tests, end-to-end run with 46 assertions.
+
+## 0.11.0 — songwriting
+
+- The structure area becomes "Composició": six songwriting quiz types (section progressions, preparing the chorus,
+  a new chord for the bridge, relative keys, last-chorus key lift, rhyme schemes).
+- Four new theory pages: how sections relate harmonically, progressions for each section, melody and lyrics,
+  and a song-sketch builder with "Un altre esbós".
+- Home tips for section progressions. Rhythm changes moved to harmony.
+- Checks: 152 unit tests, end-to-end run with 48 assertions.

@@ -16,6 +16,8 @@ export const GLOSSARY: Record<string, string> = {
   'menor harmònica': 'Menor harmònica: menor natural amb la 7a major. Dona un V7 de veritat en to menor.',
   'menor melòdica': 'Menor melòdica: escala major amb la 3a menor (menor amb 6a i 7a majors).',
   corxera: 'Corxera: figura que val mig temps de negra.',
+  relativa: 'Tonalitats relatives: una major i una menor amb les mateixes notes, com Do major i La menor. Només canvia quina nota fa de casa.',
+  modulació: 'Modulació: canviar de tonalitat dins de la cançó. La més habitual en pop és pujar l\'última tornada un semitò o un to.',
   forma: 'Forma: l\'ordre de les seccions d\'una cançó. S\'anomenen amb lletres (A, B, C: la mateixa lletra, la mateixa música) o pel seu paper (vers, tornada, pont).',
   tornada: 'Tornada: la secció que torna amb la mateixa lletra cada vegada; sol portar el títol. En anglès, chorus.',
   pont: 'Pont: secció de contrast que sol aparèixer una sola vegada, amb acords o melodia nous. En anglès, bridge.',

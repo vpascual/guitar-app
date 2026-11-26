@@ -111,6 +111,7 @@ export function Theory({ hash }: { hash: string }) {
   const [path] = hash.replace(/^#\/teoria\/?/, '').split('?');
   const topic = path ? getTopic(decodeURIComponent(path)) : undefined;
   const [key, setKey] = useState(topic ? topic.defaultKey : 'C');
+  const [seed, setSeed] = useState(1);
 
   // Scrolling (to the top, to a section, or back to where the reader was) is handled by the app's navigation.
   useEffect(() => {
@@ -131,8 +132,11 @@ export function Theory({ hash }: { hash: string }) {
           </select>
         </label>
       )}
+      {topic.randomizable && (
+        <button className="btn primary another" onClick={() => setSeed((n) => n + 1)} data-testid="another">Un altre esbós</button>
+      )}
       <article className="doc">
-        {topic.build(tonic).map((b, i) => <BlockView key={`${key}-${i}`} b={b} />)}
+        {topic.build(tonic, seed).map((b, i) => <BlockView key={`${key}-${seed}-${i}`} b={b} />)}
       </article>
     </main>
   );

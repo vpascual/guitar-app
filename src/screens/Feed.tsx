@@ -19,7 +19,7 @@ import { FormChart } from '../ui/FormChart';
 import { BarGrid } from '../ui/BarGrid';
 import { ListenButton } from '../ui/ListenButton';
 
-const SKILL_CA: Record<SkillArea, string> = { modes: 'Modes i escales', chords: 'Acords', harmony: 'Harmonia', rhythm: 'Ritme', form: 'Estructura' };
+const SKILL_CA: Record<SkillArea, string> = { modes: 'Modes i escales', chords: 'Acords', harmony: 'Harmonia', rhythm: 'Ritme', form: 'Composició' };
 
 type Pick = { index: number } | { pos: FretPos } | { skip: true };
 

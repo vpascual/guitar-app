@@ -8,7 +8,7 @@ import {
 import type { SkillArea } from '../puzzles/types';
 import { WeekBars } from '../ui/WeekBars';
 
-const SKILL_CA: Record<SkillArea, string> = { modes: 'Modes i escales', chords: 'Acords', harmony: 'Harmonia', rhythm: 'Ritme', form: 'Estructura' };
+const SKILL_CA: Record<SkillArea, string> = { modes: 'Modes i escales', chords: 'Acords', harmony: 'Harmonia', rhythm: 'Ritme', form: 'Composició' };
 const STATE_CA: Record<Mastery, string> = { new: 'per descobrir', learning: 'en curs', solid: 'sòlid' };
 
 /** Tempo of each run as a small line chart; the dot colour is the rating of that run. */

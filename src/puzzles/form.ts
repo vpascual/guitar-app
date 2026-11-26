@@ -247,7 +247,8 @@ export const bluesBar: PuzzleGenerator = {
 
 export const rcBridge: PuzzleGenerator = {
   id: 'rc-bridge',
-  skill: 'form',
+  // Jazz harmony rather than songwriting: rated with the other harmony puzzles.
+  skill: 'harmony',
   requiresAudio: false,
   base: 1080,
   bookConcepts: ['rhythm-changes'],
