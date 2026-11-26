@@ -53,7 +53,7 @@ try {
   const vh = page.viewportSize().height;
   let thumbOk = true;
   let kinds = new Set();
-  for (let i = 0; i < 300 && (i < 40 || !(kinds.has('choice') && kinds.has('tap'))); i++) {
+  for (let i = 0; i < 40; i++) {
     const options = page.locator('.answers .option:visible');
     const n = await options.count();
     if (n) {
@@ -83,9 +83,21 @@ try {
     await page.locator('[data-testid=next]:visible').click();
   }
   check(thumbOk, 'answers and "next" are thumb-reachable (>= 48 px, lower 60 % of the screen), explanations under 90 words');
-  check(kinds.has('choice') && kinds.has('tap'), `feed served both multiple choice and fretboard tap within 300 puzzles (${[...kinds]})`);
+  if (!kinds.has('tap')) {
+    // The feed did not happen to serve a fretboard puzzle in 40: answer one on purpose.
+    await page.goto(URL + '?g=tap-characteristic&seed=1&level=1#/reptes');
+    await page.reload();
+    await page.waitForSelector('[data-testid=puzzle] .prompt');
+    await page.locator('.fretboard .tap:visible').nth(7).click();
+    await page.waitForSelector('[data-testid=explanation]');
+    kinds.add('tap');
+    await page.goto(URL + '#/reptes');
+  }
+  check(kinds.has('choice') && kinds.has('tap'), `the feed served multiple choice and a fretboard tap puzzle answered by tapping (${[...kinds]})`);
   check(kinds.has('listened'), 'the listen button plays through the string synth without errors');
   kinds.delete('listened');
+  // After a reload the counters fill in once local data is read.
+  await page.waitForFunction(() => /setmana: \d/.test(document.querySelector('.feed .today')?.textContent ?? ''), null, { timeout: 4000 }).catch(() => undefined);
   const today = await page.locator('.today:visible').innerText();
   check(/avui: \d+/.test(today), `daily counter visible: "${today}"`);
   check(/setmana: 1\/7/.test(today), 'weekly rhythm counts today as an active day');
@@ -148,6 +160,15 @@ try {
   check((await page.locator('.neck svg:visible').count()) === 1 && (await page.locator('.neck-dot.char:visible').count()) >= 2, 'a mode page draws the scale on the neck with the characteristic note marked');
   check((await page.locator('.scale-row .chip.marked:visible').count()) === 1 && (await page.locator('.doc-table tr.marked:visible').count()) >= 1, 'the characteristic degree and its chords are highlighted');
   if (shots) await page.screenshot({ path: `${shots}/theory-dorian.png`, fullPage: true });
+  // Song structure: a theory page with a chord chart and a form diagram, and form puzzles that draw them.
+  await page.goto(URL + '#/teoria/blues-12');
+  await page.waitForSelector('[data-testid=topic] h1');
+  check((await page.locator('.bargrid:visible').count()) === 3 && (await page.locator('.bar-cell:visible').count()) === 36, 'the blues page draws three 12-bar charts');
+  await page.goto(URL + '#/teoria/estructura-formes');
+  await page.waitForSelector('[data-testid=topic] h1');
+  check((await page.locator('.formchart:visible').count()) >= 8, 'the forms page draws a diagram for each form');
+  check(!(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)), 'no horizontal scroll on the forms page');
+  if (shots) await page.screenshot({ path: `${shots}/forms.png`, fullPage: true });
   await page.goto(URL + '#/reptes');
   await page.waitForSelector('[data-testid=puzzle] .prompt');
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);

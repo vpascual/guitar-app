@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { repo, sync } from '../storage';
-import { initialFeedState, FeedState } from '../engine/feed';
+import { initialFeedState, normalizeFeedState, FeedState } from '../engine/feed';
 import { SKILLS } from '../engine/elo';
 import {
   CONCEPT_GROUPS, Mastery, TempoSeries, countMastery, masteryMap, solvedByDay, tempoHistory, weekRhythm,
@@ -8,7 +8,7 @@ import {
 import type { SkillArea } from '../puzzles/types';
 import { WeekBars } from '../ui/WeekBars';
 
-const SKILL_CA: Record<SkillArea, string> = { modes: 'Modes i escales', chords: 'Acords', harmony: 'Harmonia', rhythm: 'Ritme' };
+const SKILL_CA: Record<SkillArea, string> = { modes: 'Modes i escales', chords: 'Acords', harmony: 'Harmonia', rhythm: 'Ritme', form: 'Estructura' };
 const STATE_CA: Record<Mastery, string> = { new: 'per descobrir', learning: 'en curs', solid: 'sòlid' };
 
 /** Tempo of each run as a small line chart; the dot colour is the rating of that run. */
@@ -37,7 +37,7 @@ export function Progress({ active = true }: { active?: boolean }) {
     if (!active) return;
     // Fetch what the other device did first, but never wait long for the network.
     void sync.syncWithin(2500).then(() => Promise.all([repo.getFeedState(), repo.listAttempts()])).then(([f, attempts]) => {
-      const feed = f ?? initialFeedState();
+      const feed = f ? normalizeFeedState(f) : initialFeedState();
       setData({ feed, map: masteryMap(attempts, feed.reviews), week: weekRhythm(solvedByDay(attempts), new Date()), tempo: tempoHistory(attempts) });
     });
   }, [active]);

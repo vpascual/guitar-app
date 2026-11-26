@@ -26,8 +26,10 @@ describe('every generator', () => {
       for (const c of g.bookConcepts) expect(hasRef(c), c).toBe(true);
       for (let seed = 1; seed <= 20; seed++) {
         const p = makePuzzle(g.id, seed, 1);
-        if (g.skill === 'rhythm') expect(p.bookConcept).toBeNull();
-        else expect(hasRef(p.bookConcept!), String(p.bookConcept)).toBe(true);
+        // Odd meters and pop song sections are not in the book; everything else must cite it.
+        if (g.skill === 'rhythm' || g.bookConcepts.length === 0) expect(p.bookConcept).toBeNull();
+        else if (p.bookConcept !== null) expect(hasRef(p.bookConcept), String(p.bookConcept)).toBe(true);
+        else expect(g.skill, `${p.id} has no reference`).toBe('form');
       }
     });
   }

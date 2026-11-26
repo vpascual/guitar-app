@@ -5,6 +5,7 @@ import type { ReviewItem } from './feed';
 import { MAJOR_MODES, SCALES } from '../theory/scale';
 import { CHORDS } from '../theory/chord';
 import { localDate } from '../storage/repository';
+import { FORMS, SECTIONS, BLUES, CADENCES } from '../theory/form';
 
 export type Mastery = 'new' | 'learning' | 'solid';
 
@@ -47,6 +48,16 @@ export const CONCEPT_GROUPS: ConceptGroup[] = [
       ...HARMONY_MODES.map((s) => ({ key: `roman:${s.id}`, label: `xifres: ${s.nameCa}` })),
       ...DONORS.map((id) => ({ key: `borrow:${id}`, label: `préstec: ${nameOf(id)}` })),
       ...[1, 2, 3, 4, 5].map((d) => ({ key: `secdom:${d}`, label: `V7/${DEGREES[d]}` })),
+    ],
+  },
+  {
+    id: 'form', titleCa: 'Estructura de les cançons',
+    cells: [
+      ...FORMS.map((f) => ({ key: `form:${f.id}`, label: f.nameCa.replace(/ \(.*\)/, '') })),
+      ...SECTIONS.map((s) => ({ key: `section:${s.id}`, label: s.nameCa })),
+      ...BLUES.map((b) => ({ key: `blues:${b.id}`, label: b.nameCa.replace(/ \(.*\)/, '') })),
+      { key: 'rc:bridge', label: 'pont de les rhythm changes' },
+      ...CADENCES.map((c) => ({ key: `cadence:${c.id}`, label: c.nameCa })),
     ],
   },
 ];

@@ -1,5 +1,6 @@
 // Storage boundary. The UI talks to this interface only, so IndexedDB can be swapped for a remote database later.
 import type { SkillArea } from '../puzzles/types';
+import { SKILLS } from '../engine/elo';
 import type { FeedState } from '../engine/feed';
 import type { Session, MaterialState } from '../engine/session';
 
@@ -37,6 +38,8 @@ export interface Settings {
   skills: SkillArea[];
   /** Glossary terms already explained once. */
   seenTerms: string[];
+  /** Skills that existed when the settings were last saved; a skill added later is switched on once. */
+  knownSkills?: SkillArea[];
 }
 
 export interface Repository {
@@ -57,7 +60,14 @@ export interface Repository {
   importAll(dump: Record<string, unknown>): Promise<void>;
 }
 
-export const DEFAULT_SETTINGS: Settings = { audio: false, skills: ['modes', 'chords', 'harmony', 'rhythm'], seenTerms: [] };
+export const DEFAULT_SETTINGS: Settings = { audio: false, skills: [...SKILLS], seenTerms: [], knownSkills: [...SKILLS] };
+
+/** Switch on skills that were added to the app after these settings were saved. */
+export function migrateSettings(s: Settings): Settings {
+  const known = s.knownSkills ?? ['modes', 'chords', 'harmony', 'rhythm'];
+  const added = SKILLS.filter((k) => !known.includes(k));
+  return { ...s, skills: [...s.skills, ...added.filter((k) => !s.skills.includes(k))], knownSkills: [...SKILLS] };
+}
 
 /** Local calendar date as YYYY-MM-DD. */
 export function localDate(now = new Date()): string {

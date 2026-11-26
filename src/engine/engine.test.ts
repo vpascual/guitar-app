@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { expectedScore, updateRating, levelFor } from './elo';
-import { initialFeedState, nextPuzzle, recordAnswer, FeedState } from './feed';
+import { initialFeedState, nextPuzzle, recordAnswer, normalizeFeedState, FeedState } from './feed';
+import { migrateSettings } from '../storage/repository';
+import type { SkillArea } from '../puzzles/types';
 import { buildSession, applyResult, renderTab, chooseProgression, progressionChords, chordFocusChords, FOCI, BLOCK_MINUTES, BuildContext } from './session';
 import { CHORD_FOCI } from '../content/progressions';
 import { PROGRESSIONS } from '../content/progressions';
@@ -77,7 +79,7 @@ describe('feed', () => {
   });
   it('favours the weakest skill', () => {
     const rng = makeRng(2);
-    const s = { ...initialFeedState(), ratings: { modes: 800, chords: 1200, harmony: 1200, rhythm: 1200 } };
+    const s = { ...initialFeedState(), ratings: { modes: 800, chords: 1200, harmony: 1200, rhythm: 1200, form: 1200 } };
     let modes = 0;
     for (let i = 0; i < 400; i++) if (nextPuzzle(s, feedOpts, 0, rng.next).puzzle.skill === 'modes') modes++;
     expect(modes).toBeGreaterThan(260);
@@ -305,6 +307,23 @@ describe('theory section', () => {
         expect(ids, `${g.id} ${c} -> ${where.topic}#${where.anchor}`).toContain(where.anchor);
       }
     }
+  });
+});
+
+describe('adding a skill', () => {
+  it('fills in ratings for skills that did not exist when the state was saved', () => {
+    const old = { ...initialFeedState(), ratings: { modes: 900, chords: 1000, harmony: 1000, rhythm: 1000 } } as unknown as FeedState;
+    const n = normalizeFeedState(old);
+    expect(n.ratings.form).toBe(1000);
+    expect(n.ratings.modes).toBe(900);
+    expect(n.attempts.form).toBe(0);
+  });
+  it('switches the new skill on once, without undoing a later choice', () => {
+    const old = { audio: false, skills: ['modes', 'chords'] as SkillArea[], seenTerms: [] };
+    const m = migrateSettings(old);
+    expect(m.skills).toEqual(['modes', 'chords', 'form']);
+    const off = { ...m, skills: m.skills.filter((s) => s !== 'form') };
+    expect(migrateSettings(off).skills).not.toContain('form');
   });
 });
 

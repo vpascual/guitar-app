@@ -13,7 +13,8 @@ import { progressionChords } from '../engine/session';
 import { spreadTriad } from '../puzzles/chords';
 import { DEGREE_NAME } from '../puzzles/explain';
 import { scaleMidi, chordMidi } from '../puzzles/util';
-import type { ChordHelp, Listen } from '../puzzles/types';
+import type { BarCell, ChordHelp, FormVisualBlock, Listen } from '../puzzles/types';
+import { FORM_GROUP, FORM_TOPICS } from './form-topics';
 import { degreeCa, ORDINALS } from '../i18n/ca';
 
 export type Block =
@@ -29,7 +30,9 @@ export type Block =
   | { t: 'fret'; firstFret: number; dots: FretPos[]; caption: string }
   | { t: 'link'; topic: string; text: string }
   | { t: 'practice'; generatorId: string; concept?: string; text: string }
-  | { t: 'ref'; concepts: string[] };
+  | { t: 'ref'; concepts: string[] }
+  | { t: 'form'; blocks: FormVisualBlock[] }
+  | { t: 'bars'; bars: BarCell[]; perRow: number; listen?: Listen };
 
 export interface Topic {
   id: string;
@@ -42,7 +45,7 @@ export interface Topic {
   build(key: Note): Block[];
 }
 
-export const GROUPS = ['Fonaments', 'Modes de l\'escala major', 'Menor harmònica, menor melòdica i els seus modes', 'Acords', 'Harmonia', 'Ritme'];
+export const GROUPS = ['Fonaments', 'Modes de l\'escala major', 'Menor harmònica, menor melòdica i els seus modes', 'Acords', 'Harmonia', 'Ritme', FORM_GROUP];
 
 const p = (text: string): Block => ({ t: 'p', text });
 const h = (text: string, id?: string): Block => ({ t: 'h', text, id });
@@ -621,7 +624,7 @@ const TOPIC_LIST: Topic[] = [
   },
 ];
 
-export const TOPICS: Topic[] = TOPIC_LIST;
+export const TOPICS: Topic[] = [...TOPIC_LIST, ...FORM_TOPICS];
 export const getTopic = (id: string): Topic | undefined => TOPICS.find((t) => t.id === id);
 
 const CHORD_TOPIC: Record<string, string> = {
@@ -650,6 +653,11 @@ export function topicFor(generatorId: string, conceptKey: string): { topic: stri
     case 'roman': return { topic: 'xifres-romanes' };
     case 'borrow': return { topic: 'intercanvi-modal' };
     case 'secdom': return { topic: 'dominants-secundaris' };
+    case 'form': return generatorId === 'section-start' ? { topic: 'estructura-frases' } : { topic: 'estructura-formes', anchor: id };
+    case 'section': return { topic: 'estructura-seccions', anchor: id };
+    case 'blues': return { topic: 'blues-12', anchor: id };
+    case 'rc': return { topic: 'aaba-rhythm-changes', anchor: 'rc-bridge' };
+    case 'cadence': return { topic: 'cadencies', anchor: id };
     default: return { topic: 'graus' };
   }
 }

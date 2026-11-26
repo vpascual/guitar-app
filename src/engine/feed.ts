@@ -42,6 +42,20 @@ export const initialFeedState = (): FeedState => ({
   served: 0,
 });
 
+/** A skill's rating; skills added after the state was saved start at the default. */
+export const ratingOf = (state: FeedState, skill: SkillArea): number => state.ratings[skill] ?? START_RATING;
+
+/** Fill in skills that did not exist when the state was saved. */
+export function normalizeFeedState(state: FeedState): FeedState {
+  const ratings = { ...state.ratings };
+  const attempts = { ...state.attempts };
+  for (const s of SKILLS) {
+    ratings[s] ??= START_RATING;
+    attempts[s] ??= 0;
+  }
+  return { ...state, ratings, attempts };
+}
+
 const isDue = (r: ReviewItem, state: FeedState, now: number): boolean =>
   r.dueServed !== undefined ? state.served >= r.dueServed : now >= (r.dueAt ?? 0);
 
@@ -73,15 +87,15 @@ export function nextPuzzle(state: FeedState, opts: FeedOptions, now: number, ran
   if (due) {
     const g = getGenerator(due.generatorId);
     // Same concept, new seed: the repeat lands in a different key so the answer cannot be memorized.
-    return { puzzle: makePuzzle(g.id, seed, levelFor(state.ratings[g.skill]), due.conceptKey), review: due };
+    return { puzzle: makePuzzle(g.id, seed, levelFor(ratingOf(state, g.skill)), due.conceptKey), review: due };
   }
 
   const skills = [...new Set(pool.map((g) => g.skill))];
-  const weakest = skills.reduce((a, b) => (state.ratings[b] < state.ratings[a] ? b : a));
+  const weakest = skills.reduce((a, b) => (ratingOf(state, b) < ratingOf(state, a) ? b : a));
   const skill = rand() < 0.7 ? weakest : skills[Math.floor(rand() * skills.length)];
   const gens = pool.filter((g) => g.skill === skill);
   const g = gens[Math.floor(rand() * gens.length)];
-  return { puzzle: makePuzzle(g.id, seed, levelFor(state.ratings[skill])) };
+  return { puzzle: makePuzzle(g.id, seed, levelFor(ratingOf(state, skill))) };
 }
 
 export interface AnswerResult {
@@ -95,12 +109,12 @@ export function recordAnswer(
 ): AnswerResult {
   const { puzzle, review } = served;
   const skill = puzzle.skill;
-  const ratingBefore = state.ratings[skill];
+  const ratingBefore = ratingOf(state, skill);
   const score = correct ? (usedHint ? 0.5 : 1) : 0;
-  const ratingAfter = updateRating(ratingBefore, puzzle.difficulty, score, state.attempts[skill]);
+  const ratingAfter = updateRating(ratingBefore, puzzle.difficulty, score, state.attempts[skill] ?? 0);
   const next: FeedState = {
     ratings: { ...state.ratings, [skill]: ratingAfter },
-    attempts: { ...state.attempts, [skill]: state.attempts[skill] + 1 },
+    attempts: { ...state.attempts, [skill]: (state.attempts[skill] ?? 0) + 1 },
     served: state.served + 1,
     lastReviewAt: review ? state.served + 1 : state.lastReviewAt,
     reviews: state.reviews.filter(

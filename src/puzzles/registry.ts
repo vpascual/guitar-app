@@ -4,9 +4,10 @@ import { MODE_GENERATORS } from './modes';
 import { CHORD_GENERATORS } from './chords';
 import { HARMONY_GENERATORS } from './harmony';
 import { RHYTHM_GENERATORS } from './rhythm';
+import { FORM_GENERATORS } from './form';
 
 export const GENERATORS: PuzzleGenerator[] = [
-  ...MODE_GENERATORS, ...CHORD_GENERATORS, ...HARMONY_GENERATORS, ...RHYTHM_GENERATORS,
+  ...MODE_GENERATORS, ...CHORD_GENERATORS, ...HARMONY_GENERATORS, ...RHYTHM_GENERATORS, ...FORM_GENERATORS,
 ];
 
 export function getGenerator(id: string): PuzzleGenerator {
